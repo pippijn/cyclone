@@ -31,6 +31,7 @@
 #include "new_control_flow.h"
 #include "interface.h"
 #include "warn.h"
+#include "specsfile.h"
 #include "cyclone.h"
 
 namespace Port {
@@ -160,15 +161,6 @@ static void add_idirafter(string_t<`H> s) {
   add_cpparg(aprintf("-idirafter %s",s));
 }
 
-// We handle the -b flag separately from the other gcc args
-// because gcc requires it to be the first argument
-static string_t target_arch = NULL;
-static string_t targetting_flags = NULL;
-static void set_target_arch(string_t<`H> s) {
-  target_arch = s;
-  targetting_flags = aprintf("-b %s",s);
-}
-
 static void set_many_errors() {
   Position::max_errors = 65535;
 }
@@ -189,14 +181,6 @@ static bool is_cyclone_sourcefile(string_t s) {
   let len = strlen(s);
   if (len <= 4) return false;
   else return (strcmp(s+(len-4),".cyc") == 0);
-}
-
-static list_t<stringptr_t> cyclone_exec_path = NULL;
-static void add_cyclone_exec_path(string_t s) {
-  let len = strlen(s);
-  if (len <= 2) return;
-  let dir = (string_t)substring(s,2,len-2);
-  cyclone_exec_path = new List(new dir,cyclone_exec_path);
 }
 
 // Ideally we would simply pass library args as ccargs, preserving
@@ -401,166 +385,6 @@ static void remove_file(string_t<`H> s) {
   else remove((const char @)s);
 }
 
-//**********************************************************************
-// Reading a specs file
-
-#define MAXSTRNAME 256
-#define MAXSTRVALUE 4096
-
-typedef list_t<$(const char ?@,const char ?@)@> specs_t;
-
-specs_t read_specs(const char ?file) {
-  let result = NULL;
-  int c;
-  int i;
-  char strname[MAXSTRNAME];
-  char strvalue[MAXSTRVALUE];
-  FILE *spec_file = fopen((const char @)file, "r");
-
-  if (spec_file == NULL) {
-    fprintf(stderr, "Error opening spec file %s\n",file);
-    fflush(stderr);
-    return NULL;
-  }
-
-  while (true) { // exited by goto only
-    while (true) { // get rid of leading whitespace, find '*'
-      c = fgetc(spec_file);
-      if (isspace(c)) continue;
-      if (c == '*') break;
-      if (c != EOF) {
-        fprintf(stderr,
-                "Error reading spec file %s: unexpected character '%c'\n",
-                file,c);
-        fflush(stderr);
-      }
-      goto CLEANUP_AND_RETURN;
-    }
-  JUST_AFTER_STAR:
-    i = 0;
-    while (true) { // read command name up to ':'
-      c = fgetc(spec_file);
-      if (c == EOF) {
-        fprintf(stderr,
-                "Error reading spec file %s: unexpected EOF\n",
-                file);
-        fflush(stderr);
-        goto CLEANUP_AND_RETURN;
-      }
-      if (c == ':') {
-        strname[i] = 0;
-        break;
-      }
-      strname[i] = (char)c;
-      i++;
-      if (i >= MAXSTRNAME) {
-        fprintf(stderr,
-                "Error reading spec file %s: string name too long\n",
-                file);
-        fflush(stderr);
-        goto CLEANUP_AND_RETURN;
-      }
-    }
-    while (true) { // skip whitespace
-      c = fgetc(spec_file);
-      if (isspace(c)) continue;
-      break;
-    }
-    if (c == '*') { // if next char is '*', then strvalue are empty
-      // NB: this prevents a string value from starting with '*'
-      result = new List(new $(new (const char ?)strdup(strname),
-                              new (const char ?)strdup("")),result);
-      goto JUST_AFTER_STAR; // continue with next command
-    }
-    // otherwise read strvalue
-    strvalue[0] = (char)c;
-    i = 1;
-    while (true) { // read string up to end of line or file
-      c = fgetc(spec_file);
-      if (c == EOF || c == '\n' || c == '\r') { strvalue[i] = 0; break; }
-      strvalue[i] = (char)c;
-      i++;
-      if (i >= MAXSTRVALUE) {
-        fprintf(stderr,
-                "Error reading spec file %s: value of %s too long\n",
-                file,strname);
-        fflush(stderr);
-        goto CLEANUP_AND_RETURN; // this strname/option pair is dropped
-      }
-    }
-    // TODO: perhaps we should remove whitespace from the end of the line??
-    result = new List(new $(new (const char ?)strdup(strname),
-                            new (const char ?)strdup(strvalue)),result);
-    if (c == EOF) goto CLEANUP_AND_RETURN;
-  }
-
- CLEANUP_AND_RETURN:
-  fclose(spec_file);
-  return result;
-}
-// After reading a specs file we might want to split a line into
-// command line arguments
-string_t<`H> ?`H split_specs(const char ?cmdline) {
-  if (cmdline == NULL) return NULL;
-  let n = strlen(cmdline);
-  let l = NULL;
-  char buf[MAXSTRVALUE]@nozeroterm;
-  int i = 0;
-  int j = 0;
-  if (n > MAXSTRVALUE) goto DONE; // silently fail
-  while (true) {
-    // Get rid of leading spaces
-    while (true) {
-      if (i >= n) goto DONE;
-      if (cmdline[i] == 0) goto DONE;
-      if (!isspace(cmdline[i])) break;
-      i++;
-    }
-    j = 0;
-    // i points to a non-space.  Advance it to the next position
-    // which is not part of this word, e.g., a non-escaped space,
-    // zero terminator, or one past the end of the string; copy
-    // the argument to buf.
-    while (true) {
-      if (i >= n) break;
-      if (cmdline[i] == 0) break;
-      if (isspace(cmdline[i])) break;
-      if (cmdline[i] == '\\') {
-        // backslash escapes next char, whatever it is
-        i++;
-        if (i >= n) break;
-        if (cmdline[i] == 0) break;
-        buf[j] = cmdline[i];
-        j++;
-      }
-      else {
-        buf[j] = cmdline[i];
-        j++;
-      }
-      i++;
-    }
-    if (j < MAXSTRVALUE) // Invariant: j<=i<=MAXSTRVALUE
-      buf[j] = 0;
-    // extract the characters from i up to but not including j
-    l = new List(new (const char ?)strdup(buf),l);
-  }
- DONE:
-  l = List::imp_rev(l);
-  l = new List(new "",l); // For the command, since we'll pass it to Arg::parse
-  let ptrarray = List::to_array(l);
-  let result = new { for k < numelts(ptrarray) : *(ptrarray[k]) };
-  return result;
-}
-
-const char ?get_spec(specs_t specs, const char ?spec_name) {
-  try {
-    return *List::assoc_cmp(strptrcmp, specs, &spec_name);
-  } catch {
-  case &Not_found:
-    return NULL;
-  }
-}
-
 ////********************************************************************
 
 bool compile_failure = false; // for exit code (helps Makefile)
@@ -733,6 +557,21 @@ static void remove_cfiles() {
     for (; cfiles != NULL; cfiles = cfiles->tl)
       remove_file(*(cfiles->hd));
 }
+static void find_fail(string_t file) {
+  compile_failure = true;
+  remove_cfiles();
+  throw new Core::Failure(aprintf("Error: can't find internal compiler file %s\n", file));
+}
+static string_t find_in_arch_path(string_t s) {
+  let r = Specsfile::find_in_arch_path(s);
+  if (!r) find_fail(s);
+  return r;
+}
+static string_t find_in_exec_path(string_t s) {
+  let r = Specsfile::find_in_exec_path(s);
+  if (!r) find_fail(s);
+  return r;
+}
 
 list_t<Absyn::decl_t> do_print($(FILE@`H,mstring_t<`H>) @env,
 			       list_t<Absyn::decl_t,`H> tds) {
@@ -798,73 +637,12 @@ static list_t<stringptr_t> split_by_char(string_t<`H> s, char c) {
   return List::imp_rev(result);
 }
 
-/* FIX: once stat is ported we can use that instead */
-static bool file_exists(string_t file) {
-  FILE *f = NULL;
-  try f = file_open(file,"r"); catch {default: break;}
-  if (f == NULL) return false;
-  else { fclose(f); return true; }
-}
-
-/* Prints out a list of string pointers */
-static string_t sprint_list(list_t<stringptr_t>dirs) {
-  string_t tmp = "";
-  for (; dirs != NULL; dirs = dirs->tl) {
-    let dir = *dirs->hd;
-    if (dir == NULL || strlen(dir)==0) continue;
-    dir = strconcat(dir,":");
-    tmp = strconcat(dir,tmp);
-  }
-  return tmp;
-}
-
-/* Looks for the file in the list of directories.  The order
-   of the list matters---it returns the first file it finds. */
-static string_t *find(list_t<stringptr_t> dirs, string_t file) {
-  if (file == NULL) return NULL;
-  for (; dirs != NULL; dirs = dirs->tl) {
-    let dir = *dirs->hd;
-    if (dir == NULL || strlen(dir)==0) continue;
-    string_t s = Filename::concat(dir,file);
-    if (file_exists(s)) return new s;
-  }
-  return NULL;
-}
-
-static string_t do_find(list_t<stringptr_t> dirs, string_t file) {
-  let f = find(dirs, file);
-  if (f == NULL) {
-    compile_failure = true;
-    remove_cfiles();
-    fprintf(stderr,"Error: can't find internal compiler file %s in path %s\n",
-            file, sprint_list(dirs));
-    fflush(stderr);
-    throw new Core::Failure
-      (aprintf("Error: can't find internal compiler file %s in path %s\n",
-	       file, sprint_list(dirs)));
-  }
-  return *f;
-}
-
 /* Given: dirs=[d1,d2,..,dn]
    Return:     [d1/subdir,d2/subdir,..,dn/subdir] */
 static list_t<const char ?`H@`H>
 add_subdir(list_t<const char ?`H@`H> dirs, const char ?subdir) {
   let l = NULL;
   for (; dirs != NULL; dirs = dirs->tl) {
-    l = new List(new (const char ?)Filename::concat(*dirs->hd,subdir),l);
-  }
-  l = List::imp_rev(l);
-  return l;
-}
-
-/* Given: dirs=[d1,d2,..,dn]
-   Return:     [d1,d1/subdir,d2,d2/subdir,..,dn,dn/subdir] */
-static list_t<const char ?`H@`H>
-also_subdir(list_t<const char ?`H@`H> dirs, const char ?subdir) {
-  let l = NULL;
-  for (; dirs != NULL; dirs = dirs->tl) {
-    l = new List(dirs->hd,l);
     l = new List(new (const char ?)Filename::concat(*dirs->hd,subdir),l);
   }
   l = List::imp_rev(l);
@@ -961,7 +739,7 @@ static void process_file(string_t<`H> filename) {
   // 1) command line arguments (with -I and -B)
   // 2) environment var (CYCLONE_INCLUDE_PATH)
   // 3) hardwired in the build (by setting def_inc_path and def_lib_path)
-  let stdinc_dirs = add_subdir(cyclone_exec_path,target_arch);
+  let stdinc_dirs = add_subdir(Specsfile::cyclone_exec_path,Specsfile::target_arch);
   stdinc_dirs = add_subdir(stdinc_dirs,"include");
   if (strlen(def_inc_path) > 0) {
     stdinc_dirs = new List(new def_inc_path, stdinc_dirs);
@@ -1185,7 +963,7 @@ using Arg {
               Flag_spec,add_cpparg,
               "Pass definition to preprocessor");
   make_option(opt5,"-B",true,"<file>",
-              Flag_spec,add_cyclone_exec_path,
+              Flag_spec,Specsfile::add_cyclone_exec_path,
               "Add to the list of directories to search for compiler files");
   make_option(opt6,"-I",true,"<dir>",
               Flag_spec,add_cpparg,
@@ -1222,7 +1000,7 @@ using Arg {
               String_spec,set_dependencies_target,
               "Give target for dependencies");
   make_option(opt17,"-b",false,"<machine>",
-              String_spec,set_target_arch,
+              String_spec,Specsfile::set_target_arch,
               "Set target machine");
   make_option(opt18,"-Wlose-unique",false,"",
               Set_spec,&NewControlFlow::warn_lose_unique,
@@ -1417,87 +1195,32 @@ int main(int argc, string_t<`H> ?`H argv) {
      BSD systems (??) */
   GC_blacklist_warn_clear();
 
-  let cyclone_arch_path;
-  string_t def_lib_path;
-
-  // parse the command-line arguments
-  // partition the arguments into (-B and -b) and others
-  let bindices = new {for i<argc: false};
-  let numbindices = 0;
-  int i,j,k;
-  for (i = 1; i<argc; i++) { //NB arg 0 is the command
-    if (strncmp("-B",argv[i],2) == 0) {
-      bindices[i] = true;
-      numbindices++;
-    }
-    else if (strcmp("-b",argv[i]) == 0) {
-      bindices[i] = true;
-      numbindices++;
-      i++; if (i>=argc) break;
-      bindices[i] = true;
-      numbindices++;
-    }
-  }
-
-  // FIX: have to heap allocate these because that's what Arg::parse wants
-  // FIX: maybe we should expose an Arg function to take args
-  //   one at a time, that would let us avoid the nonsense with argv[0]
-  let bargs = new { for n<numbindices+1 : (string_t)NULL };
-  let otherargs = new { for n<argc-numbindices : (string_t)NULL };
-  bargs[0] = otherargs[0] = argv[0];
-  for (i = j = k = 1; i<argc; i++) {
-    if (bindices[i]) bargs[j++] = argv[i];
-    else otherargs[k++] = argv[i];
-  }
-
+  /* parse the command-line arguments */
+  string_t optstring = "Options:";
   // initialize the global options list tails
   for (int i = 1; i < numelts(global_options); i++) {
     global_options[i-1]->tl = global_options[i];
   }
   Arg::speclist_t<`H,`H> options = global_options[0];
-
-  string_t optstring = "Options:";
-  Arg::current = 0;
-  Arg::parse(options, add_other, add_other_flag, optstring, bargs);
-  if (target_arch == NULL) target_arch = Carch;
-  // Having processed -B and -b, we can now construct the exec-path
-  // and arch-path
-
-  // The Cyclone exec-path is a list of directories where special
-  // files (cyc_include.h, specs files, etc.) might be kept.
-  // It is specified with the following order (where the earlier in
-  // the order, the first place we look for the file):
-  // 1) command line arguments (with -B)
-  // 2) environment var (with CYCLONE_EXEC_PREFIX)
-  // 3) hardwired in the build (by setting lib_path)
-  string_t cyclone_exec_prefix = getenv("CYCLONE_EXEC_PREFIX");
-  if (cyclone_exec_prefix != NULL)
-    cyclone_exec_path = new List(new cyclone_exec_prefix, cyclone_exec_path);
-  def_lib_path = Cdef_lib_path;
-  if (strlen(def_lib_path) > 0)
-    cyclone_exec_path =
-     new List(new (const char ?)Filename::concat(def_lib_path, "cyc-lib"),
-              cyclone_exec_path);
-  cyclone_exec_path = List::imp_rev(cyclone_exec_path);
-  cyclone_arch_path = also_subdir(cyclone_exec_path, target_arch);
-
+  // Process the -b and -B arguments
+  let otherargs = Specsfile::parse_b(options, add_other, add_other_flag, optstring, argv);
   // Now we find the specs file and see if it has any default arguments
   // for Cyclone (which will override defaults given here)
   // NB: we chose "cycspecs" as the name of the specs file instead of
   // the usual "specs" because if "specs" is used, gcc uses its own
   // default file "specs" and not ours.
-  let specs_file = do_find(cyclone_arch_path,"cycspecs");
+  let specs_file = find_in_arch_path("cycspecs");
   if (v_r) fprintf(stderr,"Reading from specs file %s\n",specs_file);
-  let specs = read_specs(specs_file);
-  let args_from_specs_file = split_specs(get_spec(specs,"cyclone"));
+  let specs = Specsfile::read_specs(specs_file);
+  let args_from_specs_file = Specsfile::split_specs(Specsfile::get_spec(specs,"cyclone"));
   if (args_from_specs_file != NULL) {
     Arg::current = 0;
     Arg::parse(options, add_other, add_other_flag, optstring, args_from_specs_file);
   }
-  let target_cflags = get_spec(specs,"cyclone_target_cflags");
-  let cyclone_cc = get_spec(specs,"cyclone_cc");
+  let target_cflags = Specsfile::get_spec(specs,"cyclone_target_cflags");
+  let cyclone_cc = Specsfile::get_spec(specs,"cyclone_cc");
   if (!cyclone_cc) cyclone_cc = "gcc";
-  def_inc_path = get_spec(specs,"cyclone_inc_path");
+  def_inc_path = Specsfile::get_spec(specs,"cyclone_inc_path");
 
   // Finally parse the other command-line arguments
   Arg::current = 0;
@@ -1520,7 +1243,7 @@ int main(int argc, string_t<`H> ?`H argv) {
     // compiler error, cpp0: too many filenames.
     let dash_E = (produce_dependencies ? "" : " -E");
     set_cpp(aprintf("%s %s %s -w -x c%s -specs %s",
-                    cyclone_cc, targetting_flags,
+                    cyclone_cc, Specsfile::btarget,
                     target_cflags, dash_E, specs_file));
   }
   if (cyclone_files == NULL && ccargs == NULL) {
@@ -1533,9 +1256,9 @@ int main(int argc, string_t<`H> ?`H argv) {
   /* The absolute file name is kept in a global variable */
   /* don't bother if we won't translate to C or if set explicitly */
   if (!stop_after_cpp_r && !nocyc_setjmp_r)
-    cyc_setjmp = do_find(cyclone_arch_path,"cyc_setjmp.h");
+    cyc_setjmp = find_in_arch_path("cyc_setjmp.h");
   if (!stop_after_cpp_r && strlen(cyc_include) == 0)
-    cyc_include = do_find(cyclone_exec_path,"cyc_include.h");
+    cyc_include = find_in_exec_path("cyc_include.h");
 
   /* Process each .cyc file */
   for (let l = rev(cyclone_files); l != NULL; l = l->tl) {
@@ -1552,7 +1275,7 @@ int main(int argc, string_t<`H> ?`H argv) {
   if (ccargs == NULL) return 0;
 
   // Run the C compiler
-  add_ccarg(strconcat("-L",def_lib_path));
+  add_ccarg(strconcat("-L",Specsfile::def_lib_path));
 
   ccargs = rev(ccargs);
   let ccargs_string = str_sepstr(List::map(sh_escape_stringptr,ccargs), " ");
@@ -1600,10 +1323,8 @@ int main(int argc, string_t<`H> ?`H argv) {
     }
     gc_filename = "gc.a";
 
-    let gc = (nogc_r ?
-              do_find(cyclone_arch_path,nogc_filename):
-              do_find(cyclone_arch_path,gc_filename));
-    let runtime = do_find(cyclone_arch_path,runtime_filename);
+    let gc = (nogc_r ? find_in_arch_path(nogc_filename): find_in_arch_path(gc_filename));
+    let runtime = find_in_arch_path(runtime_filename);
 
     // FIX: temporarily removed from interface check below
     //stdlib = list(new libcyc_flag);
@@ -1661,7 +1382,7 @@ int main(int argc, string_t<`H> ?`H argv) {
 
   let cccmd =
     aprintf("%s %s %s %s%s %s%s",
-            cyclone_cc, targetting_flags, target_cflags,
+            cyclone_cc, Specsfile::btarget, target_cflags,
             ccargs_string, outfile_str,
             stdlib_string, libargs_string);
   if (v_r) { fprintf(stderr,"%s\n",cccmd); fflush(stderr); }
