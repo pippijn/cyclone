@@ -347,11 +347,11 @@ static void update_heap_stats(struct ProcEnv @env,
   env->heap_live = add_point(env->cnt,heap_live,env->heap_live);
 }
 
-struct Hashtable::Table<unsigned int,unsigned int> *tab = NULL;
-int uint_cmp(unsigned int i, unsigned int j) {
+static struct Hashtable::Table<unsigned int,unsigned int> *tab = NULL;
+static int uint_cmp(unsigned int i, unsigned int j) {
   return (i<j)?(-1):((i>j)?1:0);
 }
-int uint_hash(unsigned int i) {
+static int uint_hash(unsigned int i) {
   return (int)i;
 }
 static void
