@@ -564,8 +564,8 @@ static initlevel_t initlevel_rec(struct InitlevelEnv @ env,
   return this_ans;
 }
 initlevel_t initlevel(flow_env_t env, flowdict_t d, absRval_t r) {
-  let env = InitlevelEnv(d,NULL);
-  return initlevel_rec(&env,r,AllIL);
+  let env2 = InitlevelEnv(d,NULL);
+  return initlevel_rec(&env2,r,AllIL);
 }
 
 absRval_t lookup_place(flowdict_t d, place_t place) {
