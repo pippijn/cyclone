@@ -372,14 +372,14 @@ static exp_t getFunctionType(struct functionSet @fS, type_t t) {
     default: throw new Impossible("impossible IntType (not char, short or int)");
     }
     break;
-  case &FloatType:
+  case &FloatType(0):
     function = fS->ffloat;
     break;
-  case &DoubleType(longBool):
-    switch(longBool){
-    case true: function = fS->flongdouble; break;
-    default:   function = fS->fdouble;
-    }
+  case &FloatType(1):
+    function = fS->fdouble;
+    break;
+  case &FloatType(_):
+    function = fS->flongdouble;
     break;
   case &PointerType(_):
     function = fS->fvoidstar;
@@ -710,8 +710,7 @@ static type_t typ_to_c(type_t t) {
     default: return star_typ(t2,&HeapRgn_val,tq,false_conref);
     }
   case &IntType(_,_):
-  case &FloatType:
-  case &DoubleType(_): return t;
+  case &FloatType(_): return t;
   case &ArrayType(ArrayInfo{t2,tq,e,_,ztl}):
     return array_typ(typ_to_c_array(t2),tq,e,false_conref,ztl);
   case &FnType(FnInfo{_,_,tq2,t2,args,c_vararg,cyc_vararg,_,atts}):
@@ -826,8 +825,7 @@ static bool atomic_typ(type_t t) {
   case &IntType(_,_):
   case &EnumType(_,_):
   case &AnonEnumType(_):
-  case &FloatType:
-  case &DoubleType(_):
+  case &FloatType(_):
   case &FnType(_):
   case &TagType(_): return true;
   case &ArrayType(ArrayInfo{t,_,_,_,_}): return atomic_typ(t);
@@ -1808,8 +1806,9 @@ static exp_t generate_zero(type_t t) {
     res = const_exp(Int_c(sn,0),DL); break;
   case &IntType(sn,LongLong_sz) :
     res = const_exp(LongLong_c(sn,0),DL); break;
-  case &FloatType   : fallthru;
-  case &DoubleType(_)  : res = const_exp(Float_c("0.0"),DL); break;
+  case &FloatType(0): res = const_exp(Float_c("0.0F",0),DL); break;
+  case &FloatType(1): res = const_exp(Float_c("0.0",1),DL); break;
+  case &FloatType(i): res = const_exp(Float_c("0.0L",i),DL); break;
   default:
     toc_impos("found non-zero type %s in generate_zero",typ2string(t));
   }
@@ -3481,10 +3480,10 @@ xlate_pat(env_t<`rgn> nv,
     let result = xlate_pat(nv,rgn,t,r,path,p2,fail_stmt,decls);
     result[2] = seq_stmt(s,result[2],DL);
     return result;
-  case &Null_p:   s=if_neq_stmt(r,signed_int_exp(0,DL),fail_stmt); break;
-  case &Int_p(sn,i): s=if_neq_stmt(r,int_exp(sn,i,DL),    fail_stmt); break;
-  case &Char_p(c):   s=if_neq_stmt(r,char_exp(c,DL),      fail_stmt); break;
-  case &Float_p(f):  s=if_neq_stmt(r,float_exp(f,DL),     fail_stmt); break;
+  case &Null_p:       s=if_neq_stmt(r,signed_int_exp(0,DL),fail_stmt); break;
+  case &Int_p(sn,i):  s=if_neq_stmt(r,int_exp(sn,i,DL),    fail_stmt); break;
+  case &Char_p(c):    s=if_neq_stmt(r,char_exp(c,DL),      fail_stmt); break;
+  case &Float_p(f,i): s=if_neq_stmt(r,float_exp(f,i,DL),   fail_stmt); break;
 
   case &Enum_p(ed,ef):
     s = if_neq_stmt(r,new_exp(new Enum_e(ef->name,ed,ef),NULL),fail_stmt);

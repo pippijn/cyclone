@@ -236,7 +236,7 @@ static type_t tcConst(tenv_t te, seg_t loc, type_t * topt, cnst_t *c, exp_t e){
     t = (sn == Unsigned) ? ushort_typ : sshort_typ; break;
   case {.LongLong_c = $(sn,_)}:
     t = (sn == Unsigned) ? ulonglong_typ  : slonglong_typ;  break;
-  case {.Float_c = _} : t = float_typ; break;
+  case {.Float_c = $(_,i)} : t = float_typ(i); break;
   case {.Int_c = $(sn,i)}:
     if (topt == NULL)
       t = (sn == Unsigned) ? uint_typ : sint_typ;
@@ -918,14 +918,11 @@ static struct Datatypefield *tcInjection(tenv_t te,exp_t e,type_t tu,
                                        region_t<`r> r,
                                        list_t<$(tvar_t,type_t)@`r,`r> inst,
                                        list_t<datatypefield_t> fs) {
-  static datatype Type.DoubleType dbl = DoubleType(false);
-  static type_t dbl_typ = &dbl;
-
   list_t<datatypefield_t> fields;
   type_t t1 = e->topt->v;
   // must promote float to double, and char/short to int
   switch (compress(t1)) {
-  case &FloatType: unchecked_cast(te,e,dbl_typ,No_coercion);t1 = dbl_typ; break;
+  case &FloatType(0): unchecked_cast(te,e,float_typ(1),No_coercion);t1 = float_typ(1); break;
   case &IntType(_,Char_sz):
   case &IntType(_,Short_sz): unchecked_cast(te,e,sint_typ,No_coercion);t1 = sint_typ; break;
   default: break;
@@ -1952,8 +1949,7 @@ static bool zeroable_type(type_t t) {
   case &PointerType(PtrInfo(_,_,PtrAtts(_,n,_,_,_))):
     return (conref_def(true,n));
   case &IntType(_,_):
-  case &FloatType:
-  case &DoubleType(_): return true;
+  case &FloatType(_): return true;
   case &ArrayType(ArrayInfo{t,_,_,_,_}): return zeroable_type(t);
   case &FnType(_): return false;
   case &TupleType(tqs):

@@ -397,8 +397,7 @@ bool okay_szofarg(type_t t) {
 
   case &TagType(_):
   case &IntType(_,_):
-  case &FloatType:
-  case &DoubleType(_): return true;
+  case &FloatType(_): return true;
   case &ArrayType(ArrayInfo{t2,_,e,_,_}): //assume e constant checked elsewhere
     return (e != NULL);
   case &FnType(_): return false;

@@ -791,12 +791,13 @@ doc_t ntyp2doc(type_t t) {
     }
     s = text(aprintf("%s%s",sns,ts));
     break;
-  case &FloatType:  s = text("float");  break;
-  case &DoubleType(b):
-    if (b)
-      s = text("long double");
-    else
+  case &FloatType(i):
+    if (i==0)
+      s = text("float");
+    else if (i==1)
       s = text("double");
+    else
+      s = text("long double");
     break;
   case &TupleType(ts):
     s = cat(dollar(),args2doc(ts));
@@ -1290,7 +1291,7 @@ doc_t cnst2doc(cnst_t c) {
   case {.Int_c = $(Unsigned,i)}: return text(aprintf("%u",(unsigned)i));
   case {.LongLong_c = $(sg,i)}:
     return text("<<FIX LONG LONG CONSTANT>>"); // FIX
-  case {.Float_c = x}:  return text(x);
+  case {.Float_c = $(x,_)}:  return text(x);
   case {.Null_c = _}:      return text("NULL");
   case {.String_c = s}:
     return cat(text("\""), text(string_escape(s)), text("\""));
@@ -1537,7 +1538,7 @@ doc_t pat2doc(pat_t p) {
     else s = text(aprintf("%u",i));
     break;
   case &Char_p(ch): s = text(aprintf("'%s'",char_escape(ch))); break;
-  case &Float_p(x): s = text(x); break;
+  case &Float_p(x,_): s = text(x); break;
   case &Var_p(vd,&Pat{.r = &Wild_p,...}):
     s = qvar2doc(vd->name); break;
   case &Var_p(vd,p2):

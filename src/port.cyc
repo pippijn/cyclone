@@ -1195,8 +1195,7 @@ static ctype_t type_to_ctype(cenv_t env, type_t t) {
                     orig_zt ? zterm_ct() : nozterm_ct());
     }
   case &IntType(_,_):
-  case &FloatType:
-  case &DoubleType(_): return arith_ct();
+  case &FloatType(_): return arith_ct();
   case &ArrayType(ArrayInfo{et,tq,_,zt,ztloc}):
     // Similar to the pointer case.
     let cet = type_to_ctype(env,et);

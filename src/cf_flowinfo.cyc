@@ -1489,8 +1489,7 @@ bool contains_region(killrgn_t rgn, type_t t) {
   case &TypeDeclType(...): // really an error -- should be compressed out
   case &VoidType: // these cases can't contain rgn
   case &IntType(_,_):
-  case &FloatType:
-  case &DoubleType(_):
+  case &FloatType(_):
   case &EnumType(_,_):
   case &AnonEnumType(_):
   case &TagType(_):

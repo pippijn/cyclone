@@ -738,8 +738,7 @@ void process_break(tenv_t te, stmt_t s, stmt_opt_t @sopt) {
     // But it's a pain to do in control flow because there is no stmt dest
     switch (Tcutil::compress(shared->return_typ)) {
     case &VoidType: break;
-    case &DoubleType(_):
-    case &FloatType:
+    case &FloatType(_):
     case &IntType(_,_):
       Tcutil::warn(s->loc,"break may cause function not to return a value");
       break;
