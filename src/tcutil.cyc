@@ -2691,7 +2691,6 @@ bool subtype(tenv_t te,
   for (_ a = assume; a != NULL; a = a->tl)
     if (unify(t1,(*a->hd)[0]) && unify(t2,(*a->hd)[1]))
       return true;
-
   t1 = compress(t1);
   t2 = compress(t2);
   switch ($(t1,t2)) {
