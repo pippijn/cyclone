@@ -177,6 +177,32 @@ static $(Opt_t<var>,tqual,typ)@ arg_to_c($(Opt_t<var>,tqual,typ)@ a) {
 static $(tqual,typ)@ typ_to_c_f($(tqual,typ)@ x) {
   return &$(x[0],typ_to_c(x[1]));
 }
+// Sometimes we translate arrays t[] and t[N] to t*, and sometimes
+// we leave them alone.  We must leave them alone in the following
+// circumstances:
+// 1. as the argument of sizeof
+// 2. in typedef
+// 3. in declarations
+// 4. as the element type of an array
+// 5. as the type part of a C9X compound literal
+// 6. as the type of a struct field
+// We must change them to pointers in the following circumstances:
+// 1. as the argument of cast
+// We can do either in the following circumstances:
+// 1. as the parameter of a function
+// The function typ_to_c_array leaves them alone, while typ_to_c
+// changes them to pointers.
+static typ typ_to_c_array(typ t) {
+  switch(t) {
+  case ArrayType(t2,tq,UntaggedArray): // FIX: do we handle tq correctly?
+    return ArrayType(typ_to_c_array(t2),tq,UntaggedArray);
+  case ArrayType(t2,tq,FixedArray(x)): // FIX: do we handle tq correctly?
+    return ArrayType(typ_to_c_array(t2),tq,FixedArray(x));
+  case Evar(_,&Opt{.v=t2},_): return typ_to_c_array(t2);
+  default:
+    return typ_to_c(t);
+  }
+}
 static typ typ_to_c(typ t) {
   switch (t) {
   case VoidType:              return t;
@@ -210,15 +236,14 @@ static typ typ_to_c(typ t) {
     // t2[?] maps to struct tagged_array_t2*, where we define
     // struct tagged_array_t2 { unsigned int sz; t2 contents[]; };
     // t2[] and t2[3] map to t2*.
-    t2 = typ_to_c(t2);
+    t2 = typ_to_c_array(t2);
     switch (ak) {
     case TaggedArray:
       // returns the name of a struct type for the array
       let n = add_tagged_array_type(t2,tq);
       return nullableptr_typ(strct(n),empty_tqual());
-      // FIX:  fixed-size arrays aren't quite right... C's rules for
-      // when you can and can't use these types are strange.
-    default: return nullableptr_typ(t2,tq);
+    default:
+      return nullableptr_typ(t2,tq);
     }
   case FnType(_,t2,args,vararg):
     // just drop the type arguments and translate the nested types
@@ -238,21 +263,12 @@ static typ typ_to_c(typ t) {
   case TypedefType(tdn,ts,topt):
     if (topt == null) return toc_impos("Toc::typ_to_c: unresolved TypedefType");
     // just drop the type arguments and translate the nested types
-    return TypedefType(collapse_qvar(tdn),null, &Opt(typ_to_c(topt->v)));
+    return TypedefType(collapse_qvar(tdn),null, &Opt(typ_to_c_array(topt->v)));
   case RgnHandleType(r):
     // FIX?
     return void_star_typ();
   case UnionType:
     return toc_impos("uniontype");
-  }
-}
-
-// Same as above but t[] and t[e] are not translated to t* at the top-level.
-typ top_typ_to_c(typ t) {
-  switch (compress(t)) {
-  case ArrayType(_,_,TaggedArray): return typ_to_c(t);
-  case ArrayType(t2,tq,ak):        return ArrayType(typ_to_c(t2),tq,ak);
-  default:                         return typ_to_c(t);
   }
 }
 
@@ -536,6 +552,12 @@ static exp tag_fixedarray_conv(bool toplevel,typ t, exp sz, exp e) {
   typ strt_typ;
   typ elt_typ;
   switch (compress(t)) {
+  //  case ArrayType(elt,tq,FixedArray(_)):
+  //    // FIX:  what about tqual ??
+  //    elt_typ = elt;
+  //    let n = add_tagged_array_type(elt,empty_tqual());
+  //    strt_typ = strct(n);
+  //    break;
   case PointerType(elt,_,_,_):
     // FIX:  what about tqual ??
     elt_typ = elt;
@@ -543,7 +565,7 @@ static exp tag_fixedarray_conv(bool toplevel,typ t, exp sz, exp e) {
     strt_typ = strct(n);
     break;
   default:
-    return toc_impos("tag_fixedarray_conv: not a pointer");
+    return toc_impos("tag_fixedarray_conv: not a fixed array");
   }
   typ pstrt_typ = nullableptr_typ(strt_typ,empty_tqual());
   if (toplevel) {
@@ -1164,7 +1186,7 @@ static void exp_to_c(env nv, exp e) {
     default: unimp("& on non-struct/tuple/variable"); break;
     }
     break;
-  case Sizeof_e(t): e->r = Sizeof_e(typ_to_c(t)); break;
+  case Sizeof_e(t): e->r = Sizeof_e(typ_to_c_array(t)); break;
   case Deref_e(e1):
     exp_to_c(nv, e1);
     switch (compress(e1->topt->v)) {
@@ -1247,7 +1269,7 @@ static void exp_to_c(env nv, exp e) {
 	qvar x = temp_var();
 	qvar i = temp_var();
 	qvar a = temp_var();
-	let ta1 = typ_to_c(ta);
+	let ta1 = typ_to_c_array(ta);
 	let n = add_tagged_array_type(ta1,q);
 	typ tx  = nullableptr_typ(strct(n),empty_tqual());
 	typ ta2 = nullableptr_typ(ta1,q);
@@ -2272,7 +2294,7 @@ static void structdecl_to_c(structdecl s) {
       s->fields = null;
     else {
       for (let fields = s->fields->v; fields != null; fields = fields->tl) {
-	fields->hd[2] = typ_to_c(fields->hd[2]);
+	fields->hd[2] = typ_to_c_array(fields->hd[2]);
       }
     }
   }
@@ -2369,7 +2391,7 @@ static list<decl> enumdecl_to_c(enumdecl ed, list<decl> res) {
         int i = 1;
         for (let ts = f->typs; ts != null; ts = ts->tl, i++) {
           let fname = xprintf("f%d",i);
-          fs = &cons(&$(fname,ts->hd[0],typ_to_c(ts->hd[1])),fs);
+          fs = &cons(&$(fname,ts->hd[0],typ_to_c_array(ts->hd[1])),fs);
         }
         fs = List::imp_rev(fs);
         fs = &cons(&$((string)"tag",empty_tqual(),sint_t),fs);
@@ -2454,7 +2476,7 @@ static list<decl> xenumdecl_to_c(xenumdecl xd, list<decl> res) {
         list<$(field_name,tqual,typ)@> fields = null;
         int i = 1;
         for (list<$(tqual,typ)@> ts = f->typs; ts != null; ts = ts->tl, i++) {
-          let newf = &$(xprintf("f%d",i),ts->hd[0],typ_to_c(ts->hd[1]));
+          let newf = &$(xprintf("f%d",i),ts->hd[0],typ_to_c_array(ts->hd[1]));
           fields = &cons(newf,fields);
         }
         fields = &cons(&$((string)"tag",empty_tqual(),
@@ -2533,7 +2555,8 @@ static $(env,list<decl>) decls_to_c(env nv, list<decl> ds, bool top) {
 	nv = add_varmap(nv,vd->name,varb_exp(n,Local_b(vd),DL));
       vd->name = n;
       vd->sc   = scope_to_c(vd->sc);
-      vd->type = top ? top_typ_to_c(vd->type) : typ_to_c(vd->type);
+      //vd->type = top ? typ_to_c_array(vd->type) : typ_to_c(vd->type);
+      vd->type = typ_to_c_array(vd->type);
       res = &cons(d,res);
       break;
     case Fn_d(fd):
@@ -2558,7 +2581,7 @@ static $(env,list<decl>) decls_to_c(env nv, list<decl> ds, bool top) {
     case Typedef_d(td):
       td->name = collapse_qvar(td->name);
       td->tvs = null;
-      td->defn = typ_to_c(td->defn);
+      td->defn = typ_to_c_array(td->defn);
       res = &cons(d,res);
       break;
     case Namespace_d(v,ds2):
