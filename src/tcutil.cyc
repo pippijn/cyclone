@@ -113,6 +113,12 @@ bool is_function_type(type_t t) {
   default: return false;
   }
 }
+bool is_typedef_type(type_t t) {
+  switch (compress(t)) {
+  case &TypedefType(...): return true;
+  default: return false;
+  }
+}
 bool is_boxed(type_t t) {
   return type_kind(t)->kind == BoxKind;
 }
