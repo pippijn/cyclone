@@ -36,10 +36,9 @@
 
 #ifndef lint
 /*static char sccsid[] = "from: @(#)net.c	5.5 (Berkeley) 6/1/90";*/
-const char net_rcsid[]ZEROTERM = "$Id: finger.cyc,v 1.11 2002-02-21 14:43:16 jgm Exp $";
+char net_rcsid[] = "$Id: finger-orig.c,v 1.1 2002-04-15 21:47:54 jcheney Exp $";
 #endif /* not lint */
 
-#include <core.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -49,39 +48,31 @@ const char net_rcsid[]ZEROTERM = "$Id: finger.cyc,v 1.11 2002-02-21 14:43:16 jgm
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 
-#ifdef __CYGWIN__
-#ifndef sin_zero
-#define sin_zero __pad   /* this is in Cygwin's in.h */
-#endif
-#endif
-
-int main(int argc, char ?`H argv[]) {
-  FILE *fpopt, @fp;
-  struct in_addr @defaddr = new in_addr { 0 };
+int main(int argc, char *argv[]) {
+  FILE *fp;
+  struct in_addr defaddr;
   int c, sawret, ateol;
-  struct hostent *`main hp, def;
+  struct hostent *hp, def;
   struct servent *sp;
   struct sockaddr_in sn;
   int s;
-  struct in_addr *@alist = new { NULL };
-  char ?`H host;
+  char *alist[1], *host;
 
   if (argc != 2) {
     fprintf(stderr, "%s: exactly one name expected\n", argv[0]);
     exit(1);
   }
 
-  host = mstrrchr(argv[1], '@');
+  host = strrchr(argv[1], '@');
   if (!host) {
     fprintf(stderr, "%s: no host given\n", argv[0]);
     exit(1);
   }
   *host++ = '\0';
 
-  sn.sin_family = 0;
-  sn.sin_port = 0;
-  for (int i=0; i<sizeof(sn.sin_zero); i++) sn.sin_zero[i] = '\0';
+  memset(&sn, 0, sizeof(sn));
 
   sp = getservbyname("finger", "tcp");
   if (!sp) {
@@ -92,23 +83,23 @@ int main(int argc, char ?`H argv[]) {
 
   hp = gethostbyname(host);
   if (!hp) {
-    if (!inet_aton(host, defaddr)) {
+    if (!inet_aton(host, &defaddr)) {
       fprintf(stderr, "%s: unknown host: %s\n", argv[0], host);
       exit(1);
     }
     def.h_name = host;
     def.h_addr_list = alist;
-    def.h_addr = defaddr;
+    def.h_addr = (char *)&defaddr;
     def.h_length = sizeof(struct in_addr);
     def.h_addrtype = AF_INET;
-    def.h_aliases = NULL;
+    def.h_aliases = 0;
     hp = &def;
   }
-  sn.sin_family = (short)hp->h_addrtype;
+  sn.sin_family = hp->h_addrtype;
   if (hp->h_length > (int)sizeof(sn.sin_addr)) {
     hp->h_length = sizeof(sn.sin_addr);
   }
-  sn.sin_addr = *hp->h_addr;
+  memcpy(&sn.sin_addr, hp->h_addr, hp->h_length);
 
   if ((s = socket(hp->h_addrtype, SOCK_STREAM, 0)) < 0) {
     fprintf(stderr, "%s: socket: %s\n", argv[0], strerror(errno));
@@ -117,7 +108,7 @@ int main(int argc, char ?`H argv[]) {
 
   /* print hostname before connecting, in case it takes a while */
   printf("[%s]\n", hp->h_name);
-  if (connect(s, &sn,sizeof(sn)) < 0) {
+  if (connect(s, (struct sockaddr *)&sn, sizeof(sn)) < 0) {
     fprintf(stderr, "%s: connect: %s\n", argv[0], strerror(errno));
     close(s);
     exit(1);
@@ -134,14 +125,13 @@ int main(int argc, char ?`H argv[]) {
    * If we see a <CR> or a <CR> with the high bit set, treat it as
    * a newline; if followed by a newline character, only output one
    * newline.
-   */
-  fpopt = fdopen(s, "r");
-  if (!fpopt) {
+   */ 
+  fp = fdopen(s, "r");
+  if (!fp) {
     fprintf(stderr, "%s: fdopen: %s\n", argv[0], strerror(errno));
     close(s);
     exit(1);
   }
-  fp = (FILE @)fpopt;
 
   sawret = 0;
   ateol = 1;
@@ -151,7 +141,7 @@ int main(int argc, char ?`H argv[]) {
     if (c == '\r') {
       sawret = ateol = 1;
       putchar('\n');
-    }
+    } 
     else if (sawret && c == '\n') {
       sawret = 0;
       /* don't print */
@@ -164,5 +154,5 @@ int main(int argc, char ?`H argv[]) {
   }
   if (!ateol) putchar('\n');
   fclose(fp);
-  return 0;
+  exit(0);
 }
