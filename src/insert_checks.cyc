@@ -85,9 +85,9 @@ static exp_t shared_zero_exp() {
 static struct Env {
   JumpAnalysis::jump_anal_res_t tables;
   Vcgen::assn_info_t assn_info;
-  bool in_sizeof   : 1;
-  bool at_toplevel : 1;
-  bool vcgen_r     : 1;
+  bool in_sizeof   :1;
+  bool at_toplevel :1;
+  bool vcgen_r     :1;
 };
 
 typedef struct Env env_t; // not a pointer
