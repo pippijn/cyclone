@@ -1,10 +1,10 @@
 /* Translate Cyclone abstract syntax to C abstract syntax.
-   Copyright (C) 2001 Greg Morrisett
+   Copyright (C) 2004 Dan Grossman, AT&T
    This file is part of the Cyclone compiler.
 
    The Cyclone compiler is free software; you can redistribute it
    and/or modify it under the terms of the GNU General Public License
-   as published by the Free Software Foundation; either version 2 of
+   as published by the free Software Foundation; either version 2 of
    the License, or (at your option) any later version.
 
    The Cyclone compiler is distributed in the hope that it will be
@@ -16,36 +16,14 @@
    along with the Cyclone compiler; see the file COPYING. If not,
    write to the Free Software Foundation, Inc., 59 Temple Place -
    Suite 330, Boston, MA 02111-1307, USA. */
+#ifndef REMOVE_AGGREGATES_H
+#define REMOVE_AGGREGATES_H
 
-
-#ifndef _TOC_H_
-#define _TOC_H_
-
-#include <hashtable.h>
 #include "absyn.h"
 
-namespace Toc {
-using List;
-using Absyn;
+namespace RemoveAggrs {
 
-typedef Hashtable::table_t<`a,`b> table_t<`a,`b>;
+extern List::list_t<Absyn::decl_t> remove_aggrs(List::list_t<Absyn::decl_t,`H> decls);
 
-// translate the declarations to C
-extern list_t<decl_t> toc(table_t<fndecl_t,table_t<stmt_t,int>> pop_tables,
-			  list_t<decl_t> ds);
-
-// translate a Cyclone type to a C type (functionally)
-type_t typ_to_c(type_t);
-// this is just for other translation files
-extern qvar_t temp_var();
-extern stringptr_t ?globals;
-// for passing New_e destinations to RemoveAggrs
-@extensible datatype Absyn::AbsynAnnot { 
-  extern Dest(exp_t);
-};
-
-extern bool warn_bounds_checks;
-extern bool warn_all_null_deref;
-void finish(); // call this when done with a batch of typ_to_c calls
 }
 #endif
