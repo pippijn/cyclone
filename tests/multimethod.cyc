@@ -39,7 +39,7 @@ struct Obj<`a::A> {
  * region and use that as the bound instead.)
  */
 struct Object {
-  <`a> : regions(`a) > `H
+  <`a> : regions(`a) > `H, ALIASABLE >= aquals(`a)
   struct Obj<`a> @self;
 };
 
