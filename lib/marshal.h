@@ -1,5 +1,5 @@
 /* This file is part of the Cyclone Library.
-   Copyright (C) 2001 AT&T
+   Copyright (C) 2001 Greg Morrisett, AT&T
 
    This library is free software; you can redistribute it and/or it
    under the terms of the GNU Lesser General Public License as
@@ -16,36 +16,21 @@
    write to the Free Software Foundation, Inc., 59 Temple Place, Suite
    330, Boston, MA 02111-1307 USA. */
 
-#ifndef _XMLPARSE_H
-#define _XMLPARSE_H
+/* This file uses the low-level representation of Cyclone data
+   to implement generic marshallers. 
+   Currently uses unsafe_cast */
 
-#include "xml.h"
-#include <lexing.h>
-#include <list.h>
-#include <core.h>
-#include <cstdio.h>
+#ifndef _MARSHAL_H_
+#define _MARSHAL_H_
 
-namespace XmlParse {
-using Lexing;
-using List;
-using Core;
-using Std;
-using Xml;
+#include <typerep.h>
 
-extern list_t<content_t> parse_file(FILE @`H f);
-extern opt_t<Lexbuf<Function_lexbuf_state<FILE@>>> lbuf;
-extern void error(string_t<`H> msg);
+namespace Marshal {
 
-extern
-tunion context {
-  InTag,
-  Normal
-};
 
-extern void setContext(tunion `H context c);
-
-extern tunion context getContext();
+extern void print_type(tunion Typerep::Typestruct rep, `a@ val);
+  //extern void xmlize_type(tunion Typerep::Typestruct rep, `a@ val);
 
 }
 
-#endif
+#endif // _MARSHAL_H_
