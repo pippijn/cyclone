@@ -1,4 +1,4 @@
-/* Type checking for top-level declarations
+/* Generating typereps from types.
    Copyright (C) 2001 Greg Morrisett, AT&T
    This file is part of the Cyclone compiler.
 
@@ -17,24 +17,22 @@
    write to the Free Software Foundation, Inc., 59 Temple Place -
    Suite 330, Boston, MA 02111-1307, USA. */
 
-#ifndef _TC_H_
-#define _TC_H_
+#ifndef _TCGENREP_H_
+#define _TCGENREP_H_
 
-#include <list.h>
 #include "absyn.h"
 #include "tcenv.h"
+#include <position.h>
 
-namespace Tc {
+namespace Tcgenrep {
+  using List;
+  using Absyn;
+  using Tcenv;
+  using Position;
 
-using List;
-using Absyn;
-using Tcenv;
-
-extern void tc(tenv_t te, bool var_default_init, list_t<decl_t,`H> ds);
-
-  // if called, must be after tc is called
-  // removes extern variables that are never referred to
-extern list_t<decl_t> treeshake(tenv_t te, list_t<decl_t>);
+extern $(list_t<decl_t>,exp_t) @tcGenrep(tenv_t te, genv_t ge, 
+					 seg_t loc, type_t type);
 
 }
+
 #endif
