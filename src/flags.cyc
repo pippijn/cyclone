@@ -1,5 +1,5 @@
-/* Control flow analysis.
-   Copyright (C) 2001 Dan Grossman, Greg Morrisett
+/* Compiler flags
+   Copyright (C) 2004 Dan Grossman, AT&T
    This file is part of the Cyclone compiler.
 
    The Cyclone compiler is free software; you can redistribute it
@@ -17,23 +17,17 @@
    write to the Free Software Foundation, Inc., 59 Temple Place -
    Suite 330, Boston, MA 02111-1307, USA. */
 
-#ifndef NEW_CONTROL_FLOW_H
-#define NEW_CONTROL_FLOW_H
+// see flags.h for descriptions
 
-#include <set.h>
-#include <dict.h>
-#include "absyn.h"
-#include "jump_analysis.h"
-#include "cf_flowinfo.h"
+#include "flags.h"
+namespace Flags;
 
-namespace NewControlFlow {
-
-// the entry point
-void cf_check(JumpAnalysis::jump_anal_res_t tables,List::list_t<Absyn::decl_t>);
-
-// controls whether or not we warn when we lose a unique pointer --
-// costs some performance probably.
-  extern bool warn_lose_unique; // FLAG
-}
-
-#endif
+bool compile_for_boot = false;
+bool warn_alias_coerce = false;
+bool warn_region_coerce = false;
+bool tovc_r = false;
+enum C_Compilers c_compiler = Gcc_c;
+bool porting_c_code = false;
+bool no_regions = false;
+bool no_register = false;
+bool noexpand_r = false;
