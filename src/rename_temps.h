@@ -1,5 +1,5 @@
-/* Translate Cyclone abstract syntax to C abstract syntax.
-   Copyright (C) 2001 Greg Morrisett
+/* Post-translation temporary-variable renaming
+   Copyright (C) 2004 Dan Grossman, AT&T
    This file is part of the Cyclone compiler.
 
    The Cyclone compiler is free software; you can redistribute it
@@ -17,34 +17,17 @@
    write to the Free Software Foundation, Inc., 59 Temple Place -
    Suite 330, Boston, MA 02111-1307, USA. */
 
+// This is an optional pass that reuses names for temporary variables.
+// It runs on C code, not Cyclone code.
 
-#ifndef _TOC_H_
-#define _TOC_H_
+#ifndef _LOW_RENAME_TEMPS_H
+#define _LOW_RENAME_TEMPS_H
 
-#include <hashtable.h>
 #include "absyn.h"
 
-namespace Toc {
-using List;
-using Absyn;
-
-typedef Hashtable::table_t<`a,`b> table_t<`a,`b>;
- 
- 
-// translate the declarations to C
-list_t<decl_t> toc(table_t<fndecl_t,table_t<stmt_t,int>> pop_tables,
-		   list_t<decl_t>);
-
-// translate a Cyclone type to a C type (functionally)
-type_t typ_to_c(type_t);
-// this is just for other translation files
-qvar_t temp_var();
-extern stringptr_t ?globals;
-// for passing New_e destinations to RemoveAggrs
-@extensible datatype Absyn::AbsynAnnot { 
-  extern NewInfo(exp_t,type_t);
-};
-void init();
-void finish(); // call this when done with a batch of typ_to_c calls
+namespace RenameTemps {
+List::list_t<Absyn::decl_t> rename(List::list_t<Absyn::decl_t,`H>);
 }
+
+
 #endif
