@@ -32,8 +32,8 @@ static void pattern_synth(segment loc, tenv te, list<tvar> tvs,
   tenv te2 = add_type_vars(loc,te,tvs);
   if(new_block && vs != null)
     te2 = Tcenv::new_block(te2);
-  _ block = Tcenv::curr_block(te2);
-  for(_ vs2 = vs; vs2 != null; vs2 = vs2->tl) {
+  let block = Tcenv::curr_block(te2);
+  for(let vs2 = vs; vs2 != null; vs2 = vs2->tl) {
     te2 = add_pat_var(loc, te2, vs2->hd);
     vs2->hd->block = block;
   }
@@ -68,7 +68,7 @@ void tcStmt(tenv te, stmt s0, bool new_block) {
   case Exp_s(e): tcExp(te,null,e); return;
 
   case Seq_s(s1,s2):
-    _ te2 = set_next(te,Stmt_j(s2));
+    let te2 = set_next(te,Stmt_j(s2));
     tcStmt(te2,s1,true); // pass new_block in case of weird associativity??
     // JGM: try to treat sequences as "tail-calls" to avoid a deep stack.
     // (Of course, this depends on the parser's associativity.)
@@ -143,7 +143,7 @@ void tcStmt(tenv te, stmt s0, bool new_block) {
   case Goto_s(l,*sopt):   process_goto(te,s0,l,sopt);   return;
 
   case Fallthru_s(es,*sopt):
-    _ trip_opt = process_fallthru(te,s0,sopt);
+    let trip_opt = process_fallthru(te,s0,sopt);
     if(trip_opt == null) {
       terr(s0->loc,"fallthru not in a non-last case");
       return;
@@ -172,23 +172,23 @@ void tcStmt(tenv te, stmt s0, bool new_block) {
 
   case Switch_s(e,scs0):
     tcExp(te,null,e);
-    _ t = e->topt->v;
+    let t = e->topt->v;
     // type-check the cases in reverse order, a fallthru therefore transfers
     // control to the case most recently type-checked. For the last case,
     // fallthru is not allowed.
     te = set_in_switch(te);
     te = clear_fallthru(te);
     for (_ scs = List::rev(scs0); scs != null; scs = scs->tl) {
-      _ p       = scs->hd->pattern;
-      _ pat_typ = tcPat(te,p,null); // FIX: can pass region if e is an lvalue
+      let p       = scs->hd->pattern;
+      let pat_typ = tcPat(te,p,null); // FIX: can pass region if e is an lvalue
       let &$(new_tvs,x) = pat_typ;
       if (!unify(p->topt->v,t))
 	terr(scs->hd->loc,xprintf("switch on type %s, but case expects type %s",
 				  typ2string(t), typ2string(p->topt->v)));
       else
 	check_pat_regions(te,p);
-      _ pvs = null;
-      for(_ y=x; y!=null; y=y->tl)
+      let pvs = null;
+      for(let y=x; y!=null; y=y->tl)
 	pvs = &cons(y->hd->name, pvs);
       scs->hd->pat_vars = &Opt(List::imp_rev(pvs));
       // type-checking the body will type-check any explicit fallthrus.
@@ -206,16 +206,16 @@ void tcStmt(tenv te, stmt s0, bool new_block) {
     // similar to Switch_s -- check the patterns in reverse order:
     te = set_in_switch(te);
     te = clear_fallthru(te);
-    for (_ scs = List::rev(scs0); scs != null; scs = scs->tl) {
-      _ p       = scs->hd->pattern;
-      _ pat_typ = tcPat(te,p,null);
+    for (let scs = List::rev(scs0); scs != null; scs = scs->tl) {
+      let p       = scs->hd->pattern;
+      let pat_typ = tcPat(te,p,null);
       let &$(new_tvs,x) = pat_typ;
       if (!unify(p->topt->v,exn_typ))
         terr(scs->hd->loc, xprintf("expected xenum exn but found %s",
 				   typ2string(p->topt->v)));
       else
 	check_pat_regions(te,p);
-      _ pvs = null;
+      let pvs = null;
       for(_ y=x; y!=null; y=y->tl)
 	pvs = &cons(y->hd->name, pvs);
       scs->hd->pat_vars = &Opt(List::imp_rev(pvs));
@@ -236,7 +236,7 @@ void tcStmt(tenv te, stmt s0, bool new_block) {
     switch (d->r) {
     case Var_d(vd):
       let &Vardecl(sc,&$(nsl,x),tq,t,initializer,_,*block_ptr) = vd;
-      _ curr_bl = Tcenv::curr_block(te);
+      let curr_bl = Tcenv::curr_block(te);
       *block_ptr = curr_bl; // side effect
       if (nsl != null)
         terr(d->loc, "local variables cannot be qualified");
@@ -270,7 +270,7 @@ void tcStmt(tenv te, stmt s0, bool new_block) {
       return;
 
     case Let_d(p,*topt_ref,e,*exhaust):
-      _ topt = *topt_ref;
+      let topt = *topt_ref;
       // FIX:  should we use tcExpInitializer?
       tcExp(te,null,e);
       *topt_ref = e->topt; // side effect
