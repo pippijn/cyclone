@@ -803,6 +803,7 @@ static void tc_decls(tenv_t te, list_t<decl_t,`H> ds0,
       // DAN: This case is much more imperative than it used to be.
       let ns  = te->ns;
       let ns2 = List::append(ns,new List(v,NULL));
+
       // Make sure namespace v has been declared in the current namespace
       if (!Set::member(ge->namespaces,v)) {
         ge->namespaces = Set::insert(ge->namespaces,v);
