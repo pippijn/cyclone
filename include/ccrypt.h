@@ -1,5 +1,5 @@
 /* This file is part of the Cyclone Library.
-   Copyright (C) 2001 Greg Morrisett
+   Copyright (C) 2001 Greg Morrisett, AT&T
 
    This library is free software; you can redistribute it and/or it
    under the terms of the GNU Lesser General Public License as
@@ -16,30 +16,11 @@
    write to the Free Software Foundation, Inc., 59 Temple Place, Suite
    330, Boston, MA 02111-1307 USA. */
 
+#ifndef _CRYPT_H_
+#define _CRYPT_H_
 
-#include <core.h>
-#include <arpa/cinet.h>
-using Core;
-
-namespace Cinet {
-  extern "C" {
-    int inet_aton(const Cstring cp, struct Std::in_addr @`r inp);
-    Cstring inet_ntoa(struct Std::in_addr);
-    unsigned long inet_addr(const Cstring);
-  }
-#define s2c(x) (string_to_Cstring(x))
+namespace Std {
+  extern char ?crypt(const char ?key, const char ?salt);
 }
 
-namespace Std;
-
-int inet_aton(string_t cp, struct in_addr @`r inp) {
-  return Cinet::inet_aton(s2c(cp), inp);
-}
-
-char ?inet_ntoa(struct in_addr x) {
-  return Cstring_to_string(Cinet::inet_ntoa(x));
-}
-
-unsigned long inet_addr(string_t addr) {
-  return Cinet::inet_addr(s2c(addr));
-}
+#endif

@@ -16,30 +16,19 @@
    write to the Free Software Foundation, Inc., 59 Temple Place, Suite
    330, Boston, MA 02111-1307 USA. */
 
-
 #include <core.h>
-#include <arpa/cinet.h>
+#include <ccrypt.h>
 using Core;
 
-namespace Cinet {
+namespace Ccrypt {
   extern "C" {
-    int inet_aton(const Cstring cp, struct Std::in_addr @`r inp);
-    Cstring inet_ntoa(struct Std::in_addr);
-    unsigned long inet_addr(const Cstring);
+    Cstring crypt(const Cstring key, const Cstring salt);
   }
 #define s2c(x) (string_to_Cstring(x))
 }
 
 namespace Std;
 
-int inet_aton(string_t cp, struct in_addr @`r inp) {
-  return Cinet::inet_aton(s2c(cp), inp);
-}
-
-char ?inet_ntoa(struct in_addr x) {
-  return Cstring_to_string(Cinet::inet_ntoa(x));
-}
-
-unsigned long inet_addr(string_t addr) {
-  return Cinet::inet_addr(s2c(addr));
+char ?crypt(const char ?key, const char ?salt) {
+  return Ccrypt::crypt(s2c(key), s2c(salt));
 }
