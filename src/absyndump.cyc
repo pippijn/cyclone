@@ -383,7 +383,7 @@ void dumpexp_prec(int inprec, exp e) {
   case Enum_e(_,_,es,_,ef): fallthru(es,ef);
   case Xenum_e(_,es,_,ef):
     dumpqvar(ef->name);
-    group(dumpexp,es,"(",")",",");
+    if (es != null) group(dumpexp,es,"(",")",",");
     break;
 
   case UnresolvedMem_e(n,des):
@@ -535,7 +535,9 @@ void dumppat(pat p) {
     break;
   case Enum_p(n,_,tvs,ps,_,_): fallthru(n,tvs,ps);
   case Xenum_p(n,tvs,ps,_,_):
-    dumpqvar(n); dumptvars(tvs); group(dumppat,ps,"(",")",","); break;
+    dumpqvar(n); dumptvars(tvs);
+    if (ps != null) group(dumppat,ps,"(",")",",");
+    break;
   }
 }
 

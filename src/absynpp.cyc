@@ -264,7 +264,7 @@ Doc dtms2doc(Doc d,list<type_modifier> tms) {
       break;
     case TaggedArray_ps: ptr = text("?"); break;
     }
-    _ r   = ntyp2doc(rgn);
+    let r = ntyp2doc(rgn);
     return cat3(ptr,r,rest);
   }
 }
@@ -612,8 +612,12 @@ Doc exp2doc_prec(int inprec, exp e) {
     break;
   case Enum_e(_,_,es,_,ef): fallthru(es,ef);
   case Xenum_e(_,es,_,ef):
-    s = cat2(qvar2doc(ef->name),
-             egroup("(",")",",",List::map(exp2doc,es)));
+    if (es == null)
+      // special case: a nullary enum constant is printed "foo" not "foo()"
+      s = qvar2doc(ef->name);
+    else
+      s = cat2(qvar2doc(ef->name),
+               egroup("(",")",",",List::map(exp2doc,es)));
     break;
   case UnresolvedMem_e(n,des):
     // Currently n is always null from the parser
@@ -1061,15 +1065,15 @@ Doc pat2doc(pat p) {
 	     tvars2doc(tvs),
              group("{","}",",",List::map(dp2doc,dps)));
     break;
-  case Enum_p(n,_,tvs,ps,_,_):
-    s = cat3(qvar2doc(n),
-	     tvars2doc(tvs),
-             egroup("(",")",",",List::map(pat2doc,ps)));
-    break;
+  case Enum_p(n,_,tvs,ps,_,_): fallthru(n,tvs,ps);
   case Xenum_p(n,tvs,ps,_,_):
-    s = cat3(qvar2doc(n),
-	     tvars2doc(tvs),
-             egroup("(",")",",",List::map(pat2doc,ps)));
+    if (ps == null)
+      // special case: a nullary enum constant is printed "foo" not "foo()"
+      s = qvar2doc(n);
+    else
+      s = cat3(qvar2doc(n),
+               tvars2doc(tvs),
+               egroup("(",")",",",List::map(pat2doc,ps)));
     break;
   }
   return s;
