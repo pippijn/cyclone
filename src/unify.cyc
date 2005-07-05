@@ -348,12 +348,16 @@ static void unify_it(type_t t1, type_t t2) {
       let c = compress(pinfo.ptr_atts.bounds);
       switch (c) {
       case &Evar(...):
-	unify(c,bounds_one()); // FIX? should be unify_it??
+	if (!unify(c,bounds_one())) fallthru;
 	*ref1_ref = t2;
 	return;
-      default: fail_because("kinds are incompatible");
+      default:
+        ts_failure = $(t1,t2);
+        fail_because("kinds are incompatible");
       }
-    default: fail_because("kinds are incompatible");
+    default:
+      ts_failure = $(t1,t2);
+      fail_because("kinds are incompatible");
     }
 
   case $(&Evar(...),_): // t2 is an evar, t1 is not, so swap
