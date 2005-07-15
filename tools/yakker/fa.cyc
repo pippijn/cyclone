@@ -1998,25 +1998,3 @@ dfa_t lookahead_dfa(grammar_t grm,List::list_t<rule_t> rules, rule_t right_ctxt)
   return dfa;
 }
 
-/***************************** TESTING *****************************/
-void test_tc(grammar_t<`H> grm) {
-  let &$(_,r,_) = grm->hd;
-  nfa_init();
-  let nfa = rule2nfa(grm,r);
-  let g1 = nfa_onestep();
-  printUintGraph(g1);
-  let g2 = Graph::tc(g1);
-  printf("------------------\n");
-  printUintGraph(g2);
-}
-void test_nfa2dfa(grammar_t<`H> grm) {
-  let &$(_,r,_) = grm->hd;
-  nfa_init();
-  let nfa = rule2nfa(grm,r);
-  //  printf("The NFA is:\n");
-  //  nfa_print();
-  //  printf("Converting to DFA:\n");
-  let dfa = nfa2dfa(nfa,Set::empty(st_cmp));
-  dfa_print(dfa);
-  //  dfa_generate1(dfa);
-}
