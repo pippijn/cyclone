@@ -406,7 +406,7 @@ qvar_t datatype_scanf_arg_qvar() {
 /* } */
 /* exp_t uniquergn_exp() { */
 /*   let t  = rgn_handle_type(unique_rgn_type); */
-/*   let vd = new_vardecl(0,uniquergn_qvar(),t,NULL); */
+/*   let vd = new_vardecl(0,uniquergn_qvar(),t,NULL,NULL); */
 /*   vd->sc = Extern; */
 /*   return new Exp{.topt = t, .loc = 0, .annot = &EmptyAnnot_val,  */
 /* 		 .r = new Var_e(new Global_b(vd))}; */
@@ -421,7 +421,7 @@ qvar_t uniqueaqual_qvar() {
 }
 exp_t uniqueaqual_exp() {
   let t  = aqual_handle_type(un_qual_type);
-  let vd = new_vardecl(0,uniqueaqual_qvar(),t,NULL);
+  let vd = new_vardecl(0,uniqueaqual_qvar(),t,NULL,NULL);
   vd->sc = Extern;
   return new Exp{.topt = t, .loc = 0, .annot = &EmptyAnnot_val,
 		 .r = new Var_e(new Global_b(vd))};
@@ -850,7 +850,7 @@ stmt_t decl_stmt(decl_t d, stmt_t s, seg_t loc) {
   return new_stmt(new Decl_s(d,s), loc);
 }
 stmt_t declare_stmt(qvar_t x, type_t t, exp_opt_t init, stmt_t s, seg_t loc) {
-  decl_t d = new_decl(new Var_d(new_vardecl(0,x,t,init)),loc);
+  decl_t d = new_decl(new Var_d(new_vardecl(0,x,t,init,NULL)),loc);
   return new_stmt(new Decl_s(d,s),loc);
 }
 stmt_t assign_stmt(exp_t e1, exp_t e2, seg_t loc) {
@@ -878,13 +878,14 @@ decl_t alias_decl(tvar_t tv,vardecl_t vd,exp_t e,seg_t loc) {
  return new_decl(new Let_d(new_pat(new AliasVar_p(tv,vd),loc),NULL,e,NULL),loc);
 }
 
-vardecl_t new_vardecl(seg_t varloc, qvar_t x, type_t t, exp_opt_t init) {
-  return new Vardecl{.sc=Public, .name=x, .varloc = varloc,
+vardecl_t new_vardecl(seg_t varloc, qvar_t x, type_t t, exp_opt_t init, exp_opt_t rename) {
+  return new Vardecl{.sc=Public, .name=x, .varloc=varloc,
 		     .tq=empty_tqual(0), .type=t, .initializer=init, .rgn=NULL,
-                     .attributes=NULL, .escapes=false, .is_proto=false};
+                     .attributes=NULL, .escapes=false, .is_proto=false,
+                     .rename=rename};
 }
 vardecl_t static_vardecl(qvar_t x, type_t t, exp_opt_t init) {
-  let ans = new_vardecl(0,x,t,init);
+  let ans = new_vardecl(0,x,t,init,NULL);
   ans->sc = Static;
   return ans;
 }

@@ -1644,7 +1644,7 @@ static doc_t ids2doc(list_t<vardecl_t> vds) {
 }
 
 doc_t vardecl2doc(vardecl_t vd) {
-  let &Vardecl{sc,name,varloc,tq,type,initializer,_,atts,...} = vd;
+  let &Vardecl{sc,name,varloc,tq,type,initializer,_,atts,_,_,rename} = vd;
   doc_t s;
   doc_t sn = typedef_name2bolddoc(name);
   doc_t attsdoc   = atts2doc(atts);
@@ -1669,6 +1669,7 @@ doc_t vardecl2doc(vardecl_t vd) {
   s = cat(tmp_doc,
         scope2doc(sc),
         tqtd2doc(tq,type,new Opt(cat(beforenamedoc,sn))),
+        (rename==NULL) ? nil_doc() : exp2doc(rename),
         (initializer==NULL) ? nil_doc() : cat(text(" = "),exp2doc(initializer)),
 	text(";"));
   return s;

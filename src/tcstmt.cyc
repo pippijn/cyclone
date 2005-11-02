@@ -64,7 +64,7 @@ static bool make_var_exp(exp_t@ eptr, stmt_t s0) {
     default: done = true;
     }
   let e = *eptr;
-  let vd = new_vardecl(0, stmt_temp_var(), new_evar(NULL,NULL), NULL);
+  let vd = new_vardecl(0, stmt_temp_var(), new_evar(NULL,NULL), NULL, NULL);
   let d = let_decl(new_pat(new Var_p(vd, new_pat(&Wild_p_val,e->loc)),e->loc),
 		   e, s0->loc);
   s0->r = decl_stmt(d,new_stmt(s0->r,s0->loc),s0->loc)->r;
@@ -288,7 +288,7 @@ void tcStmt(tenv_t te, stmt_t s0, bool new_block) {
     if(!List::exists(is_case_default, *scs0)) {
       // add a default case that re-throws the exception
       qvar_t def_v = new $(Loc_n,new "exn");
-      let vd = new_vardecl(0,def_v,void_type,0);
+      let vd = new_vardecl(0,def_v,void_type,0,NULL);
       let def_pat = new_pat(new Var_p(vd, new_pat(&Wild_p_val,0)),0);
       let def_stmt =
 	exp_stmt(new_exp(new Throw_e(varb_exp(new Local_b(vd),0),true),0),0);
@@ -510,7 +510,8 @@ void tcStmt(tenv_t te, stmt_t s0, bool new_block) {
 				  at_type(t,curr_bl,al_qual_type,empty_tqual(0),
 					  false_type, false_type),
 				  NULL, curr_bl, NULL, false,
-				  (fd->body!=NULL)};
+				  (fd->body!=NULL),
+                                  NULL};
       fd->fn_vardecl = vd;
       fenv_t old_fenv = (fenv_t)te->le;
       te->le = nested_fenv(d->loc,old_fenv,fd);

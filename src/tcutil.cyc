@@ -1929,7 +1929,7 @@ $(decl_t,exp_t,bool) insert_alias(exp_t e, type_t e_type) {
   // generate a fresh variable to alias the given expression to
   static int counter = 0;
   qvar_t v = new $(Loc_n, new ((string_t)aprintf("__aliasvar%d",counter++)));
-  vardecl_t vd = new_vardecl(0,v,e_type,e);
+  vardecl_t vd = new_vardecl(0,v,e_type,e,NULL);
   exp_t ve = varb_exp(new Local_b(vd),e->loc);
   // generate a fresh region variable for it and make the type
   // of the variable be as close to the instantiated type as we

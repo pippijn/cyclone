@@ -1411,7 +1411,7 @@ static void zero_ptr_assign_to_c(env_t nv, exp_t e,
   }
   let x = temp_var();                // build ptr_type x = ea + eb;
   TOC_RGN(nv, rgn2) {
-    let x_vd = new Vardecl {Public,x,0,mt_tq,c_fat_ptr_type,xinit,NULL,NULL,false,false};
+    let x_vd = new Vardecl {Public,x,0,mt_tq,c_fat_ptr_type,xinit,NULL,NULL,false,false,NULL};
     let x_bnd = new Local_b(x_vd);     // build *x -- need to translate here
     let x_exp = varb_exp(x_bnd,DL);  // to check the bound and for NULL
     x_exp->topt = fat_ptr_type;
@@ -1420,7 +1420,7 @@ static void zero_ptr_assign_to_c(env_t nv, exp_t e,
     deref_x->annot = &InsertChecks::NullAndFatBound_val; //check bound and NULL
     exp_to_c(nv,deref_x);
     let y = temp_var();                // build elt_type y = *x;
-    let y_vd = new Vardecl {Public,y,0,mt_tq,c_elt_type,deref_x,NULL,NULL,false,false};
+    let y_vd = new Vardecl {Public,y,0,mt_tq,c_elt_type,deref_x,NULL,NULL,false,false,NULL};
     let y_bnd = new Local_b(y_vd);
     exp_t z_init = e2;                 // build y op e2 and translate
     if (popt != NULL) {
@@ -1432,7 +1432,7 @@ static void zero_ptr_assign_to_c(env_t nv, exp_t e,
     }
     exp_to_c(nv,z_init);
     let z = temp_var();                // build z = y op e2;
-    let z_vd = new Vardecl {Public,z,0,mt_tq,c_elt_type,z_init,NULL,NULL,false,false};
+    let z_vd = new Vardecl {Public,z,0,mt_tq,c_elt_type,z_init,NULL,NULL,false,false,NULL};
     let z_bnd = new Local_b(z_vd);
     // build y == zero and translate -- here, we need to know what
     // the element type is to generate the right zero.
@@ -2954,11 +2954,11 @@ static stmt_opt_t extract_pattern_vars(region_t<`rgn> rgn, env_t<`rgn> @nv,
       // and found nothing (available), so we create a new vardecl
       vardecl_t new_vd;
       if(can_use_voidstar(ctype)) {
-          new_vd = new_vardecl(DL, temp_var(), void_star_type(), NULL);
+          new_vd = new_vardecl(DL, temp_var(), void_star_type(), NULL, NULL);
           *newdecls = rnew(rgn) List{rnew(rgn) $(vd,new_vd,ctype,false),
                                      *newdecls};
       } else {
-          new_vd = new_vardecl(DL, temp_var(), ctype, NULL);
+          new_vd = new_vardecl(DL, temp_var(), ctype, NULL, NULL);
           *newdecls = rnew(rgn) List{rnew(rgn) $(vd,new_vd,ctype,false),
                                      *newdecls};
       }
@@ -2985,11 +2985,11 @@ static stmt_opt_t extract_pattern_vars(region_t<`rgn> rgn, env_t<`rgn> @nv,
 
       vardecl_t new_vd;
       if(can_use_voidstar(ctype)) {
-          new_vd = new_vardecl(DL, temp_var(), void_star_type(), NULL);
+          new_vd = new_vardecl(DL, temp_var(), void_star_type(), NULL, NULL);
           *newdecls = rnew(rgn) List{rnew(rgn) $(vd,new_vd,ctype,true),
                                      *newdecls};
       } else {
-          new_vd = new_vardecl(DL, temp_var(), ctype, NULL);
+          new_vd = new_vardecl(DL, temp_var(), ctype, NULL, NULL);
           *newdecls = rnew(rgn) List{rnew(rgn) $(vd,new_vd,ctype,false),
                                      *newdecls};
       }
@@ -3020,11 +3020,11 @@ static stmt_opt_t extract_pattern_vars(region_t<`rgn> rgn, env_t<`rgn> @nv,
 
       vardecl_t new_vd;
       if(can_use_voidstar(ctype)) {
-          new_vd = new_vardecl(DL, temp_var(), void_star_type(), NULL);
+          new_vd = new_vardecl(DL, temp_var(), void_star_type(), NULL, NULL);
           *newdecls = rnew(rgn) List{rnew(rgn) $(vd,new_vd,ctype,true),
                                      *newdecls};
       } else {
-          new_vd = new_vardecl(DL, temp_var(), ctype, NULL);
+          new_vd = new_vardecl(DL, temp_var(), ctype, NULL, NULL);
           *newdecls = rnew(rgn) List{rnew(rgn) $(vd,new_vd,ctype,false),
                                      *newdecls};
       }
@@ -3553,7 +3553,7 @@ static void stmt_to_c(env_t nv, stmt_t s) {
         switch (p->r) {
         case &Var_p(vd, &Pat{.r = &Wild_p, ...}):
 	  if(var_may_appear_exp(vd->name,e)) {
-	    let new_vd = new_vardecl(DL, temp_var(), vd->type, e);
+	    let new_vd = new_vardecl(DL, temp_var(), vd->type, e, NULL);
 	    vd->initializer = varb_exp(new Local_b(new_vd),DL);
 	    vd->initializer->topt = new_vd->type;
 	    s->r = decl_stmt(new_decl(new Var_d(new_vd),s->loc),
@@ -3926,7 +3926,7 @@ static int xdatatypedecl_to_c_body<`d,`r>(region_t<`d> d,
       exp_opt_t initopt = NULL;
       if (f->sc != Extern)
         initopt = string_exp(*fn,DL);
-      let tag_decl = new_vardecl(0,f->name, tag_typ, initopt);
+      let tag_decl = new_vardecl(0,f->name, tag_typ, initopt, NULL);
       tag_decl->sc = f->sc;
       result_decls = new List(new_decl(new Var_d(tag_decl),DL),result_decls);
       *xdatatypes_so_far =
@@ -3949,7 +3949,7 @@ static int xdatatypedecl_to_c_body<`d,`r>(region_t<`d> d,
     case &false:
       if (f->sc != Extern) {
         let initopt = string_exp(*fn,DL);
-        let tag_decl = new_vardecl(0,f->name, tag_typ, initopt);
+        let tag_decl = new_vardecl(0,f->name, tag_typ, initopt, NULL);
         tag_decl->sc = f->sc;
         result_decls = new List(new_decl(new Var_d(tag_decl),DL),result_decls);
         *xdatatypes_so_far = Dict::insert(*xdatatypes_so_far, f->name, true);
