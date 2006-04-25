@@ -106,7 +106,7 @@ void set_c_compiler(string_t<`H> s){
 
 void set_port_c_code() {
   Flags::porting_c_code = true;
-  Position::max_errors = 65535; // allow a lot of errors
+  Warn::max_errors = 65535; // allow a lot of errors
   save_c_r = true; // save temp files
   Flags::set_parseonly();
 }
@@ -164,7 +164,7 @@ static void add_idirafter(string_t<`H> s) {
 }
 
 static void set_many_errors() {
-  Position::max_errors = 65535;
+  Warn::max_errors = 65535;
 }
 
 static const char ?def_inc_path = "_see_cycspecs_file_";
@@ -470,14 +470,14 @@ extern "C" void CYCALLOCPROFILE_mark(const char *s);
   try ans = f(env,tds);
   catch { case x:
     ans = onfail;
-    if (Position::error_p())
+    if (Warn::error_p())
       break;
     compile_failure = true;
     fprintf(stderr,"COMPILER STAGE %s (unexpected exception) \n",stage_name);
     uncaught_exn = new $(x,get_exn_filename(),get_exn_lineno());
     break;
   }
-  if (Position::error_p())
+  if (Warn::error_p())
     compile_failure = true;
   if (compile_failure) {
     fprintf(stderr,"\nCOMPILATION FAILED!\n");
@@ -875,7 +875,7 @@ namespace Cyclone {
     if (Flags::stop_after_pass <= Flags::Cpp) return NULL;
 
     // Run the stages of the Cyclone compiler
-    Position::reset_position(preprocfile); // necessary for good error messages!
+    Warn::reset(preprocfile); // necessary for good error messages!
     FILE * in_file  = try_file_open(preprocfile,"r","file");
 
     list_t<Absyn::decl_t> tds = NULL;
@@ -966,7 +966,7 @@ static void process_file(string_t<`H> filename) {
       if (inter_objfile == NULL)
         compile_failure = true;
       else {
-	Position::reset_position(interfacefile);
+	Warn::reset(interfacefile);
 	let int_env = $(te, inter_file, (FILE @)inter_objfile);
 	tds = do_stage("interface checking", tds, do_interface, &int_env, tds);
 	if(inter_file != NULL)
@@ -977,7 +977,7 @@ static void process_file(string_t<`H> filename) {
   }
   if(Flags::interproc || Flags::resolve) {
     BansheeIf::discharge_implications();
-    if(Position::error_p()) {
+    if(Warn::error_p()) {
       compile_failure = true;
       fprintf(stderr,"\nCOMPILATION FAILED!\n");
       fflush(stderr);
@@ -1073,7 +1073,7 @@ static interface_t read_cycio(string_t<`H> @ n) {
     remove_cfiles();
     exit(1);
   }
-  Position::reset_position(nf); /* in case of parsing problems */
+  Warn::reset(nf); /* in case of parsing problems */
   let i = Interface::load(f);
   file_close(f);
   return i;
@@ -1632,4 +1632,3 @@ int main(int argc, string_t<`H> ?`H argv) {
 
   return compile_failure ? 1 : 0;
 }
-

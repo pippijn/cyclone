@@ -29,6 +29,7 @@
 #include "assndef.h"
 #include "pratt_prover.h"
 #include "bansheeif.h"
+#include "warn.h"
 using Core;
 using List;
 using Absyn;
@@ -51,7 +52,7 @@ static void fail_because(const char*`H reason) __attribute__((noreturn)) {
 // occurred -- this augments the high-level information with
 // low-level specific details.
 void explain_failure() {
-  if(Position::num_errors >= Position::max_errors)
+  if(Warn::num_errors >= Warn::max_errors)
     return;
   fflush(stderr);
 
@@ -660,4 +661,3 @@ static void unify_it(type_t t1, type_t t2,
   default: throw &Unify_val; // caller in charge failure_reason
   }
 }
-

@@ -773,7 +773,7 @@ static list_t<$(type_t, list_t<BansheeIf::constraint_t>)@> parse_constraint_grap
     Warn::warn(0, "Unable to initialize constraint graph");
     return 0;
   }
-  Position::reset_position(cfilename); // necessary for good error messages!
+  Warn::reset(cfilename); // necessary for good error messages!
   let ret = Parse::parse_constraint_file(file);
   fclose(file);
   return ret;
