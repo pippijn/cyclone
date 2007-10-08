@@ -218,7 +218,7 @@ static exp_t lower_lhs(env_t env, exp_t e);
 static bool  lower_stmt(env_t env, stmt_t s);
 static void  lower_cond(env_t env, exp_t e, var_t truelab, var_t falselab, seg_t loc);
 static var_opt_t lower_true(env_t env, exp_t e, var_t falselab, seg_t loc);
-
+static fndecl_t lower_fn(fndecl_t fd);
 
 // Emits statements into the environment.  Returns true if the
 // statement might fall-through to any next statement, and false
@@ -343,7 +343,18 @@ static bool lower_stmt(env_t env, stmt_t s) {
       set_prev_stmts(env,p);
       emit_stmt(env,decl_stmt(new Decl{new Var_d(newvd),d->loc},body,0));
       return a;
-    case &Fn_d(fd): Warn::impos("Fn decl in lower_stmt");
+    case &Fn_d(fd):
+      let fn_r = d->r;
+      if (fd->orig_scope != ExternC)
+        fn_r = new Fn_d(lower_fn(fd));
+      let p = prev_stmts(env);
+      set_prev_stmts(env,NULL);
+      let a = lower_stmt(env,s1);
+      let body = rev_seq_stmts(prev_stmts(env));
+      set_prev_stmts(env,p);
+      emit_stmt(env,decl_stmt(new Decl{d->r,d->loc},body,0));
+      return a;
+      //      Warn::impos("Fn decl in lower_stmt");
     case &Aggr_d(ad): Warn::impos("Aggregate decl in lower_stmt");
     case &Enum_d(ed): Warn::impos("Enum decl in lower_stmt");
     case &Using_d(...): Warn::impos("Using decl in lower");
