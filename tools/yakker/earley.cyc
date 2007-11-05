@@ -720,8 +720,11 @@ struct rstate {
   Hashtable::table_t<earley_node_t,List::list_t<earley_node_t,`H>,`H> pred;
   Hashtable::table_t<earley_node_t,List::list_t<$(earley_node_opt_t,earley_node_t) @`H,`H>,`H> retn;
   Hashtable::table_t<earley_node_t,List::list_t<earley_node_t,`H>,`H> call;
+  Hashtable::table_t<earley_node_t,$(float,float)@> weights; //PROB
 };
 typedef struct rstate @rstate_t;
+
+static float zeroWeight = 1.0; //PROB
 
 static void dot_iter(earley_node_t s,List::list_t<earley_node_t> ts) {
   let &$(si,sj,sk) = s;
@@ -777,6 +780,16 @@ void point_to(Hashtable::table_t<earley_node_t,List::list_t<`a,`H>,`H> tbl,
   else Hashtable::insert(tbl,source,List::list(target));
 }
 
+//PROB
+void add_weights(rstate_t rs, earley_node_t node, float forward, float inner) { //PROB
+  let ptr = Hashtable::lookup_opt(rs->weights,node);                            //PROB
+  if (ptr != NULL) {                                                            //PROB
+    $(float,float)@y = *ptr;                                                    //PROB
+    y->f0 += forward;                                                           //PROB
+    y->f1 += inner;                                                             //PROB
+  }                                                                             //PROB
+  else Hashtable::insert(rs->weights,node,new $(forward,inner));                //PROB
+}                                                                               //PROB
 
 $(unsigned int, unsigned int) *
 get_bounds(Hashtable::table_t<earley_node_t,List::list_t<$(earley_node_opt_t,earley_node_t) @`H>,`H> retn,
@@ -797,7 +810,9 @@ push_closure(rstate_t rs,
 			       // efficiency sake (to save allocations).
              const char ?reason,
              earley_node_opt_t back,
-	     earley_node_opt_t up) {
+	     earley_node_opt_t up
+             , float forward, float inner //PROB
+             ) {
 
   let &$(s,backptr) = ei;
   let node = new $(s,backptr,i);
@@ -805,6 +820,7 @@ push_closure(rstate_t rs,
     point_to(rs->pred,node,back);
     point_to(rs->retn,node,new $(up,back));
   }
+  add_weights(rs,node,forward,inner); //PROB
 
   let es = Axarray::get(rs->estates,i);
   if (Set::member(es,ei)) return;
@@ -817,7 +833,10 @@ push_closure(rstate_t rs,
   let t = target(rs->dfa,s,callout_action());
   if (t != 0) {
     point_to(rs->call,new $(t,i,i),node);
-    push_closure(rs,input,i,new $(t,i),"(call)",NULL,NULL);
+    let w = zeroWeight; //PROB: should be prob from dfa
+    push_closure(rs,input,i,new $(t,i),"(call)",NULL,NULL
+                 ,w*forward,zeroWeight //PROB
+                 );
   }
 
   /* Close under REPEATS. Only works if target has *one* non-call target. */
@@ -878,7 +897,9 @@ push_closure(rstate_t rs,
 
     /* 3. Call push_closure again as if we started in this
        state. ie. t_new replaces s. So, we reuse back and up. */
-    push_closure(rs,input,i,new $(t_new,backptr),"(repeat)",back,up);
+    push_closure(rs,input,i,new $(t_new,backptr),"(repeat)",back,up
+                 ,1.0,1.0 //PROB: didn't figure this out yet
+                 );
   }
   /* Close under RETURNS.  Use else, becaause a REPEAT state can't
      also be a final state. */
@@ -906,9 +927,13 @@ push_closure(rstate_t rs,
 	  let backnode = new $(t,tbackptr,backptr);
 	  // Earley node w/ dot after symb.
           let retnode = new $(ttarget,tbackptr,i);
+          let w = zeroWeight; //PROB: should be prob of return on symb
+          let &$(backnode_forward,backnode_inner) = Hashtable::lookup(rs->weights,backnode); //PROB
           push_closure(rs,input,i,new $(ttarget,tbackptr),
                        aprintf("(return %s)",act2symb(symb)),
-                       backnode, node);
+                       backnode, node
+                       ,w*inner*backnode_forward,w*inner*backnode_inner //PROB
+                       );
         }
       }
     }
@@ -1223,18 +1248,24 @@ $(int,int) recognize(dfa_t dfa, Set::set_t<st_t> dfa_final, const char ?input, i
     retn = Hashtable::create(11,earley_node_cmp,earley_node_hash);
   let
     call = Hashtable::create(11,earley_node_cmp,earley_node_hash);
+  let                                                                 //PROB
+    weights = Hashtable::create(11,earley_node_cmp,earley_node_hash); //PROB
 
   /* Initialize the sequence of Earley states with s0 */
   let estates = /* Earley states  s0, s1, s2, ... */
     Axarray::create(11,Set::empty(earley_item_cmp));
   let earley_item_0 = new $(1,0); // 1 is initial state of dfa, 0 is i in si
-  let rs = new rstate {dfa,estates,pred,retn,call};
+  let rs = new rstate {dfa,estates,pred,retn,call
+                       ,weights //PROB
+  };
   push_closure(rs,
 	       input,
                0,
                earley_item_0,
                "(initial)",
-               NULL,NULL);
+               NULL,NULL
+               ,zeroWeight,zeroWeight //PROB
+               );
 
   /* Scan the input */
   fprintf(stderr,"Scanning the input.\n");
@@ -1251,8 +1282,13 @@ $(int,int) recognize(dfa_t dfa, Set::set_t<st_t> dfa_final, const char ?input, i
 
       let &$(state,parent) = si_list->hd;
       let k = target(dfa,state,input[i]);
+      let eitem = new $(state,parent,i);
+      let w = zeroWeight; //PROB: should be weight of transition from dfa
+      let &$(forward,inner) = Hashtable::lookup(rs->weights,eitem);
       if (k != 0) // where k==0 indicates there is no valid target.
-        push_closure(rs,input,i+1,new $(k,parent),"(input)",new $(state,parent,i),NULL);
+        push_closure(rs,input,i+1,new $(k,parent),"(input)",eitem,NULL
+                     ,w*forward,w*inner //PROB
+                     );
     }
   }
 
