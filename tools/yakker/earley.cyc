@@ -11,7 +11,6 @@
 #include "axarray.h"
 #include "cs.h"
 #include "analyze.h"
-#include "pm_bnf.h"
 
 #include "nfa_eager.h"
 #include "semiring.h"
