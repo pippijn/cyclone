@@ -2,11 +2,12 @@
 testaqualfail.cyc:11: c was declared with type int *@aqual(UNIQUE) but initialized with type int *
   ALIASABLE and UNIQUE are not compatible. ((different alias qualifiers))
 testaqualfail.cyc:33: returns value of type int * but requires int *@aqual(`q)
-  @false and @true are not compatible. (different type constructors)
+  ALIASABLE and `q are not compatible. 
+	((abstracted type variable doesn't unify with constant))
 testaqualfail.cyc:41: type mismatch: int *@aqual(UNIQUE) != int *
   ALIASABLE and UNIQUE are not compatible. ((different alias qualifiers))
 testaqualfail.cyc:53: returns value of type int * but requires int *@aqual(UNIQUE)
-  @false and @true are not compatible. (different type constructors)
+  ALIASABLE and UNIQUE are not compatible. ((different alias qualifiers))
 testaqualfail.cyc:64: alias qualifier bounds violated: UNIQUE <> ALIASABLE
 testaqualfail.cyc:84: returns value of type struct s3c<UNIQUE> but requires struct s3c<ALIASABLE>
   ALIASABLE and UNIQUE are not compatible. ((different alias qualifiers))

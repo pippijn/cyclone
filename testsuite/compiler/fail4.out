@@ -1,7 +1,7 @@
 
 fail4.cyc:4: qualified names in declarations unimplemented (Foo::x)
 fail4.cyc:9: qualified names in declarations unimplemented (Foo::f30)
-fail4.cyc:14: qualified datatype field declaratations are not allowed
+fail4.cyc:14: qualified datatype field declarations not allowed
 fail4.cyc:17: undeclared identifier x
 fail4.cyc:22: F41 is a constant, not a function
 fail4.cyc:27: F42 is an enum constructor, not a function

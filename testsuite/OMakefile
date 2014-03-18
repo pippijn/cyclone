@@ -1,0 +1,3 @@
+CYCFLAGS += -I$(dir .)
+
+.SUBDIRS: compiler cyctest tests
