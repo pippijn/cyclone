@@ -1,0 +1,64 @@
+OBJECTS[] =
+  clib/bget.o
+  clib/boot_cstubs.o
+  clib/nogc.o
+  clib/runtime_cyc.o
+  clib/runtime_exception.o
+  clib/runtime_memory.o
+  clib/runtime_stack.o
+  clib/runtime_zeroterm.o
+  cyclib/ap.o
+  cyclib/apq.o
+  cyclib/arg.o
+  cyclib/array.o
+  cyclib/assert.o
+  cyclib/base64.o
+  cyclib/bitvec.o
+  cyclib/buffer.o
+  cyclib/core.o
+  cyclib/dict.o
+  cyclib/execinfo.o
+  cyclib/filename.o
+  cyclib/fn.o
+  cyclib/getopt1.o
+  cyclib/getopt.o
+  cyclib/graph.o
+  cyclib/hashtable.o
+  cyclib/iter.o
+  cyclib/lexing.o
+  cyclib/lineno.o
+  cyclib/list.o
+  cyclib/position.o
+  cyclib/pp.o
+  cyclib/printf.o
+  cyclib/queue.o
+  cyclib/rope.o
+  cyclib/scanf.o
+  cyclib/set.o
+  cyclib/sexp.o
+  cyclib/slowdict.o
+  cyclib/splay.o
+  cyclib/string.o
+  cyclib/tmp.o
+  cyclib/xarray.o
+  cyclib/xp.o
+  libc/cstubs.o
+  libc/cycstubs.o
+
+boot ()
+
+libcyc.so: $(OBJECTS)
+  cc -m32 $^ -o $(absname $@) -shared -Wl,-z,defs
+
+libcyc.boot.so: $(bootname $(OBJECTS))
+  cc -m32 $^ -o $(absname $@) -shared -Wl,-z,defs
+
+.SUBDIRS: cyclib clib
+
+mkdir -p libc
+.SUBDIRS: libc
+  .INCLUDE: OMakefile: $(BUILDLIB) ../libc.cys
+    $(BUILDLIB) -d . ../libc.cys
+    touch OMakefile
+
+.DEFAULT: libcyc.so

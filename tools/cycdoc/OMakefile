@@ -1,0 +1,14 @@
+OBJECTS[] =
+  cycdoc.o
+
+LDFLAGS[] +=
+  -L$(rootdir)/compiler
+  -Wl,-rpath,$(absname $(rootdir)/compiler)
+
+CYCFLAGS[] +=
+  -I$(rootdir)/compiler
+
+cycdoc: $(OBJECTS) $(rootdir)/compiler/libcyclone.so $(rootdir)/stdlib/libcyc.so
+  cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc -lcyclone
+
+.DEFAULT: cycdoc

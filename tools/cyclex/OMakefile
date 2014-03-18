@@ -1,0 +1,18 @@
+OBJECTS[] =
+  compact.o
+  lexer.o
+  lexgen.o
+  main.o
+  output.o
+  parser_tab.o
+  syntax.o
+
+boot ()
+
+cyclex: $(OBJECTS) $(rootdir)/stdlib/libcyc.so
+  cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc
+
+cyclex.boot: $(bootname $(OBJECTS)) $(rootdir)/stdlib/libcyc.boot.so
+  cc -m32 $(bootname $(OBJECTS)) -o $@ $(LDFLAGS) -lcyc.boot
+
+.DEFAULT: cyclex

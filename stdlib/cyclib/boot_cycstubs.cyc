@@ -189,9 +189,3 @@ using Core;
     let response = Cunistd::getcwd((char *)buf, size);
     return response ? buf : NULL;
   }
-
-  namespace Execinfo {
-    int bt() {
-      return 1;
-    }
-  }

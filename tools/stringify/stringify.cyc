@@ -156,7 +156,16 @@ int main(int argc, char ??argv) {
   for (; i < argc; i++) {
     let arg = argv[i];
     // calculate varname from name of file
-    varname = Filename::basename(arg);
+    varname = strdup(arg);
+    for (let i = 0; i < strlen(varname); i++)
+      switch (varname[i])
+        {
+        case '.':
+          varname[i] = '_';
+          break;
+        default:
+          break;
+        }
     let len = strlen(varname);
     for (let i = 0; i < len; i++) {
       if (varname[i] == '.') { varname[i] = '\0'; break; }

@@ -7,7 +7,7 @@
 namespace ParseErrors {
   struct ParseState { int state; int token; const char ?msg; };
 
-  static struct ParseState msg_table[] = {
+  static struct ParseState msg_table[] = { 
 
 #include "parse_errors_gen.h"
 
@@ -15,16 +15,16 @@ namespace ParseErrors {
 }
 using ParseErrors;
 
-void yyerror(string_t<`H> s, int state, int token) {
+void yyerror(string_t<`H> s, int state, int token) { 
   if (Flags::print_parser_state_and_token) {
     printf("parse error: state [%d], token [%d]\n",state,token);
     exit(1);
   }
   // search through the msg_table to try and find a matching state & token
   // or if the entry in the table for the token has -1, then it matches
-  // as well.  We want token-specific matches to override.
+  // as well.  We want token-specific matches to override.  
   for (unsigned i = 0; i < numelts(msg_table); i++) {
-    if (msg_table[i].state == state &&
+    if (msg_table[i].state == state && 
         msg_table[i].token == token) {
       s = msg_table[i].msg;
       break;
@@ -34,9 +34,9 @@ void yyerror(string_t<`H> s, int state, int token) {
   let ts = token2string(token);
   if (ts != NULL)
     Warn::err(yylloc.first_line,"%s (found %s instead)",s,token2string(token));
-  else
+  else 
     Warn::err(yylloc.first_line,"%s ",s);
-}
+} 
 
 
 

@@ -1,0 +1,7 @@
+OBJECTS[] =
+  stringify.o
+
+stringify: $(OBJECTS) $(rootdir)/stdlib/libcyc.so
+  cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc
+
+.DEFAULT: stringify

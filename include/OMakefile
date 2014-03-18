@@ -1,0 +1,2 @@
+$(rootdir)/precore_c.h: $(rootdir)/include/core.h
+  $(CYCLONE) -o $@ -stopafter-toc -pp -D_CYC_GENERATE_PRECORE_C_ -nocyc -noremoveunused -noexpandtypedefs -nocyc_setjmp -x cyc $<

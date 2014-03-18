@@ -20,6 +20,7 @@
 // Cyclone to C translator
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "runtime_internal.h"
 
 /* struct _fat_ptr Cstring_to_string(Cstring s) { */
@@ -72,7 +73,13 @@ struct Cyc___cycFILE { // must match defn in boot_cstubs.c and boot_cycstubs.cyc
   *Cyc_stdout = &Cyc_stdout_v,
   *Cyc_stderr = &Cyc_stderr_v;
 
-extern int Cyc_main(int argc, struct _fat_argv argv);
+int Cyc_main(int argc, struct _fat_argv argv) __attribute__((weak));
+int Cyc_main(int argc, struct _fat_argv argv)
+{
+  fputs ("no main function", stderr);
+  abort ();
+}
+
 extern char *_set_top_handler(); // defined in runtime_exception.c
 
 /* #ifdef _HAVE_PTHREAD_ */

@@ -1,0 +1,17 @@
+*cyclone_target_cflags:
+  
+
+*cyclone_cc:
+  gcc -m32
+
+*cyclone_inc_path:
+  /home/pippijn/code/git/github/src/lang/cyclone/new/include
+
+*cyclone:
+
+
+*predefines:
+
+
+*cpp:
+ -nostdinc 

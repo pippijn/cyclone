@@ -1,0 +1,58 @@
+OBJECTS[] =
+  absyndump.o
+  absyn.o
+  absynpp.o
+  assndef.o
+  attributes.o
+  bansheeif_stub.o
+  binding.o
+  callgraph.o
+  cf_flowinfo.o
+  cifc.o
+  config.o
+  currgn.o
+  evexp.o
+  flags.o
+  formatstr.o
+  insert_checks.o
+  interface.o
+  jump_analysis.o
+  kinds.o
+  lex.o
+  lower.o
+  low_treeshake.o
+  new_control_flow.o
+  parse_errors.o
+  parse_tab.o
+  port.o
+  pratt_prover.o
+  remove_aggregates.o
+  remove_casts.o
+  remove_labels.o
+  rename_temps.o
+  specsfile.o
+  subtype.o
+  tcdecl.o
+  tcenv.o
+  tcexp.o
+  tc.o
+  tcpat.o
+  tcstmt.o
+  tctyp.o
+  tcutil.o
+  toc.o
+  toseqc.o
+  tovc.o
+  unify.o
+  vcgen.o
+  warn.o
+
+boot ()
+
+libcyclone.so: $(OBJECTS) $(rootdir)/stdlib/libcyc.so
+  cc -m32 $(OBJECTS) -o $(absname $@) -shared -Wl,-z,defs $(LDFLAGS) -lcyc
+
+libcyclone.boot.so: $(bootname $(OBJECTS)) $(rootdir)/stdlib/libcyc.boot.so
+  cc -m32 $(bootname $(OBJECTS)) -o $(absname $@) -shared -Wl,-z,defs $(LDFLAGS) -lcyc.boot
+
+.DEFAULT: libcyclone.so

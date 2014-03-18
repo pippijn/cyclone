@@ -1,0 +1,86 @@
+rootdir = $(absname $(dir .))
+
+BUILDLIB	= $(rootdir)/tools/buildlib/buildlib.boot
+CYCBISON	= $(rootdir)/tools/bison/cycbison
+CYCLEX		= $(rootdir)/tools/cyclex/cyclex.boot
+CYCLONE		= $(rootdir)/tools/cyclone/cyclone.boot
+ERRORGEN	= $(rootdir)/tools/errorgen/errorgen
+STRINGIFY	= $(rootdir)/tools/stringify/stringify
+
+LDFLAGS[] =
+  -L$(rootdir)/stdlib
+  -Wl,-rpath,$(absname $(rootdir)/stdlib)
+
+
+########################################################################
+############################## C compiler ##############################
+########################################################################
+
+CFLAGS[] =
+  -m32
+  -ggdb3
+  -I$(rootdir)/stdlib
+  -I$(rootdir)/stdlib/cyc-lib
+
+.SCANNER: scan-%.c: %.c
+  cc $(CFLAGS) $< -MM
+
+%.o: %.c $(rootdir)/stdlib/cyc-lib/cyc_include.h :scanner: scan-%.c
+  cc $(CFLAGS) $< -c -o $@
+
+
+########################################################################
+########################### Cyclone compiler ###########################
+########################################################################
+
+CYCFLAGS[] =
+  -I$(rootdir)/include
+  -I$(rootdir)/stdlib/libc
+
+.SCANNER: scan-%.cyc: %.cyc
+  cc -xc $(CYCFLAGS) $< -MM
+
+%.c: %.cyc $(CYCLONE) :scanner: scan-%.cyc
+  $(CYCLONE) $(CYCFLAGS) -stopafter-toc $< -o $@
+
+
+########################################################################
+########################### Code generation ############################
+########################################################################
+
+%.cyc: %.cyl $(CYCLEX)
+  $(CYCLEX) $< $@
+
+%_tab.cyc %_tab.h: %.cyy $(CYCBISON)
+  $(CYCBISON) -d $< -o $*.cyc
+
+%_gen.h: %.err.cyc $(ERRORGEN) $(CYCLONE)
+  $(ERRORGEN) -c $(CYCLONE) $< > $@
+
+%.string.cyc: % $(STRINGIFY)
+  $(STRINGIFY) $< > $@
+
+
+########################################################################
+############################## Boot stuff ##############################
+########################################################################
+
+bootname (name) =
+  value $(addprefix $(rootdir)/boot/$(fullname .)/,$(name))
+
+boot () =
+  boot: $(addsuffix .c, $(removesuffix $(OBJECTS)))
+    foreach (source => ..., $^):
+      target = $(bootname $(source))
+      mkdir -p $(dirname $(target))
+      cp $(source) $(target)
+
+.PHONY: boot
+
+.SUBDIRS: $(subdirs PC, boot)
+  value
+
+########################################################################
+
+
+.SUBDIRS: include stdlib compiler tools

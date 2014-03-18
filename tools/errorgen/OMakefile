@@ -1,0 +1,7 @@
+OBJECTS[] =
+  errorgen.o
+
+errorgen: $(OBJECTS) $(rootdir)/stdlib/libcyc.so
+  cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc
+
+.DEFAULT: errorgen
