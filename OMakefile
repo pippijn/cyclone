@@ -9,7 +9,7 @@ STRINGIFY	= $(rootdir)/tools/stringify/stringify
 
 LDFLAGS[] =
   -L$(rootdir)/library/stdlib
-  -Wl,-rpath,$(absname $(rootdir)/stdlib)
+  -Wl,-rpath,$(absname $(rootdir)/library/stdlib)
 
 
 ########################################################################
