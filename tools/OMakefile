@@ -1,1 +1,1 @@
-.SUBDIRS: cyclex bison stringify errorgen cyclone buildlib cycdoc aprof rewrite
+.SUBDIRS: cyclex bison stringify errorgen cyclone buildlib cycdoc aprof rewrite yakker

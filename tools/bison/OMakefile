@@ -17,7 +17,7 @@ OBJECTS[] =
   symtab.o
   version.o
   warshall.o
-  cycbison.simple.string.o
+  cycbison_simple.string.o
 
 CYCLONE = $(rootdir)/tools/cyclone/cyclone
 

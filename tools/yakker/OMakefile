@@ -1,0 +1,13 @@
+CYCLONE = $(rootdir)/tools/cyclone/cyclone
+
+CYCFLAGS += -I$(dir .)
+CYCFLAGS += -DNULL_PLAN_C
+
+instantiate.cyc: instantiate.yk yakker/yakker
+  yakker/yakker -gen sequence -no-main $< > $@
+
+.PHONY: yakker-boot
+yakker-boot: instantiate.cyc
+  cp $< bootfiles/instantiate.cyc
+
+.SUBDIRS: libyakker yakker templates bootfiles

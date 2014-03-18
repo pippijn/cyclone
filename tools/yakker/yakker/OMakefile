@@ -1,0 +1,40 @@
+OBJECTS[] =
+  ../analyze.o
+  ../axarray.o
+  ../bnf.o
+  ../corerules.o
+  ../crawlergen.o
+  ../cs.o
+  ../dfa-core.o
+  ../earley-common.o
+  ../earley.o
+  ../extract.o
+  ../fa.o
+  ../flatten.o
+  ../lex.o
+  ../namespaces.o
+  ../nfa_eager.o
+  ../nfa_lazy.o
+  ../pads.o
+  ../parsergen.o
+  ../parse_tab.o
+  ../pr.o
+  ../prose.o
+  ../semiring.o
+  ../templates/corerules_grm.bnf.string.o
+  ../templates/crawl_main.cyc.string.o
+  ../templates/dfa_engine1.cyc.string.o
+  ../templates/dfa_engine2_1.str.string.o
+  ../templates/prose_elim_grm.bnf.string.o
+  ../termgrammar.o
+  ../util.o
+  ../yakker.o
+  ../ykbuf.o
+
+OBJECTS[] +=
+  ../bootfiles/instantiate.o
+
+yakker: $(OBJECTS) $(rootdir)/stdlib/libcyc.so
+  cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc -lm #$(shell pkg-config --libs libssl)
+
+.DEFAULT: yakker

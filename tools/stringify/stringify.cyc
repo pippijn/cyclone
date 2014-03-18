@@ -156,8 +156,14 @@ int main(int argc, char ??argv) {
   for (; i < argc; i++) {
     let arg = argv[i];
     // calculate varname from name of file
-    varname = strdup(arg);
-    for (let i = 0; i < strlen(varname); i++)
+    varname = Filename::basename(arg);
+    let len = strlen(varname);
+#if 1
+    for (let i = 0; i < len; i++) {
+      if (varname[i] == '.') { varname[i] = '\0'; break; }
+    }
+#else
+    for (let i = 0; i < len; i++)
       switch (varname[i])
         {
         case '.':
@@ -166,10 +172,7 @@ int main(int argc, char ??argv) {
         default:
           break;
         }
-    let len = strlen(varname);
-    for (let i = 0; i < len; i++) {
-      if (varname[i] == '.') { varname[i] = '\0'; break; }
-    }
+#endif
     stringify_file(varname,arg);
   }
   return 0;

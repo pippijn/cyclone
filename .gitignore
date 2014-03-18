@@ -1,9 +1,10 @@
 /.*omakedb*
+*.boot
+*.so
+*.a
 *.o
 *.omc
 *.output
 *.string.cyc
-*.boot
-*.so
 *_tab.cyc
 *_tab.h

@@ -1,0 +1,4 @@
+/lex.cyc
+/instantiate.cyc
+/yakker/yakker
+*.c

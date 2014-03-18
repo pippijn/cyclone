@@ -1,0 +1,15 @@
+OBJECTS[] =
+  ../axarray.o
+  ../cs.o
+  ../dfa-core.o
+  ../earley-backend.o
+  ../earley-common.o
+  ../funtable.o
+  ../semiring.o
+  ../ssl.o
+  ../util.o
+
+libyakker.a: $(OBJECTS)
+  ar cru $@ $(OBJECTS)
+
+.DEFAULT: libyakker.a

@@ -254,7 +254,7 @@ throw &Parse_error_val;
 }
 unsigned char ?@nozeroterm ykr3 = YKRESTORE(save3);
 let x = substring((const char ?@nozeroterm)ykr3,0,YKCURSOR-ykr3);
- do_chunk(x);
+ do_chunk(x); 
 break;
 case 3:
 { int c;
@@ -263,7 +263,7 @@ case 3:
   c = *YKCURSOR++;
   if (c!=37) throw &Parse_error_val;
 }
- do_chunk("%");
+ do_chunk("%"); 
 break;
 default: throw &Parse_error_val;
 }
