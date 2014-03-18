@@ -9,10 +9,10 @@ OBJECTS[] =
 
 boot ()
 
-cyclex: $(OBJECTS) $(rootdir)/stdlib/libcyc.so
+cyclex: $(OBJECTS) $(rootdir)/library/stdlib/libcyc.so
   cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc
 
-cyclex.boot: $(bootname $(OBJECTS)) $(rootdir)/stdlib/libcyc.boot.so
+cyclex.boot: $(bootname $(OBJECTS)) $(rootdir)/library/stdlib/libcyc.boot.so
   cc -m32 $(bootname $(OBJECTS)) -o $@ $(LDFLAGS) -lcyc.boot
 
 .DEFAULT: cyclex

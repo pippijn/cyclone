@@ -4,13 +4,13 @@ OBJECTS[] =
 CYCLONE = $(rootdir)/tools/cyclone/cyclone
 
 LDFLAGS[] +=
-  -L$(rootdir)/compiler
-  -Wl,-rpath,$(absname $(rootdir)/compiler)
+  -L$(rootdir)/library/compiler
+  -Wl,-rpath,$(absname $(rootdir)/library/compiler)
 
 CYCFLAGS[] +=
-  -I$(rootdir)/compiler
+  -I$(rootdir)/library/compiler
 
-cycdoc: $(OBJECTS) $(rootdir)/compiler/libcyclone.so $(rootdir)/stdlib/libcyc.so
+cycdoc: $(OBJECTS) $(rootdir)/library/compiler/libcyclone.so $(rootdir)/library/stdlib/libcyc.so
   cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc -lcyclone
 
 .DEFAULT: cycdoc

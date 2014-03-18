@@ -1,9 +1,7 @@
 OBJECTS[] =
   errorgen.o
 
-CYCLONE = $(rootdir)/tools/cyclone/cyclone
-
-errorgen: $(OBJECTS) $(rootdir)/stdlib/libcyc.so
+errorgen: $(OBJECTS) $(rootdir)/library/stdlib/libcyc.so
   cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc
 
 .DEFAULT: errorgen

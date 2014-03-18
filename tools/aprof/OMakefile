@@ -8,7 +8,7 @@ OBJECTS[] =
 
 CYCLONE = $(rootdir)/tools/cyclone/cyclone
 
-aprof: $(OBJECTS) $(rootdir)/stdlib/libcyc.so
+aprof: $(OBJECTS) $(rootdir)/library/stdlib/libcyc.so
   cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc
 
 .DEFAULT: aprof

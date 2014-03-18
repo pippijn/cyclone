@@ -21,7 +21,7 @@ OBJECTS[] =
 
 CYCLONE = $(rootdir)/tools/cyclone/cyclone
 
-cycbison: $(OBJECTS) $(rootdir)/stdlib/libcyc.so
+cycbison: $(OBJECTS) $(rootdir)/library/stdlib/libcyc.so
   cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc
 
 .DEFAULT: cycbison

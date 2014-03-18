@@ -3,7 +3,7 @@ OBJECTS[] =
 
 CYCLONE = $(rootdir)/tools/cyclone/cyclone
 
-rewrite: $(OBJECTS) $(rootdir)/stdlib/libcyc.so
+rewrite: $(OBJECTS) $(rootdir)/library/stdlib/libcyc.so
   cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc
 
 .DEFAULT: rewrite
