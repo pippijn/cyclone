@@ -48,17 +48,22 @@ OBJECTS[] =
 boot ()
 
 libcyc.so: $(OBJECTS)
-  cc -m32 $^ -o $(absname $@) -shared -Wl,-z,defs
+  cc -m32 -o $(absname $@) -shared -Wl,-z,defs $(OBJECTS)
 
 libcyc.boot.so: $(bootname $(OBJECTS))
-  cc -m32 $^ -o $(absname $@) -shared -Wl,-z,defs
+  cc -m32 -o $(absname $@) -shared -Wl,-z,defs $(bootname $(OBJECTS))
 
 .SUBDIRS: cyclib clib cyc-lib
 
 mkdir -p libc
 .SUBDIRS: libc
-  .INCLUDE: OMakefile: $(BUILDLIB) ../libc.cys
+  STUBS[] =
+    cstubs.c
+    cycstubs.cyc
+
+  $(STUBS): $(BUILDLIB) ../libc.cys
     $(BUILDLIB) -d . ../libc.cys
-    touch OMakefile
+
+  %: $(STUBS)
 
 .DEFAULT: libcyc.so
