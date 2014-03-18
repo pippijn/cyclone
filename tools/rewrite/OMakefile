@@ -1,0 +1,9 @@
+OBJECTS[] =
+  rewrite.o
+
+CYCLONE = $(rootdir)/tools/cyclone/cyclone
+
+rewrite: $(OBJECTS) $(rootdir)/stdlib/libcyc.so
+  cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc
+
+.DEFAULT: rewrite
