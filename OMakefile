@@ -38,7 +38,7 @@ CYCFLAGS[] =
   -I$(rootdir)/stdlib/libc
 
 .SCANNER: scan-%.cyc: %.cyc
-  cc -xc $(CYCFLAGS) $< -MM
+  cc -xc $(CYCFLAGS) $< -M -MT $(removesuffix $<).c
 
 %.c: %.cyc $(CYCLONE) :scanner: scan-%.cyc
   $(CYCLONE) $(CYCFLAGS) -stopafter-toc $< -o $@

@@ -1,6 +1,8 @@
 OBJECTS[] =
   stringify.o
 
+CYCLONE = $(rootdir)/tools/cyclone/cyclone
+
 stringify: $(OBJECTS) $(rootdir)/stdlib/libcyc.so
   cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc
 

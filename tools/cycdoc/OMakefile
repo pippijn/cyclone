@@ -1,6 +1,8 @@
 OBJECTS[] =
   cycdoc.o
 
+CYCLONE = $(rootdir)/tools/cyclone/cyclone
+
 LDFLAGS[] +=
   -L$(rootdir)/compiler
   -Wl,-rpath,$(absname $(rootdir)/compiler)
