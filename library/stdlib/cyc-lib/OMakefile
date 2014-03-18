@@ -1,0 +1,11 @@
+CYCFLAGS[] =
+  -stopafter-toc
+  -pp
+  -D_CYC_GENERATE_PRECORE_C_
+  -nocyc
+  -noremoveunused
+  -noexpandtypedefs
+  -nocyc_setjmp
+
+precore_c.new.h: $(rootdir)/include/core.h $(CYCLONE)
+  $(CYCLONE) -o $@ $(CYCFLAGS) -x cyc $<

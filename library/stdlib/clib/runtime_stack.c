@@ -20,6 +20,8 @@
 
 #include "runtime_internal.h"
 
+#include <stdlib.h>
+
 #ifdef HAVE_THREADS
 static tlocal_key_t _current_frame_key;
 #elif !defined(USE_CYC_TLS)

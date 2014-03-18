@@ -303,6 +303,7 @@ static int cpuinfo (int whole, unsigned long*kernel, unsigned long*user);
 #endif
 #endif /*Void_t*/
 
+#define _GNU_SOURCE
 #if __STD_C
 #include <stddef.h>   /* for size_t */
 #else

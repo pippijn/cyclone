@@ -20,6 +20,8 @@
 
 #include "runtime_internal.h"
 
+#include <stdlib.h>
+
 // FIX: makes alignment and pointer-size assumptions
 char Cyc_Null_Exception[] = "Cyc_Null_Exception";
 struct Cyc_Null_Exception_exn_struct Cyc_Null_Exception_struct = { Cyc_Null_Exception };

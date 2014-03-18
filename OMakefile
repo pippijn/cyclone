@@ -84,4 +84,4 @@ boot () =
 
 .PHONY: check
 
-.SUBDIRS: include library tools testsuite
+.SUBDIRS: library tools testsuite

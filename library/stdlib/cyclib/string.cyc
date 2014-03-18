@@ -752,7 +752,7 @@ namespace Cstr {
     `a*`r memcpy(`a::A*`r, const `a*, size_t n);
     `a*`r memmove(`a::A*`r, const `a*, size_t n);
     int memcmp(const void*, const void*, size_t n);
-    char * @nozeroterm `r memchr(const char * @nozeroterm `r, char c, size_t n);
+    char * @nozeroterm `r memchr(const char * @nozeroterm `r, int c, size_t n);
     void * @nozeroterm `r memset(void * @nozeroterm `r, int c, size_t n);
     void bcopy (const `a::A*src, `a *dest, size_t n);
     void bzero(`a::A*s, size_t n);

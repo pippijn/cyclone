@@ -25,10 +25,12 @@
 #include <time.h> // for clock()
 #endif
 
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
+
 #include "runtime_internal.h"
 #include "bget.h"
-
-#define _throw_bad_reapalloc() (_throw_bad_reapalloc_fn(__FILE__,__LINE__))
 
 struct _RegionAllocFunctions {
   void (*_rufree) (struct _RegionHandle*, unsigned char*);

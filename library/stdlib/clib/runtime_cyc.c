@@ -19,9 +19,11 @@
 // This is the C "runtime library" to be used with the output of the
 // Cyclone to C translator
 
+#include "runtime_internal.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include "runtime_internal.h"
+#include <string.h>
 
 /* struct _fat_ptr Cstring_to_string(Cstring s) { */
 /*   struct _fat_ptr str; */
@@ -96,7 +98,6 @@ extern void GC_init();
 int main(int argc, char **argv) {
   GC_init();
   // initialize region system
-  int status;
   _init_regions();
   // MWH: could do this in pthread_once above, but there's no need
   // because we won't have multiple main() threads

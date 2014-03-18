@@ -91,6 +91,7 @@ void _pop_region();
 void* _throw_null_fn(const char*,unsigned);
 void* _throw_arraybounds_fn(const char*,unsigned);
 void* _throw_badalloc_fn(const char*,unsigned);
+void* _throw_bad_reapalloc_fn(const char*,unsigned);
 void* _throw_match_fn(const char*,unsigned);
 void* _throw_assert_fn(const char *,unsigned);
 void* _throw_fn(void*,const char*,unsigned);
@@ -98,6 +99,7 @@ void* _rethrow(void*);
 #define _throw_null() (_throw_null_fn(__FILE__,__LINE__))
 #define _throw_arraybounds() (_throw_arraybounds_fn(__FILE__,__LINE__))
 #define _throw_badalloc() (_throw_badalloc_fn(__FILE__,__LINE__))
+#define _throw_bad_reapalloc() (_throw_bad_reapalloc_fn(__FILE__,__LINE__))
 #define _throw_match() (_throw_match_fn(__FILE__,__LINE__))
 #define _throw_assert() (_throw_assert_fn(__FILE__,__LINE__))
 #define _throw(e) (_throw_fn((e),__FILE__,__LINE__))

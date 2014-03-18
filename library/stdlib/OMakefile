@@ -53,7 +53,7 @@ libcyc.so: $(OBJECTS)
 libcyc.boot.so: $(bootname $(OBJECTS))
   cc -m32 $^ -o $(absname $@) -shared -Wl,-z,defs
 
-.SUBDIRS: cyclib clib
+.SUBDIRS: cyclib clib cyc-lib
 
 mkdir -p libc
 .SUBDIRS: libc

@@ -2156,7 +2156,7 @@ extern void _push_handler(struct _handler_cons *h);
 extern void*Cyc_Core_get_exn_thrown(void);
 extern const char *Cyc_Core_get_exn_filename(void);
 extern int Cyc_Core_get_exn_lineno();
-static struct __pair {
+struct __pair {
   void * (*cycf)(void *);
   void *arg;
 };
@@ -3432,6 +3432,8 @@ hstub {
                                int max_count);
 }
 cstub {
+  #include <stdlib.h>
+
   FILE *_sfile_to_file(struct Cyc___cycFILE *sf) {
     if(!sf) {
       fprintf(stderr,"Attempt to access null file descriptor.\n");
