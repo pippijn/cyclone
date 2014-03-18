@@ -1,3 +1,4 @@
+/boot
 /.*omakedb*
 *.boot
 *.so
