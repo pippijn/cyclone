@@ -1,12 +1,12 @@
 typedef enum Bool {false, true} bool;
 int x1 = 3;
-//int x2 = true; // int != bool
+int x2 = true; // int != bool
 int x3 = 4+3;
 char x4 = 'x';
 //char x5 = "x"; // char != char[1]
 int f1() {return 2;}
-//int f2() {return;} // returns void not int
-//int f3() {0;} // should return int but doesn't return
+int f2() {return;} // returns void not int
+int f3() {0;} // should return int but doesn't return
 int x6;
 char x7;
 float x8;
@@ -15,14 +15,14 @@ int *x10;
 float *x11 = NULL;
 int f4(int x) { return x; }
 int f5(int x,int y) { return x+y; }
-//int f6(int x,float y) { return x+y; } // returns float not int
+int f6(int x,float y) { return x+y; } // returns float not int
 int f7(int x,float y) { return (int)(x+y); } // should the cast be implicit?
-//int f8() { int x; return x; } // x might not be initialized
+int f8() { int x; return x; } // x might not be initialized
 int f9() { int x=13; return x; }
 //int f10() { return y; } // unbound identifier y
-//int f11() { int x=13; int *x=NULL; return x; } // returns wrong type
+int f11() { int x=13; int *x=NULL; return x; } // returns wrong type
 int f12(int x) { if (x < 23) return x; else return 0; }
-//int f13(int x) { if (x < 23) return x; } // might not return int
+int f13(int x) { if (x < 23) return x; } // might not return int
 void f14(int x) {
   while (x < 23) {
     break;
@@ -47,14 +47,14 @@ int f21() { struct s1 x = s1{.yy='M',.xx=4}; return 0; }
 struct s1 f22() { return s1{.yy='M',.xx=4}; }
 struct s1 f23() { return s1(4,'M'); }
 //struct s1 f24() { return s1('M'); } // missing field y
-//struct s1 f25() { return s1('M',4); } // works, but integer conversion warn
-//struct s1 f26() { return s1{.xx='M',.yy=4}; } // works, but conversion warn
+struct s1 f25() { return s1('M',4); } // works, but integer conversion warn
+struct s1 f26() { return s1{.xx='M',.yy=4}; } // works, but conversion warn
 $(int,bool) f27() { return $(1,true); }
 int f28($(bool,int) x) { return x[1]; }
 //int f29($(bool,int) x) { return x[2]; } // bad index
 $(int,bool) f30($(bool,int) x) { return $(x[1],x[0]); }
 int f31(int x) { x += 2; return x; }
-//int f32(int x) { int y; y += 2; return x; } // y not initialized
+int f32(int x) { int y; y += 2; return x; } // y not initialized
 int f34() {
   int x;
   return ( true ? (x=0) : 2 );
@@ -66,17 +66,17 @@ int f34() {
 //    return y;
 //  else return z;
 //}
-//char x13[2] = "z"; // FIX: declared char[2] not char[1]--terminating zero!
+char x13[2] = "z"; // FIX: declared char[2] not char[1]--terminating zero!
 //char x14[?] = "z"; // FIX: declared char[?] not char[1]--auto convert needed?
 //char x15[?]; // FIX: requires initializer -- default needed
-//char x16[2]; // FIX: requires initializer -- default needed
-//int x17; int x17; // FIX: should detect duplicate bindings
+char x16[2]; // FIX: requires initializer -- default needed
+int x17; int x17; // FIX: should detect duplicate bindings
 int f36() {let $(x,y) = $(1,2); return x+y;}
 //int f37() {let $(x,y,z) = $(1,2); return x+y+z;} // pat&def types don't match
 int f38() {let $($(x,y),z) = $($(1,2),3); return x+y+z;}
 int f39() {let $($(x,2),z) = $($(1,2),3); return x+z;}
-//int f40() {let $(true,y) = $(1,2); return y;} // pat&def types don't match
-int f40(int x) {switch (x) {case 1: return 1; default: return 2;}}
+int f40() {let $(true,y) = $(1,2); return y;} // pat&def types don't match
+int f41(int x) {switch (x) {case 1: return 1; default: return 2;}}
 //int f41(bool x) {switch (x) {case true: return 1;}}
 int f42(enum e1 x) {switch (x) {case E1: return 1; case E2: return 2; default: return 3;}}
 //void f42(enum e2 x) {
@@ -95,10 +95,10 @@ int f46($(int,int) *x) {
   case &$(y,z): return y+z;
   }
 }
-//int f47($(int,bool) *x) { // expecting arith, found bool
-//  switch (x) {case &$(y,z): return y+z;}
-//}
-//int f48(int @x) {switch (x) { case &y: return y;}} // FIX: @ not *
+int f47($(int,bool) x) { // expecting arith, found bool
+  switch (x) {case $(y,z): return y+z;}
+}
+int f48(int @x) {switch (x) { case &y: return y;}} // FIX: @ not *
 
 typedef int foo;
 foo tdef0 = 3;
@@ -120,9 +120,9 @@ ppair<int,int> tdef3(foo i) {
   return new $(i,i);
 }
 
-//ppair<int,char> tdef3(foo i) {  // type char is not a boxed type
-//  return &$(i,'c');
-//}
+ppair<int,char> tdef4(foo i) {  // type char is not a boxed type
+  return new $(i,'c');
+}
 
 int f49(struct s1 x) {
   switch (x) {
