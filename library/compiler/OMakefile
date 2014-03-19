@@ -72,7 +72,10 @@ OBJECTS[] =
   vcgen.o
   warn.o
 
+link (stdlib)
+
 boot ()
+cyclone-rules (true)
 
 .SCANNER: scan-%.cyc: parse_tab.h parse_errors_gen.h
 
@@ -82,12 +85,12 @@ config.c: make-config.boot
 $(bootname config.c): config.c
   cp $< $@
 
-libcyclone.so: $(OBJECTS) $(LIBCYC)
-  cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) -lcyc $(LDFLAGS)
+libcompiler.so: $(OBJECTS) $(LIBCYC)
+  cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) $(LDFLAGS)
 
 .SUBDIRS: $(bootname .)
   .SUBDIRS: inference
     CFLAGS += $(LIBBANSHEE_CFLAGS)
 
-  libcyclone.boot.so: $(OBJECTS) $(LIBCYC_BOOT)
-    cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) -lcyc.boot $(LDFLAGS_BOOT)
+  libcompiler.boot.so: $(OBJECTS) $(LIBCYC_BOOT)
+    cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) $(LDFLAGS_BOOT)

@@ -1,28 +1,3 @@
-HEADERS[] =
-  array.h
-  bitvec.h
-  buffer.h
-  core.h
-  dict.h
-  filename.h
-  fn.h
-  graph.h
-  hashtable.h
-  iter.h
-  list.h
-  pp.h
-  queue.h
-  rope.h
-  set.h
-  slowdict.h
-  xarray.h
-
-stdlib.tex: $(HEADERS) $(CYCDOC)
-  $(CYCDOC) -cyclone $(CYCLONE) -I. $(HEADERS) > $@
-
-.DEFAULT: stdlib.tex
-
-
 OBJECTS[] =
   libc/cstubs.o
   libc/cycstubs.o
@@ -64,28 +39,10 @@ OBJECTS[] =
   xarray.o
   xp.o
 
-boot ()
+CYCFLAGS += -I$(dir .)
 
-libcyc.so: $(OBJECTS) $(rootdir)/library/runtime/libcycrt.so
-  cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) $(LDFLAGS)
+boot-library ()
 
-.SUBDIRS: $(bootname .)
-  libcyc.boot.so: $(OBJECTS) $(rootdir)/library/runtime/libcycrt.so
-    cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) $(LDFLAGS_BOOT)
+buildlib (libc)
 
-.SUBDIRS: cyc-lib
-
-########################################################################
-############################ libc bindings #############################
-########################################################################
-
-mkdir -p libc
-.SUBDIRS: libc
-  STUBS[] =
-    cstubs.c
-    cycstubs.cyc
-
-  $(STUBS): $(BUILDLIB) ../libc.cys
-    $(BUILDLIB) -d . ../libc.cys
-
-  %: $(STUBS)
+.SUBDIRS: cyc-lib doc

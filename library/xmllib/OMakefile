@@ -1,0 +1,33 @@
+CYCFLAGS += -I.
+
+link (stdlib)
+
+########################################################################
+############################# XML Library ##############################
+########################################################################
+
+OBJECTS[] =
+  xml.o
+  xmldump.o
+  xmlparse_tab.o
+  xmlscan.o
+
+.SCANNER: scan-%.cyc: xmlparse_tab.h
+
+library ()
+
+########################################################################
+########################### XML test program ###########################
+########################################################################
+
+OBJECTS[] =
+  xmlecho.o
+
+link (xmllib)
+program (xmlecho)
+
+check: test.xml.out
+
+test.xml.out: xmlecho test.xml
+  $< test.xml > test.xml.out
+  diff test.xml test.xml.out

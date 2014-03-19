@@ -1,0 +1,9 @@
+OBJECTS[] =
+  libsqlite3/cstubs.o
+  libsqlite3/cycstubs.o
+
+link (stdlib)
+
+library ()
+
+buildlib (libsqlite3)

@@ -1,7 +1,6 @@
 OBJECTS[] =
   rewrite.o
 
-rewrite: $(OBJECTS) $(LIBCYC)
-  cc -m32 $(OBJECTS) -o $@ -lcyc $(LDFLAGS)
+link (stdlib)
 
-.DEFAULT: rewrite
+program (rewrite)

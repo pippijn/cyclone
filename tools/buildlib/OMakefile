@@ -1,15 +1,7 @@
 OBJECTS[] =
   buildlib.o
 
-boot ()
-
 link (compiler)
+link (stdlib)
 
-buildlib: $(OBJECTS) $(rootdir)/library/compiler/libcyclone.so $(LIBCYC)
-  cc -m32 $(OBJECTS) -o $@ -lcyclone -lcyc $(LDFLAGS)
-
-.SUBDIRS: $(bootname .)
-  buildlib.boot: $(OBJECTS) $(rootdir)/boot/library/compiler/libcyclone.boot.so $(LIBCYC_BOOT)
-    cc -m32 $(OBJECTS) -o $@ -lcyclone.boot -lcyc.boot $(LDFLAGS_BOOT)
-
-.DEFAULT: buildlib
+boot-program (buildlib)

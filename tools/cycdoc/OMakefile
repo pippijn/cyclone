@@ -2,6 +2,6 @@ OBJECTS[] =
   cycdoc.o
 
 link (compiler)
+link (stdlib)
 
-cycdoc: $(OBJECTS) $(rootdir)/library/compiler/libcyclone.so $(LIBCYC)
-  cc -m32 $(OBJECTS) -o $@ -lcyclone -lcyc $(LDFLAGS)
+program (cycdoc)

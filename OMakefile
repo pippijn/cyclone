@@ -7,9 +7,8 @@ HAVE_THREADS	= 0
 USE_CYC_TLS	= 0
 
 BUILDLIB	= $(rootdir)/boot/tools/buildlib/buildlib.boot
-CYCBISON	= $(rootdir)/boot/tools/bison/cycbison.boot
-CYCLEX		= $(rootdir)/boot/tools/cyclex/cyclex.boot
-CYCLONE_BOOT	= $(rootdir)/boot/tools/cyclone/cyclone.boot
+CYCBISON	= $(rootdir)/tools/bison/cycbison
+CYCLEX		= $(rootdir)/tools/cyclex/cyclex
 CYCLONE		= $(rootdir)/tools/cyclone/cyclone
 CYCDOC		= $(rootdir)/tools/cycdoc/cycdoc
 ERRORGEN	= $(rootdir)/tools/errorgen/errorgen
@@ -19,28 +18,37 @@ BANSHEE		= $(rootdir)/tools/banshee/banshee.native
 CYCSPECS	= $(rootdir)/library/stdlib/cyc-lib/cycspecs
 
 LIBCYCRT	= $(rootdir)/library/runtime/libcycrt.so
-LIBCYC		= $(rootdir)/library/stdlib/libcyc.so $(LIBCYCRT)
-LIBCYC_BOOT	= $(rootdir)/boot/library/stdlib/libcyc.boot.so $(LIBCYCRT)
+LIBCYC		= $(LIBCYCRT)
+LIBCYC_BOOT	= $(LIBCYCRT)
 
 link (lib) =
   LDFLAGS[] +=
     -L$(rootdir)/library/$(lib)
     -Wl,-rpath,$(absname $(rootdir)/library/$(lib))
+    -l$(lib)
 
   LDFLAGS_BOOT[] +=
     -L$(rootdir)/boot/library/$(lib)
     -Wl,-rpath,$(absname $(rootdir)/boot/library/$(lib))
+    -l$(lib).boot
+
+  LIBCYC[] +=
+    $(rootdir)/library/$(lib)/lib$(lib).so
+
+  LIBCYC_BOOT[] +=
+    $(rootdir)/boot/library/$(lib)/lib$(lib).boot.so
 
   CYCFLAGS[] +=
     -I$(rootdir)/library/$(lib)
 
-  export LDFLAGS LDFLAGS_BOOT CYCFLAGS
+  export LDFLAGS LDFLAGS_BOOT CYCFLAGS LIBCYC LIBCYC_BOOT
 
 
 CYCFLAGS[] =
   #--geninterface
   #-noexpandtypedefs
   #-nonullchecks
+  #--no-lower
   -I$(rootdir)/library/stdlib/libc
 
 LDFLAGS[] =
@@ -48,8 +56,6 @@ LDFLAGS[] =
   -Wl,-rpath,$(absname $(rootdir)/library/runtime)
   -lcycrt
 LDFLAGS_BOOT = $(LDFLAGS)
-
-link (stdlib)
 
 
 ########################################################################
@@ -108,25 +114,99 @@ boot () =
 ########################### Cyclone compiler ###########################
 ########################################################################
 
-.SCANNER: scan-%.cyc: %.cyc $(CYCLONE_BOOT) $(CYCSPECS)
-  $(CYCLONE_BOOT) $(CYCFLAGS) $< -M -MT $(removesuffix $<).c
+private.cyclone-rules (boot) =
+  if $(boot):
+    CYCLONE	= $(bootname $(CYCLONE)).boot
+    CYCLEX	= $(bootname $(CYCLEX)).boot
+    CYCBISON	= $(bootname $(CYCBISON)).boot
+    export
 
-%.c: %.cyc $(CYCLONE_BOOT) $(CYCSPECS) :scanner: scan-%.cyc
-  $(CYCLONE_BOOT) $(CYCFLAGS) -stopafter-toc $< -o $@
+  .SCANNER: scan-%.cyc: %.cyc $(CYCLONE) $(CYCSPECS)
+    $(CYCLONE) $(CYCFLAGS) $< -M -MT $(removesuffix $<).c
+
+  %.c: %.cyc $(CYCLONE) $(CYCSPECS) :scanner: scan-%.cyc
+    $(CYCLONE) $(CYCFLAGS) -stopafter-toc $< -o $@
+
+  %.cyc: %.cyl $(CYCLEX)
+    $(CYCLEX) $< $@
+
+  %_tab.cyc %_tab.h: %.cyy $(CYCBISON)
+    $(CYCBISON) -d $< -o $*.cyc
+
+  %_gen.h: %.err.cyc $(ERRORGEN) $(CYCLONE)
+    $(ERRORGEN) -c $(CYCLONE) $< > $@
+
+  export
+
+
+program (name) =
+  $(name): $(OBJECTS) $(LIBCYC)
+    cc -m32 -o $@ $(OBJECTS) $(LDFLAGS)
+
+  .DEFAULT: $(name)
+
+  cyclone-rules (false)
+  export
+
+
+library () =
+  private.name = $(basename $(fullname .))
+
+  lib$(name).so: $(OBJECTS) $(LIBCYC)
+    cc -m32 -o $@ $(OBJECTS) -shared -Wl,-z,defs $(LDFLAGS)
+
+  cyclone-rules (false)
+  export
+
+
+boot-program (name) =
+  boot ()
+
+  $(name): $(OBJECTS) $(LIBCYC)
+    cc -m32 -o $@ $(OBJECTS) $(LDFLAGS)
+
+  .SUBDIRS: $(bootname .)
+    $(name).boot: $(OBJECTS) $(LIBCYC_BOOT)
+      cc -m32 -o $@ $(OBJECTS) $(LDFLAGS_BOOT)
+
+  .DEFAULT: $(name)
+
+  cyclone-rules (true)
+  export
+
+
+boot-library () =
+  private.name = $(basename $(fullname .))
+
+  boot ()
+
+  lib$(name).so: $(OBJECTS) $(LIBCYC)
+    cc -m32 -o $@ $(OBJECTS) -shared -Wl,-z,defs $(LDFLAGS)
+
+  .SUBDIRS: $(bootname .)
+    lib$(name).boot.so: $(OBJECTS) $(LIBCYC_BOOT)
+      cc -m32 -o $@ $(OBJECTS) -shared -Wl,-z,defs $(LDFLAGS_BOOT)
+
+  cyclone-rules (true)
+  export
+    
+
+buildlib (cys) =
+  mkdir -p $(cys)
+  .SUBDIRS: $(cys)
+    STUBS[] =
+      cstubs.c
+      cycstubs.cyc
+
+    $(STUBS): ../$(cys).cys $(BUILDLIB)
+      $(BUILDLIB) -d . $<
+
+    %: $(STUBS)
 
 
 ########################################################################
 ########################### Code generation ############################
 ########################################################################
-
-%.cyc: %.cyl $(CYCLEX)
-  $(CYCLEX) $< $@
-
-%_tab.cyc %_tab.h: %.cyy $(CYCBISON)
-  $(CYCBISON) -d $< -o $*.cyc
-
-%_gen.h: %.err.cyc $(ERRORGEN) $(bootname $(CYCLONE)).boot
-  $(ERRORGEN) -c $(bootname $(CYCLONE)).boot $< > $@
 
 %.string.cyc: % $(STRINGIFY)
   $(STRINGIFY) $< > $@

@@ -1,8 +1,10 @@
 OBJECTS[] =
   cyctest.o
 
-cyctest: $(OBJECTS) $(rootdir)/library/stdlib/libcyc.so
-  cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc -lm
+LDFLAGS += -lm
+
+program (cyctest)
+
 
 cyctest.out: cyctest cyctest.ref
   $< >& $@

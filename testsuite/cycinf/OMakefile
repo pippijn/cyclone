@@ -13,6 +13,7 @@ RESFLAGS[] =
   #--geninterface
   --resolve
 
+link (stdlib)
 
 sample: sample.cyc external.cyc $(LIBCYC) $(CYCLONE)
   rm -rf .cych
@@ -22,7 +23,7 @@ sample: sample.cyc external.cyc $(LIBCYC) $(CYCLONE)
   $(CYCLONE) $(INFFLAGS) $(CYCFLAGS) sample.cyc
   $(CYCLONE) $(RESFLAGS) $(CYCFLAGS) .cych/external.cyc
   $(CYCLONE) $(RESFLAGS) $(CYCFLAGS) .cych/sample.cyc
-  cc -flto -m32 .cych/sample.c .cych/external.c -o $@ $(CFLAGS) $(LDFLAGS) -lcyc
+  cc -flto -m32 .cych/sample.c .cych/external.c -o $@ $(CFLAGS) $(LDFLAGS)
 
 sample.out: sample sample.ref
   $< > $@

@@ -2,15 +2,7 @@ OBJECTS[] =
   cyclone.o
   interproc.o
 
-boot ()
-
 link (compiler)
+link (stdlib)
 
-cyclone: $(OBJECTS) $(rootdir)/library/compiler/libcyclone.so $(LIBCYC)
-  cc -m32 $(OBJECTS) -o $@ -lcyclone -lcyc $(LDFLAGS)
-
-.SUBDIRS: $(bootname .)
-  cyclone.boot: $(OBJECTS) $(rootdir)/boot/library/compiler/libcyclone.boot.so $(LIBCYC_BOOT)
-    cc -m32 $(OBJECTS) -o $@ -lcyclone.boot -lcyc.boot $(LDFLAGS_BOOT)
-
-.DEFAULT: cyclone
+boot-program (cyclone)

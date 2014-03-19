@@ -1,0 +1,12 @@
+OBJECTS[] =
+  libpcre/cstubs.o
+  libpcre/cycstubs.o
+
+LDFLAGS  += -lpcre
+CYCFLAGS += -I.
+
+link (stdlib)
+
+library ()
+
+buildlib (libpcre)

@@ -1,10 +1,10 @@
 SUBDIRS[] =
   banshee
   compiler
-  pcre
+  cycpcre
+  cycsqlite3
   runtime
-  sqlite3
   stdlib
-  xml
+  xmllib
 
 .SUBDIRS: $(SUBDIRS)

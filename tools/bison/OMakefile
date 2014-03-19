@@ -19,13 +19,6 @@ OBJECTS[] =
   warshall.o
   cycbison_simple.string.o
 
-boot ()
+link (stdlib)
 
-cycbison: $(OBJECTS) $(LIBCYC)
-  cc -m32 -o $@ $(OBJECTS) -lcyc $(LDFLAGS)
-
-.SUBDIRS: $(bootname .)
-  cycbison.boot: $(OBJECTS) $(LIBCYC_BOOT)
-    cc -m32 -o $@ $(OBJECTS) -lcyc.boot $(LDFLAGS_BOOT)
-
-.DEFAULT: cycbison
+boot-program (cycbison)

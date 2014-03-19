@@ -6,7 +6,6 @@ OBJECTS[] =
   aprof_summary.o
   aprof_svg.o
 
-aprof: $(OBJECTS) $(LIBCYC)
-  cc -m32 $(OBJECTS) -o $@ -lcyc $(LDFLAGS)
+link (stdlib)
 
-.DEFAULT: aprof
+program (aprof)

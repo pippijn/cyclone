@@ -1,5 +1,8 @@
 CYCFLAGS += -I$(dir .)
 
+link (stdlib)
+cyclone-rules (false)
+
 SUBDIRS[] =
   compiler
   cycinf

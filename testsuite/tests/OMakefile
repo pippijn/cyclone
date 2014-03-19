@@ -36,7 +36,8 @@ EXES[] =
   unique_test
   zeroterm
 
-.PHONY: tests
+LDFLAGS += -lm -lpthread
+
 
 %.out: % %.ref
   if $(file-exists $*_input):
@@ -46,6 +47,7 @@ EXES[] =
   else
     $< $< >& $@
   diff $@ $*.ref
+
 
 foreach (exe => ..., $(EXES)):
   OBJECTS = $(exe).o
@@ -61,9 +63,6 @@ foreach (exe => ..., $(EXES)):
     OBJECTS += md5driver.o
     export
 
-  $(exe): $(OBJECTS) $(rootdir)/library/stdlib/libcyc.so
-    cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc -lm -lpthread
-
-  tests: $(exe)
+  program ($(exe))
 
   check: $(exe).out

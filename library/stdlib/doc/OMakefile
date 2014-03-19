@@ -1,0 +1,23 @@
+HEADERS[] =
+  ../array.h
+  ../bitvec.h
+  ../buffer.h
+  ../core.h
+  ../dict.h
+  ../filename.h
+  ../fn.h
+  ../graph.h
+  ../hashtable.h
+  ../iter.h
+  ../list.h
+  ../pp.h
+  ../queue.h
+  ../rope.h
+  ../set.h
+  ../slowdict.h
+  ../xarray.h
+
+stdlib.tex: $(HEADERS) $(CYCDOC) $(CYCLONE)
+  $(CYCDOC) -cyclone $(CYCLONE) -I.. $(HEADERS) > $@
+
+.DEFAULT: stdlib.tex

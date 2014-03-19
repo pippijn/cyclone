@@ -1,5 +1,6 @@
 OBJECTS[] =
   stringify.o
 
-stringify: $(OBJECTS) $(LIBCYC)
-  cc -m32 $(OBJECTS) -o $@ -lcyc $(LDFLAGS)
+link (stdlib)
+
+program (stringify)

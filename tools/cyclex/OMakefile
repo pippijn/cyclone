@@ -7,13 +7,6 @@ OBJECTS[] =
   parser_tab.o
   syntax.o
 
-boot ()
+link (stdlib)
 
-cyclex: $(OBJECTS) $(LIBCYC)
-  cc -m32 $(OBJECTS) -o $@ -lcyc $(LDFLAGS)
-
-.SUBDIRS: $(bootname .)
-  cyclex.boot: $(OBJECTS) $(LIBCYC_BOOT)
-    cc -m32 $(OBJECTS) -o $@ -lcyc.boot $(LDFLAGS_BOOT)
-
-.DEFAULT: cyclex
+boot-program (cyclex)

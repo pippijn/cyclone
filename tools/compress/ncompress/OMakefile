@@ -1,7 +1,4 @@
 OBJECTS[] =
   compress42.o
 
-compress: $(OBJECTS) $(LIBCYC)
-  cc -m32 $(OBJECTS) -o $@ -lcyc $(LDFLAGS)
-
-.DEFAULT: compress
+program (compress)

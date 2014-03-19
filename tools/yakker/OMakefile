@@ -1,10 +1,19 @@
 CYCFLAGS += -I$(dir .)
 CYCFLAGS += -DNULL_PLAN_C
 
+link (stdlib)
+cyclone-rules (false)
+
 instantiate.cyc: instantiate.yk yakker/yakker
   yakker/yakker -gen sequence -no-main $< > $@
 
 boot: instantiate.cyc
   cp $< bootfiles/instantiate.cyc
 
-.SUBDIRS: libyakker yakker templates bootfiles
+SUBDIRS[] =
+  bootfiles
+  libyakker
+  templates
+  yakker
+
+.SUBDIRS: $(SUBDIRS)

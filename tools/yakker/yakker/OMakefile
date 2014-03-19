@@ -35,7 +35,6 @@ OBJECTS[] =
 OBJECTS[] +=
   ../bootfiles/instantiate.o
 
-yakker: $(OBJECTS) $(LIBCYC)
-  cc -m32 $(OBJECTS) -o $@ -lcyc $(LDFLAGS) -lm #$(shell pkg-config --libs libssl)
+LDFLAGS += -lm
 
-.DEFAULT: yakker
+program (yakker)

@@ -1,5 +1,6 @@
 OBJECTS[] =
   errorgen.o
 
-errorgen: $(OBJECTS) $(LIBCYC)
-  cc -m32 $(OBJECTS) -o $@ -lcyc $(LDFLAGS)
+link (stdlib)
+
+boot-program (errorgen)
