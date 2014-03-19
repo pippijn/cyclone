@@ -1,29 +1,42 @@
 EXES[] =
   cinclude
   dynregion
+  fallthru_tests
   flatlist
   foo
   hello
   histogram
   md5
   multimethod
+  offsetof_test
   patterns
   rc
+  refcnt_reap_test
   refcnt_test
+  require
   scheme
   scheme-2
+  #sigaction_test
   streambufftest
+  #structarray
   subset
+  t1
+  t2
+  t3
+  t4
   testaqualsuccess
   testasm
   testbget
-  testexn
   test_currgn
+  testexn
   test_getopt
   test_large_vc_terms
   test_regions
   unique_patterns
+  unique_test
   zeroterm
+
+.PHONY: tests
 
 foreach (exe => ..., $(EXES)):
   OBJECTS = $(exe).o
@@ -41,6 +54,8 @@ foreach (exe => ..., $(EXES)):
 
   $(exe): $(OBJECTS) $(rootdir)/library/stdlib/libcyc.so
     cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc -lm -lpthread
+
+  tests: $(exe)
 
   check: $(exe)
     if $(file-exists $(exe)_input):

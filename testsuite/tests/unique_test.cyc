@@ -162,12 +162,14 @@ struct Mylist<`a,`r::TR> {
 };
 typedef struct Mylist<`a,`r> *`r mylist_u_t<`a,`r>;
 
+#if 0
 // this checks paths, etc.
 void p(int b) {
   struct Mylist<int,`U> e = Mylist(1,NULL);
   e.tl = new Mylist(3,NULL);
 //    mylist_u_t l = e.tl;
 }
+#endif
 
 // for testing aggregates
 
@@ -229,11 +231,13 @@ void poly() {
 
 typedef struct List::List<`a,`U> *`U llist_t<`a>;
 
+#if 0
 llist_t<`a> append(llist_t<`a> x, llist_t<`a> y) {
   if (x == NULL) return y;
   x->tl = append(x->tl,y);
   return x;
 }
+#endif
 
 int main() {
   int *`U v = h(1);

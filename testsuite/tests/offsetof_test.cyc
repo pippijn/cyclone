@@ -16,12 +16,14 @@ struct bar {
 int main() {
   printf("offsetof(bar,f.d)=%d\n",offsetof(struct bar,f.d));
   printf("offsetof(bar,i4)=%d\n",offsetof(struct bar,i4));
-  printf("offsetof(bar,0)=%d\n",offsetof(struct bar,0));
+  printf("offsetof(bar,i3)=%d\n",offsetof(struct bar,i3));
   printf("offsetof(foo,d)=%d\n",offsetof(struct foo,d));
 
   // errors that should be flagged by the compiler
-//   printf("offsetof(bar,f.d)=%d\n",offsetof(struct bar,f.d.x));
-//   printf("offsetof(bar,f.d)=%d\n",offsetof(struct bar,f.x));
+#if 0
+  printf("offsetof(bar,f.d)=%d\n",offsetof(struct bar,f.d.x));
+  printf("offsetof(bar,f.d)=%d\n",offsetof(struct bar,f.x));
+#endif
 
   return 0;
 }

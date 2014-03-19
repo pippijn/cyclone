@@ -65,7 +65,7 @@ void init_signals3(void)
     sigaction(SIGTERM, &sa, NULL);
 }
 
-void main() {
+int main() {
   init_signals();
   raise(SIGUSR1);
   raise(SIGUSR2);
@@ -78,4 +78,6 @@ void main() {
   init_signals3();
   raise(SIGTERM); // should kill
   printf("oops--should die\n");
+
+  return 1;
 }

@@ -37,6 +37,10 @@ list<`a> tail<`a>(list<`a> x) {
   return fst(x); // should warn about implicit cast
 }
 
+#if 0
 `a head<`a>(list<`a> x) {
   return snd(x); // should warn about implicit cast
 }
+#endif
+
+int main () { return 0; }

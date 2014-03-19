@@ -81,3 +81,5 @@ int foo4(int x) {
 int foo5(int x) {
   return foo4(x);
 }
+
+int main () { return 0; }

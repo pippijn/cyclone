@@ -1,7 +1,7 @@
 typedef enum Bool {false, true} bool;
 int x1 = 3;
 //int x2 = true; // int != bool
-int x3 = 4+3;
+//int x3 = 4+3;
 char x4 = 'x';
 //char x5 = "x"; // char != char[1]
 int f1() {return 2;}
@@ -78,7 +78,7 @@ int f39() {let $($(x,2),z) = $($(1,2),3); return x+z;}
 //int f40() {let $(true,y) = $(1,2); return y;} // pat&def types don't match
 int f40(int x) {switch (x) {case 1: return 1; default: return 2;}}
 //int f41(bool x) {switch (x) {case true: return 1;}}
-int f42(enum e1 x) {switch (x) {case E1: return 1; case E2: return 2;}}
+int f42(enum e1 x) {switch (x) {case E1: return 1; case E2: return 2; default: return 3;}}
 //void f42(enum e2 x) {
 //  switch (x) {case E3(y): y+1; case E4: 2; case E5(y,4): y+4;}
 //}
@@ -191,3 +191,5 @@ void f58(list z) { z = z->tl; }
 //  struct YOYOYYYY badfield;
 //};
 */
+
+int main () { return 0; }

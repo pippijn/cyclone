@@ -77,7 +77,7 @@ struct Cyc___cycFILE { // must match defn in boot_cstubs.c and boot_cycstubs.cyc
 
 int __attribute__((weak)) Cyc_main(int argc, struct _fat_argv argv)
 {
-  fputs ("no main function", stderr);
+  fputs ("no main function\n", stderr);
   abort ();
 }
 

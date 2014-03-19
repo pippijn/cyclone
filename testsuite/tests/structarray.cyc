@@ -52,10 +52,12 @@ ptr_t<int> vector5() {
   return new Ptr{.size = 5, .elts = {0,1,2,3,4}};
 }
 
+#if 0
 // create an integer pointer array of size 2
 ptr_t<int@> pvector2() {
   return new Ptr{<int@> .size = 2, .elts = {new 0, new 1}};
 }
+#endif
 
 // create an integer array of size N
 ptr_t<int> vectorn(tag_t n, int x) {
@@ -141,11 +143,15 @@ struct FooPtr<int> @foovectorn(tag_t n, int x) {
 int main() {
   let p1 = vector4();
   let p2 = vector5();
+#if 0
   let p3 = pvector2();
+#endif
 
   assert(num_elts(p1) == 4);
   assert(num_elts(p2) == 5);
+#if 0
   assert(num_elts(p3) == 2);
+#endif
 
   for (int i = 0; i < 4; i++) {
     assert(get(p1,i) == i);
@@ -161,10 +167,12 @@ int main() {
   case &Array_bounds: break;
   }
 
+#if 0
   let i1 = get(p3,0);
   let i2 = get(p3,1);
   *i1 = 3;
   *i2 = 4;
+#endif
 
   dynptr_test();
 
