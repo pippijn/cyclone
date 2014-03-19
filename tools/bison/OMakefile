@@ -19,8 +19,6 @@ OBJECTS[] =
   warshall.o
   cycbison_simple.string.o
 
-CYCLONE = $(rootdir)/tools/cyclone/cyclone
-
 cycbison: $(OBJECTS) $(rootdir)/library/stdlib/libcyc.so
   cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc
 

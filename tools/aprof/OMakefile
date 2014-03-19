@@ -6,8 +6,6 @@ OBJECTS[] =
   aprof_summary.o
   aprof_svg.o
 
-CYCLONE = $(rootdir)/tools/cyclone/cyclone
-
 aprof: $(OBJECTS) $(rootdir)/library/stdlib/libcyc.so
   cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc
 

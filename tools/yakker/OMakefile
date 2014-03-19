@@ -1,5 +1,3 @@
-CYCLONE = $(rootdir)/tools/cyclone/cyclone
-
 CYCFLAGS += -I$(dir .)
 CYCFLAGS += -DNULL_PLAN_C
 

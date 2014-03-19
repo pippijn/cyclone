@@ -88,3 +88,10 @@ boot () =
 .PHONY: check
 
 .SUBDIRS: library tools testsuite
+
+########################################################################
+
+.PHONY: clean
+
+clean:
+  rm $(filter-proper-targets $(find $(rootdir) -name *))
