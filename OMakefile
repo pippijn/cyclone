@@ -6,10 +6,13 @@ USE_CYC_TLS	= 0
 BUILDLIB	= $(rootdir)/boot/tools/buildlib/buildlib.boot
 CYCBISON	= $(rootdir)/boot/tools/bison/cycbison.boot
 CYCLEX		= $(rootdir)/boot/tools/cyclex/cyclex.boot
+CYCLONE_BOOT	= $(rootdir)/boot/tools/cyclone/cyclone.boot
 CYCLONE		= $(rootdir)/tools/cyclone/cyclone
 ERRORGEN	= $(rootdir)/tools/errorgen/errorgen
 STRINGIFY	= $(rootdir)/tools/stringify/stringify
 BANSHEE		= $(rootdir)/tools/banshee/banshee.native
+
+CYCSPECS	= $(rootdir)/library/stdlib/cyc-lib/cycspecs
 
 LIBCYCRT	= $(rootdir)/library/runtime/libcycrt.so
 LIBCYC		= $(rootdir)/library/stdlib/libcyc.so $(LIBCYCRT)
@@ -31,6 +34,7 @@ link (lib) =
 
 
 CYCFLAGS[] =
+  #--geninterface
   -I$(rootdir)/library/stdlib/libc
 
 LDFLAGS[] =
@@ -98,11 +102,11 @@ boot () =
 ########################### Cyclone compiler ###########################
 ########################################################################
 
-.SCANNER: scan-%.cyc: %.cyc
-  cc -xc $(CYCFLAGS) $< -M -MT $(removesuffix $<).c
+.SCANNER: scan-%.cyc: %.cyc $(CYCLONE_BOOT) $(CYCSPECS)
+  $(CYCLONE_BOOT) $(CYCFLAGS) $< -M -MT $(removesuffix $<).c
 
-%.c: %.cyc $(bootname $(CYCLONE)).boot $(rootdir)/library/stdlib/cyc-lib/cycspecs :scanner: scan-%.cyc
-  $(bootname $(CYCLONE)).boot $(CYCFLAGS) -stopafter-toc $< -o $@
+%.c: %.cyc $(CYCLONE_BOOT) $(CYCSPECS) :scanner: scan-%.cyc
+  $(CYCLONE_BOOT) $(CYCFLAGS) -stopafter-toc $< -o $@
 
 
 ########################################################################

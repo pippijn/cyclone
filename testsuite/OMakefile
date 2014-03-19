@@ -1,3 +1,9 @@
 CYCFLAGS += -I$(dir .)
 
-.SUBDIRS: compiler cyctest tests
+SUBDIRS[] =
+  compiler
+  cycinf
+  cyctest
+  tests
+
+.SUBDIRS: $(SUBDIRS)
