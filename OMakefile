@@ -14,17 +14,23 @@ LIBCYCRT	= $(rootdir)/library/runtime/libcycrt.so
 LIBCYC		= $(rootdir)/library/stdlib/libcyc.so $(LIBCYCRT)
 LIBCYC_BOOT	= $(rootdir)/boot/library/stdlib/libcyc.boot.so $(LIBCYCRT)
 
-link (libpath) =
+link (lib) =
   LDFLAGS[] +=
-    -L$(rootdir)/$(libpath)
-    -Wl,-rpath,$(absname $(rootdir)/$(libpath))
+    -L$(rootdir)/library/$(lib)
+    -Wl,-rpath,$(absname $(rootdir)/library/$(lib))
 
   LDFLAGS_BOOT[] +=
-    -L$(rootdir)/boot/$(libpath)
-    -Wl,-rpath,$(absname $(rootdir)/boot/$(libpath))
+    -L$(rootdir)/boot/library/$(lib)
+    -Wl,-rpath,$(absname $(rootdir)/boot/library/$(lib))
 
-  export LDFLAGS LDFLAGS_BOOT
+  CYCFLAGS[] +=
+    -I$(rootdir)/library/$(lib)
 
+  export LDFLAGS LDFLAGS_BOOT CYCFLAGS
+
+
+CYCFLAGS[] =
+  -I$(rootdir)/library/stdlib/libc
 
 LDFLAGS[] =
   -L$(rootdir)/library/runtime
@@ -32,7 +38,7 @@ LDFLAGS[] =
   -lcycrt
 LDFLAGS_BOOT = $(LDFLAGS)
 
-link (library/stdlib)
+link (stdlib)
 
 
 ########################################################################
@@ -87,10 +93,6 @@ boot () =
 ########################################################################
 ########################### Cyclone compiler ###########################
 ########################################################################
-
-CYCFLAGS[] =
-  -I$(rootdir)/include
-  -I$(rootdir)/library/stdlib/libc
 
 .SCANNER: scan-%.cyc: %.cyc
   cc -xc $(CYCFLAGS) $< -M -MT $(removesuffix $<).c

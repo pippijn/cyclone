@@ -4,10 +4,7 @@ OBJECTS[] =
 
 boot ()
 
-link (library/compiler)
-
-CYCFLAGS[] +=
-  -I$(rootdir)/library/compiler
+link (compiler)
 
 cyclone: $(OBJECTS) $(rootdir)/library/compiler/libcyclone.so $(LIBCYC)
   cc -m32 $(OBJECTS) -o $@ -lcyclone -lcyc $(LDFLAGS)

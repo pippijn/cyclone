@@ -1,3 +1,5 @@
+CYCFLAGS += -I.
+
 section:
   OBJECTS[] =
     xml.o

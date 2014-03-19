@@ -2123,6 +2123,8 @@ hstub pthread_cond_wait {
   extern "C" int pthread_cond_wait (pthread_cond_t *cond, pthread_mutex_t *mutex);
 }
 hstub pthread_create {
+  // FIXME: buildlib doesn't handle "typedef T T;" well.
+  typedef union pthread_attr_t pthread_attr_t;
       // TODO: could change the type of pthread_t to be pthread_t<`a>
       // where `a is the return type for the invocation function.
       // Then the type of join() could be changed to properly

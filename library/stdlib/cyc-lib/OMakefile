@@ -6,5 +6,5 @@ CYCFLAGS[] =
   -noremoveunused
   -noexpandtypedefs
 
-boot: $(rootdir)/include/core.h $(CYCLONE)
+boot: ../core.h $(CYCLONE)
   $(CYCLONE) -o precore_c.h $(CYCFLAGS) -x cyc $<

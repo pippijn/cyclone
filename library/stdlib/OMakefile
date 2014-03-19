@@ -50,6 +50,14 @@ libcyc.so: $(OBJECTS) $(rootdir)/library/runtime/libcycrt.so
 
 .SUBDIRS: cyc-lib
 
+.DEFAULT: libcyc.so
+
+########################################################################
+############################ libc bindings #############################
+########################################################################
+
+clean:
+  rm -r libc
 mkdir -p libc
 .SUBDIRS: libc
   STUBS[] =
@@ -60,5 +68,3 @@ mkdir -p libc
     $(BUILDLIB) -d . ../libc.cys
 
   %: $(STUBS)
-
-.DEFAULT: libcyc.so
