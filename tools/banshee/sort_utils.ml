@@ -30,65 +30,67 @@
 
 open Cgen
 open Engspec
-open Spec_to_c 
+open Spec_to_c
 
 let foldr f =
   let rec localfun y l =
-    match l with [] -> y 
-    |   x::xs -> f(x, (localfun y xs))
+    match l with
+    | [] -> y
+    | x::xs -> f(x, (localfun y xs))
   in localfun
 
-let foldl f = 
+let foldl f =
   let rec localfun y l =
-    match l with [] -> y
-    |  x::xs -> localfun (f(x,y)) xs 
-  in localfun 
+    match l with
+    | [] -> y
+    | x::xs -> localfun (f(x,y)) xs
+  in localfun
 
 let parens s = "(" ^ s ^ ")"
 
-let gen_proto_and_fun ?(dec:declarator = DExtern) ?(quals:qual list = []) (ret,name,args,body) = 
+let gen_proto_and_fun ?(dec:declarator = DExtern) ?(quals:qual list = []) (ret,name,args,body) =
   (prototype  ~dec:dec (ret,name,args,body,quals),
-	      func ~dec:dec (ret,name,args,body,quals))
+   func ~dec:dec (ret,name,args,body,quals))
 
 let int_to_string x = Int32.to_string (Int32.of_int x)
 
-let args l = 
+let args l =
   let rec args_aux l n = match l with
-  | h :: t -> (h,"arg" ^ Int32.to_string n)::(args_aux t (Int32.succ n))
-  | [] -> []
+    | h :: t -> (h,"arg" ^ Int32.to_string n)::(args_aux t (Int32.succ n))
+    | [] -> []
   in
   args_aux l Int32.one
 
 let fields l =
   let rec fields_aux l n = match l with
-  | h :: t -> (h,"f" ^ Int32.to_string n)::(fields_aux t (Int32.succ n))
-  | [] -> [] 
+    | h :: t -> (h,"f" ^ Int32.to_string n)::(fields_aux t (Int32.succ n))
+    | [] -> []
   in
-  [(no_qual Int, "type");(no_qual (Ident "stamp"), "st")] @ 
-  (fields_aux l Int32.zero) 
+  [(no_qual Int, "type");(no_qual (Ident "stamp"), "st")] @
+  (fields_aux l Int32.zero)
 
 let decon_fields l =
   let rec fields_aux l n = match l with
-  | h :: t -> (h,"f" ^ Int32.to_string n)::(fields_aux t (Int32.succ n))
-  | [] -> [] 
+    | h :: t -> (h,"f" ^ Int32.to_string n)::(fields_aux t (Int32.succ n))
+    | [] -> []
   in
   (fields_aux l Int32.zero)
 
-let decon_struct arity = 
-  let str = ref "c->f0" in 
-  for i = 1 to (arity-1) do 
+let decon_struct arity =
+  let str = ref "c->f0" in
+  for i = 1 to (arity-1) do
     str := (!str) ^ ",c->f" ^ (int_to_string i)
   done;
   (!str)
 
-let decon_bad arity = 
+let decon_bad arity =
   let str = ref "NULL" in
   for i = 1 to (arity-1) do
     str := (!str) ^ ",NULL"
   done;
   (!str)
-    
-(* common c types *)
+
+    (* common c types *)
 let stamp_type = no_qual (Ident "stamp")
 let etype e = no_qual (Ident e)
 let vtype e = no_qual (Ident (e ^ "_var"))
@@ -102,23 +104,21 @@ let gen_e_type = no_qual (Ident "gen_e")
 
 (* get_stamp operation for any sort *)
 let gen_get_stamp e s = (no_qual (Ident "stamp"),
-			 e ^ "_get_stamp",
-			 args [gen_e_type],
-			 [Return (s ^ "_get_stamp((gen_e)arg1)")],[])
- 
+                         e ^ "_get_stamp",
+                         args [gen_e_type],
+                         [Return (s ^ "_get_stamp((gen_e)arg1)")],[])
+
 
 (* is_var operation for any sort *)
 let gen_is_var e s = (no_qual (Ident "bool"),
-			      e ^ "_is_var",
-			      args [gen_e_type],
-			      [Return (s ^ "_is_var((gen_e)arg1)")],[])
+                      e ^ "_is_var",
+                      args [gen_e_type],
+                      [Return (s ^ "_is_var((gen_e)arg1)")],[])
 
 
 (* cmp operation for any sort *)
-(*
 let gen_cmp e s = (no_qual (Ident "int"),
-		   e ^ "_cmp",
-		   args [gen_e_type;gen_e_type], 
-		   [Return (s ^ "_get_stamp((gen_e)arg1) - " ^
-			    s ^ "_get_stamp((gen_e)arg2)")],[])
-*)
+                   e ^ "_cmp",
+                   args [gen_e_type;gen_e_type],
+                   [Return (s ^ "_get_stamp((gen_e)arg1) - " ^
+                            s ^ "_get_stamp((gen_e)arg2)")],[])

@@ -32,16 +32,16 @@ type strid = string
 type sigid = string
 type exprid = string
 type conid = string
-      
+
 type variance = NEGvariance | NOvariance | POSvariance
 type bconsig = exprid * variance
-      
-type consig = bconsig list 
+
+type consig = bconsig list
 type databody = (conid * consig option) list
-   
+
 exception Fixed_sort of string
 
-class type sort_gen = 
+class type sort_gen =
   object
     method get_name : string
     method gen_sort_ops : Cgen.file -> Cgen.header -> exprid -> unit
@@ -50,20 +50,19 @@ class type sort_gen =
     method reset : exprid -> Cgen.statement list
   end
 
-class virtual fixed_sort_gen = 
+class virtual fixed_sort_gen =
   object (this)
     method private error e = "Sort " ^ e ^ " does not permit constructors."
     method virtual get_name : string
     method virtual gen_sort_ops : Cgen.file -> Cgen.header -> exprid -> unit
-    method gen_con_ops (_ :Cgen.file) (_:Cgen.header) ((_,b): exprid * databody) = 
-      match b with 
+    method gen_con_ops (_ :Cgen.file) (_:Cgen.header) ((_,b): exprid * databody) =
+      match b with
       |	[] -> ()
       |	_ ->
-	(raise (Fixed_sort (this#error this#get_name)); ())
+          (raise (Fixed_sort (this#error this#get_name)); ())
     method virtual init : exprid -> Cgen.statement list
     method virtual reset : exprid -> Cgen.statement list
   end
-	        
+
 type dataspec = (exprid * sort_gen * databody) list
 type engspec = strid * sigid * dataspec list
-      

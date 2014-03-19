@@ -29,23 +29,40 @@
  *)
 
 exception Fail of string
-let _ = 
-  let filename = try (Array.get Sys.argv 1) with
-  | _ -> print_string "Usage : banshee <filename> [outfile] "; exit 1 in
-  let outfile = ( try (Array.get Sys.argv 2) with
-  | _ ->  Filename.chop_extension filename) in
-(*  let _ =  
-    if (Filename.check_suffix filename ".spec") 
-    then ()
-    else begin 
-      print_string "Specification file must end with .spec"; 
+
+let () =
+  let filename, outfile =
+    match Sys.argv with
+    | [|_; filename; outfile|] ->
+        filename, outfile
+    | [|_; filename|] ->
+        filename, Filename.chop_extension filename
+    | _ ->
+        print_string "Usage: banshee <filename> [outfile] ";
+        exit 1
+  in
+
+  begin
+    if Filename.check_suffix filename ".bsp" then
+      ()
+    else (
+      print_string "Specification file must end with .bsp";
       exit 1
-    end in
-*)
-  let h_file = outfile ^ ".h" and c_file = outfile ^ ".c" in
-  let input_file = try (open_in filename) with | _ -> 
-    print_string "Error opening specification file"; exit 1 in 
+    )
+  end;
+
+  let h_file = outfile ^ ".h"
+  and c_file = outfile ^ ".c"
+  in
+
+  let input_file =
+    try open_in filename with
+    | _ ->
+        print_string "Error opening specification file";
+        exit 1
+  in
+
   let lexbuf = Lexing.from_channel input_file in
   let spec = Parser.engspec Lexer.token lexbuf in
-  (Spec_to_c.spec_to_c spec h_file c_file; flush stdout)
- 
+
+  Spec_to_c.spec_to_c spec h_file c_file

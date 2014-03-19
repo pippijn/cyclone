@@ -33,11 +33,17 @@ type def
 
 type expr = string
 type ident = string
-      
-type qual = Const | Volatile | Deletes | Sameregion | ParentPtr | Traditional
-  
-type ctype = 
-    Struct of ident
+
+type qual =
+  | Const
+  | Volatile
+  | Deletes
+  | Sameregion
+  | ParentPtr
+  | Traditional
+
+type ctype =
+  | Struct of ident
   | Pointer of qctype
   | Int
   | Float
@@ -46,32 +52,32 @@ type ctype =
   | Void
   | Ident of ident
 and qctype = ctype * qual list
-      
-type storage = 
-    Typedef
+
+type storage =
+  | Typedef
   | Extern
   | Static
   | Auto
   | Register
 
-type declarator = 
-    DExtern
+type declarator =
+  | DExtern
   | DStatic
   | DInline
-      
-type statement = 
-    Return of expr
+
+type statement =
+  | Return of expr
   | Compound of statement list
   | Condition of expr * statement * statement
   | Expr of expr
   | Switch of expr * (expr * statement) list * statement
-	
+
 type actuals = ident list
 type formals = (qctype * ident) list
 type body = statement list
 type func = qctype * ident * formals * body * (qual list)
-      
-class type header = 
+
+class type header =
   object
     method add_include : decl -> unit
     method add_includes : decl list -> unit
@@ -83,17 +89,17 @@ class type header =
     method add_gdecls : decl list -> unit
     method print : out_channel -> unit
   end
-      
-class type file = 
+
+class type file =
   object
     inherit header
     method add_fdef : def -> unit
     method add_fdefs : def list -> unit
   end
-    
-val decl_substitution : (string * string) list -> string -> decl  
+
+val decl_substitution : (string * string) list -> string -> decl
 val comment : string -> decl
-val block_comment : string ->decl 
+val block_comment : string ->decl
 val blank : decl
 val prototype : ?dec:(declarator) -> func -> decl
 val typedef : qctype -> ident -> decl
@@ -111,24 +117,21 @@ val var : ?init:(expr) -> qctype -> ident -> storage option -> decl
 val struct_decl : ident -> (qctype * ident) list -> decl
 val qctype_to_string : qctype -> string
 
-(* definitions *)
+    (* definitions *)
 val def_substitution : (string * string) list -> string -> def
 val func : ?dec:(declarator) -> func -> def
-val compound_def : def list -> def 
+val compound_def : def list -> def
 
-(* printing *)
+    (* printing *)
 val decl_to_string : decl -> string
 val def_to_string : def -> string
 val out_decl : out_channel -> decl -> unit
 val out_def : out_channel -> def -> unit
 
-(* utils *)
+    (* utils *)
 val no_qual : ctype -> qctype
 val const :  ctype -> qctype
 val void : qctype
-    
+
 val empty_header : header
 val empty_file : file
-    
-    
-   
