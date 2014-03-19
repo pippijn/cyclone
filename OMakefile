@@ -29,7 +29,7 @@ LDFLAGS[] =
 CFLAGS[] =
   -m32
   -ggdb3
-  -I$(rootdir)/library/stdlib
+  -I$(rootdir)/library/runtime
   -I$(rootdir)/library/stdlib/cyc-lib
 
 PTHREAD_LDFLAGS[] = $(EMPTY_ARRAY)
