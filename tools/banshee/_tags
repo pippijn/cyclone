@@ -1,0 +1,2 @@
+# Regexp
+<*.{byte,native}>: package(str)

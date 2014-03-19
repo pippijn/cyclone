@@ -1,1 +1,10 @@
-.SUBDIRS: compiler runtime stdlib xml pcre sqlite3
+SUBDIRS[] =
+  banshee
+  compiler
+  pcre
+  runtime
+  sqlite3
+  stdlib
+  xml
+
+.SUBDIRS: $(SUBDIRS)

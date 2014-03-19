@@ -1,10 +1,39 @@
+LIBBANSHEE_CFLAGS[] =
+  -I$(dir ../banshee)
+  -I$(dir ../banshee/rlib)
+  -Ddeletes=
+  -Dtraditional=
+  -Dsameregion=
+  -Dparentptr=
+
+LIBBANSHEE_LDFLAGS[] =
+  -L$(dir ../banshee)
+  -Wl,-rpath,$(absname ../banshee)
+  -lbanshee
+
+LIBBANSHEE = $(file ../banshee/libbanshee.so)
+
+.SUBDIRS: inference
+  CFLAGS += $(LIBBANSHEE_CFLAGS)
+
+  cycinf.c: cycinf.bsp $(BANSHEE)
+    $(BANSHEE) $<
+
+LDFLAGS		+= $(LIBBANSHEE_LDFLAGS)
+LDFLAGS_BOOT	+= $(LIBBANSHEE_LDFLAGS)
+
+LIBCYC		+= $(LIBBANSHEE)
+LIBCYC_BOOT	+= $(LIBBANSHEE)
+
 OBJECTS[] =
+  inference/cycinf.o
   absyndump.o
   absyn.o
   absynpp.o
   assndef.o
   attributes.o
-  bansheeif_stub.o
+  bansheeif.o
+  #bansheeif_stub.o
   binding.o
   callgraph.o
   cf_flowinfo.o
@@ -61,6 +90,9 @@ libcyclone.so: $(OBJECTS) $(LIBCYC)
   cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) -lcyc $(LDFLAGS)
 
 .SUBDIRS: $(bootname .)
+  .SUBDIRS: inference
+    CFLAGS += $(LIBBANSHEE_CFLAGS)
+
   libcyclone.boot.so: $(OBJECTS) $(LIBCYC_BOOT)
     cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) -lcyc.boot $(LDFLAGS_BOOT)
 

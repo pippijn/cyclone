@@ -1200,11 +1200,6 @@ void cycinf_print_graph(FILE * arg1)
 print_constraint_graphs(arg1);
 }
 
-void cycinf_dump_graph()
-{
-print_constraint_graphs(stdout);
-}
-
 void cycinf_serialize(FILE * arg1,hash_table * arg2,unsigned long arg3) 
 {
 return;

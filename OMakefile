@@ -9,6 +9,7 @@ CYCLEX		= $(rootdir)/boot/tools/cyclex/cyclex.boot
 CYCLONE		= $(rootdir)/tools/cyclone/cyclone
 ERRORGEN	= $(rootdir)/tools/errorgen/errorgen
 STRINGIFY	= $(rootdir)/tools/stringify/stringify
+BANSHEE		= $(rootdir)/tools/banshee/banshee.native
 
 LIBCYCRT	= $(rootdir)/library/runtime/libcycrt.so
 LIBCYC		= $(rootdir)/library/stdlib/libcyc.so $(LIBCYCRT)

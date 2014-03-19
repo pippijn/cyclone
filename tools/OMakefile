@@ -1,1 +1,14 @@
-.SUBDIRS: cyclex bison stringify errorgen cyclone buildlib cycdoc aprof rewrite yakker
+SUBDIRS[] =
+  aprof
+  banshee
+  bison
+  buildlib
+  cycdoc
+  cyclex
+  cyclone
+  errorgen
+  rewrite
+  stringify
+  yakker
+
+.SUBDIRS: $(SUBDIRS)

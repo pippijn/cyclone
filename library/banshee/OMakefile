@@ -1,0 +1,53 @@
+CFLAGS[] +=
+  -I$(dir rlib)
+  -DBANSHEE_ROLLBACK
+  -Ddeletes=
+  -Dtraditional=
+  -Dsameregion=
+  -Dparentptr=
+  -w
+  -Wall
+  -Werror
+  -fno-strict-aliasing
+  -fno-common
+
+.SUBDIRS: rlib
+
+OBJECTS[] =
+  array.o
+  banshee.o
+  banshee_persist_kinds.o
+  banshee_region_persist_kinds.o
+  bfix.o
+  buffer.o
+  epsilon-annotations.o
+  flowrow-sort.o
+  flow-var.o
+  hash_bounds.o
+  hash.o
+  hashset.o
+  jcollection.o
+  list.o
+  persist.o
+  regexp.o
+  setif-sort.o
+  setif-var.o
+  setst-sort.o
+  setst-var.o
+  stamp.o
+  termhash.o
+  term-sort.o
+  term-var.o
+  ufind.o
+  usage.o
+  utils.o
+
+fn_ptrs.c: build_funptr_table.py $(OBJECTS)
+  build_funptr_table.py $(nth-tl 1, $+) > $@
+
+OBJECTS[] +=
+  rlib/regions.o
+  fn_ptrs.o
+
+libbanshee.so: $(OBJECTS)
+  cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS)
