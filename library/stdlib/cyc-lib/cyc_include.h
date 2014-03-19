@@ -3,6 +3,8 @@
 #ifndef _CYC_INCLUDE_H_
 #define _CYC_INCLUDE_H_
 
+#include <stddef.h>
+
 /* Need one of these per thread (see runtime_stack.c). The runtime maintains 
    a stack that contains either _handler_cons structs or _RegionHandle structs.
    The tag is 0 for a handler_cons and 1 for a region handle.  */
@@ -13,8 +15,7 @@ struct _RuntimeStack {
 };
 
 #ifndef offsetof
-/* should be size_t but int is fine */
-#define offsetof(t,n) ((int)(&(((t*)0)->n)))
+#define offsetof(t,n) ((size_t)(&(((t*)0)->n)))
 #endif
 
 /* Fat pointers */
@@ -244,7 +245,7 @@ void* _zero_arr_inplace_plus_post_other_fn(unsigned,void**,int,const char*,unsig
   _ans; })
 
 //Not a macro since initialization order matters. Defined in runtime_zeroterm.c.
-struct _fat_ptr _fat_ptr_decrease_size(struct _fat_ptr,unsigned sz,unsigned numelts);
+struct _fat_ptr _fat_ptr_decrease_size(struct _fat_ptr,size_t sz,size_t numelts);
 
 #ifdef CYC_GC_PTHREAD_REDIRECTS
 # define pthread_create GC_pthread_create
@@ -254,21 +255,21 @@ struct _fat_ptr _fat_ptr_decrease_size(struct _fat_ptr,unsigned sz,unsigned nume
 # define dlopen GC_dlopen
 #endif
 /* Allocation */
-void* GC_malloc(int);
-void* GC_malloc_atomic(int);
-void* GC_calloc(unsigned,unsigned);
-void* GC_calloc_atomic(unsigned,unsigned);
+void* GC_malloc(size_t);
+void* GC_malloc_atomic(size_t);
+void* GC_calloc(size_t,size_t);
+void* GC_calloc_atomic(size_t,size_t);
 
 #if(defined(__linux__) && defined(__KERNEL__))
-void *cyc_vmalloc(unsigned);
+void *cyc_vmalloc(size_t);
 void cyc_vfree(void*);
 #endif
 // bound the allocation size to be < MAX_ALLOC_SIZE. See macros below for usage.
 #define MAX_MALLOC_SIZE (1 << 28)
 void* _bounded_GC_malloc(int,const char*,int);
 void* _bounded_GC_malloc_atomic(int,const char*,int);
-void* _bounded_GC_calloc(unsigned,unsigned,const char*,int);
-void* _bounded_GC_calloc_atomic(unsigned,unsigned,const char*,int);
+void* _bounded_GC_calloc(size_t,size_t,const char*,int);
+void* _bounded_GC_calloc_atomic(size_t,size_t,const char*,int);
 /* these macros are overridden below ifdef CYC_REGION_PROFILE */
 #ifndef CYC_REGION_PROFILE
 #define _cycalloc(n) _bounded_GC_malloc(n,__FILE__,__LINE__)

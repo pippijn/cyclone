@@ -1394,12 +1394,11 @@ void CYCALLOCPROFILE_mark(const char *s) {
 /******* for turning off gc warnings about blacklisted blocks *******/
 /* These type/macro defns are taken from gc/include/gc.h and must
    be kept in sync. */
-#   define GC_PROTO(args) args
 typedef unsigned long GC_word;
-typedef void (*GC_warn_proc) GC_PROTO((char *msg, GC_word arg));
+typedef void (*GC_warn_proc) (char *msg, GC_word arg);
 
 extern void GC_default_warn_proc(char *msg, GC_word arg);
-extern GC_warn_proc GC_set_warn_proc(GC_warn_proc p);
+extern void GC_set_warn_proc(GC_warn_proc p);
 
 static void GC_noblacklist_warn_proc(char *msg, GC_word arg) {
 #if(defined(__linux__) && defined(__KERNEL__)) 

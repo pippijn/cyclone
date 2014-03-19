@@ -69,7 +69,10 @@ bootname (name) =
   value $(addprefix $(rootdir)/boot/$(fullname .)/,$(name))
 
 boot () =
+  boot-dirs = $(bootname $(set $(dirname $(OBJECTS))))
+
   boot: $(addsuffix .c, $(removesuffix $(OBJECTS)))
+    #rm -rf $(boot-dirs)
     foreach (source => ..., $^):
       target = $(bootname $(source))
       mkdir -p $(dirname $(target))

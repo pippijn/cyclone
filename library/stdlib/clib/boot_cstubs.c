@@ -21,6 +21,8 @@
 
 /* This stuff needed by ap.cyc only.  We define long_max and long_min
    as variables to try to keep things reasonably portable. */
-  #include <limits.h>
-  long Cyc_long_max = LONG_MAX;
-  long Cyc_long_min = LONG_MIN;
+
+#include <limits.h>
+
+long Cyc_long_max = LONG_MAX;
+long Cyc_long_min = LONG_MIN;

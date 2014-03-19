@@ -1,4 +1,9 @@
 CFLAGS[] +=
+  #-Dinline=__inline__
+  #-std=c89
+  #-pedantic
+  #-Wno-long-long
+  #-Wno-variadic-macros
   -Wall
   -Werror
   -Wno-unused-variable

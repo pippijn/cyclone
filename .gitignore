@@ -4,6 +4,7 @@
 *.so
 *.a
 *.o
+*.cyp
 *.omc
 *.output
 *.string.cyc
