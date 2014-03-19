@@ -1,0 +1,4 @@
+comparing 3 and 4 yields -1
+comparing 4 and fred yields -24
+comparing fred and fred yields 0
+comparing fred and 3.14159 yields 12

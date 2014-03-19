@@ -38,6 +38,15 @@ EXES[] =
 
 .PHONY: tests
 
+%.out: % %.ref
+  if $(file-exists $*_input):
+    $< < $*_input >& $@
+  elseif $(file-exists $*.txt):
+    $< $*.txt >& $@
+  else
+    $< $< >& $@
+  diff $@ $*.ref
+
 foreach (exe => ..., $(EXES)):
   OBJECTS = $(exe).o
 
@@ -57,10 +66,4 @@ foreach (exe => ..., $(EXES)):
 
   tests: $(exe)
 
-  check: $(exe)
-    if $(file-exists $(exe)_input):
-      $< < $(exe)_input
-    elseif $(file-exists $(exe).txt):
-      $< $(exe).txt
-    else
-      $< $<
+  check: $(exe).out

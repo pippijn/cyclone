@@ -14,7 +14,7 @@ RESFLAGS[] =
   --resolve
 
 
-sample: sample.cyc external.cyc $(LIBCYC)
+sample: sample.cyc external.cyc $(LIBCYC) $(CYCLONE)
   rm -rf .cych
   mkdir -p .cych
   touch .cych/cvars
@@ -24,5 +24,8 @@ sample: sample.cyc external.cyc $(LIBCYC)
   $(CYCLONE) $(RESFLAGS) $(CYCFLAGS) .cych/sample.cyc
   cc -flto -m32 .cych/sample.c .cych/external.c -o $@ $(CFLAGS) $(LDFLAGS) -lcyc
 
-check: sample
-  $<
+sample.out: sample sample.ref
+  $< > $@
+  diff $@ sample.ref
+
+check: sample.out

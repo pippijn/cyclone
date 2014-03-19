@@ -4,5 +4,8 @@ OBJECTS[] =
 cyctest: $(OBJECTS) $(rootdir)/library/stdlib/libcyc.so
   cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc -lm
 
-check: cyctest
-  $<
+cyctest.out: cyctest cyctest.ref
+  $< >& $@
+  diff $@ cyctest.ref
+
+check: cyctest.out

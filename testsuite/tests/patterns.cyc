@@ -21,7 +21,7 @@ void func1a(struct s1 @s) {
   bool gotnull = false;
   switch (s) {
   case &s1{.p=p1 as NULL,.y=y1}: gotnull=true; fallthru(p1,y1);
-  case &s1{.p=p2,.y=y2}: printf("%x\n",p2); break;
+  case &s1{.p=p2,.y=y2}: assert(p2 != NULL); break;
   }
   return;
 }

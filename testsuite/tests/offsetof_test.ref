@@ -1,0 +1,4 @@
+offsetof(bar,f.d)=8
+offsetof(bar,i4)=20
+offsetof(bar,i3)=0
+offsetof(foo,d)=4
