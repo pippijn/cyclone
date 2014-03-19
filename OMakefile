@@ -136,6 +136,7 @@ boot () =
 ########################################################################
 
 .PHONY: check
+.DEFAULT: check
 
 .SUBDIRS: library tools testsuite
 

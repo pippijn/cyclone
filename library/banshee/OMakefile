@@ -13,6 +13,9 @@ CFLAGS[] +=
 .SUBDIRS: rlib doc
 
 OBJECTS[] =
+  #bounds.o
+  hash_bounds.o
+
   array.o
   banshee.o
   banshee_persist_kinds.o
@@ -22,7 +25,6 @@ OBJECTS[] =
   epsilon-annotations.o
   flowrow-sort.o
   flow-var.o
-  hash_bounds.o
   hash.o
   hashset.o
   jcollection.o
