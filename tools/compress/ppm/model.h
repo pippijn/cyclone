@@ -1,4 +1,5 @@
 /* Model module definitions used by both the encoder and the decoder. */
+#include <core.h>
 
 #define NO_PRELOAD_LIMIT -1 /* means no limit on size of input file */
 

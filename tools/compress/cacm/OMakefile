@@ -1,0 +1,28 @@
+section:
+  OBJECTS[] =
+    adaptive_model.o
+    arithmetic_decode.o
+    arithmetic_encode.o
+    bit_input.o
+    bit_output.o
+    encode.o
+
+  encode: $(OBJECTS) $(LIBCYC)
+    cc -m32 $(OBJECTS) -o $@ -lcyc $(LDFLAGS)
+
+  .DEFAULT: encode
+
+
+section:
+  OBJECTS[] =
+    adaptive_model.o
+    arithmetic_decode.o
+    arithmetic_encode.o
+    bit_input.o
+    bit_output.o
+    decode.o
+
+  decode: $(OBJECTS) $(LIBCYC)
+    cc -m32 $(OBJECTS) -o $@ -lcyc $(LDFLAGS)
+
+  .DEFAULT: decode

@@ -1,0 +1,6 @@
+/cacm/encode
+/cacm/decode
+/ncompress/compress
+/ppm/encode
+/ppm/decode
+*.c

@@ -140,6 +140,9 @@
 #include        <string.h>
 #include        <stdlib.h>
 #include        <unistd.h>
+#include	<utime.h>
+
+#define	COMPILE_DATE	__DATE__
 
 #ifdef DIRENT
 #	include	<dirent.h>
@@ -149,15 +152,6 @@
 #ifdef SYSDIR
 #	include	<sys/dir.h>
 #	define	RECURSIVE		1
-#endif
-#ifdef UTIME_H
-#	include	<utime.h>
-#else
-struct utimbuf
-{
-  time_t actime;
-  time_t modtime;
-};
 #endif
 
 #ifdef	__STDC__
@@ -268,7 +262,6 @@ extern int errno;
 #	define	BYTEORDER 	4321
 #	undef	NOALLIGN
 #	define	NOALLIGN	1
-#	define	COMPILE_DATE	__DATE__
 #endif /* DOS */
 
 #ifndef	O_BINARY
@@ -515,14 +508,13 @@ int zcat_flg = 0;		/* Write output on stdout, suppress messages    */
 int recursive = 0;		/* compress directories                                                 */
 int exit_code = -1;		/* Exitcode of compress (-1 no file compressed) */
 
-char_type inbuf[] = { for i < IBUFSIZ + 64:0 };	/* Input buffer                                                                 */
-char_type outbuf[] = { for i < OBUFSIZ + 2048:0 };	/* Output buffer                                                           */
+char_type inbuf[IBUFSIZ + 64]@zeroterm = { for i < IBUFSIZ + 63:(char_type)'\0' };	/* Input buffer                                                                 */
+char_type outbuf[OBUFSIZ + 2048]@zeroterm = { for i < OBUFSIZ + 2047:(char_type)'\0' };	/* Output buffer                                                           */
 
-struct stat_t infstat;		/* Input file status                                                    */
-string_t
-<`H > ifname;			/* Input filename                                                               */
+struct stat infstat;		/* Input file status                                                    */
+char ?@zeroterm ifname;			/* Input filename                                                               */
 int remove_ofname = 0;		/* Remove output file on a error                                */
-char ofname[MAXPATHLEN];	/* Output filename                                                              */
+char ofname[MAXPATHLEN]@zeroterm;	/* Output filename                                                              */
 int fgnd_flag = 0;		/* Running in background (SIGINT=SIGIGN)                */
 
 long bytes_in;			/* Total number of byte from input                              */
@@ -835,7 +827,7 @@ REG2 mstring_t < `H > ? argv;
     }
   else
     {				/* Standard input */
-      ifname = "";
+      ifname = strdup ("");
       exit_code = 0;
       remove_ofname = 0;
 
@@ -881,8 +873,26 @@ Usage: %s [-dfvcVr] [-b maxbits] [file ...]\n\
   exit (1);
 }
 
-extern struct stat_t @ stat_t_zero ();
-extern int isatty(int);
+static struct stat stat_t_zero = {
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  {0,0},
+  {0,0},
+  {0,0},
+  0,
+  0,
+};
+
 /*{
   return new stat_t
     {
@@ -903,7 +913,7 @@ comprexx (fileptr)
 {
   int fdin;
   int fdout;
-  mstring_t < `H > tempname = new {for i < MAXPATHLEN: '\0'} ;
+  char ?@zeroterm tempname = new {for i < MAXPATHLEN: '\0'} ;
 
   strcpy (tempname, *fileptr);
   errno = 0;
@@ -1037,8 +1047,8 @@ comprexx (fileptr)
 	{
 	  int c;
 	  int s;
-	  struct stat_t statbuf = *stat_t_zero ();
-	  struct stat_t statbuf2 = *stat_t_zero ();
+	  struct stat statbuf = stat_t_zero;
+	  struct stat statbuf2 = stat_t_zero;
 
 	  if (stat (ofname, &statbuf) == 0)
 	    {
@@ -1668,7 +1678,7 @@ int fdout;
       if (insize > 0)
 	{
 	  fprintf (stderr, "%s: not in compressed format\n",
-		   (ifname[0] != '\0' ? ifname : "stdin"));
+		   (ifname[0] != '\0' ? (string_t)ifname : (string_t)"stdin"));
 	  exit_code = 1;
 	}
 
@@ -1683,7 +1693,7 @@ int fdout;
     {
       fprintf (stderr,
 	       "%s: compressed with %d bits, can only handle %d bits\n",
-	       (*ifname != '\0' ? ifname : "stdin"), maxbits, BITS);
+	       (*ifname != '\0' ? (string_t)ifname : (string_t)"stdin"), maxbits, BITS);
       exit_code = 4;
       return;
     }
@@ -1876,7 +1886,7 @@ void
 read_error ()
 {
   fprintf (stderr, "\nread error on");
-  perror ((ifname[0] != '\0') ? ifname : "stdin");
+  perror ((ifname[0] != '\0') ? (string_t)ifname : "stdin");
   abort_compress (0);
 }
 
@@ -1884,7 +1894,7 @@ void
 write_error ()
 {
   fprintf (stderr, "\nwrite error on");
-  perror ((ofname[0] != '\0') ? (string_t < `H >) ofname : "stdout");
+  perror ((ofname[0] != '\0') ? (string_t)ofname : "stdout");
   abort_compress (0);
 }
 

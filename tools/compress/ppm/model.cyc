@@ -1,5 +1,6 @@
 /* PPM* model for arithmetic encoder. */
 #include "stdio.h"
+#include "stdlib.h"
 #include "assert.h"
 #include "arithcode.h"
 #include "model.h"
@@ -257,7 +258,7 @@ int len;
     }
 }
 
-char dumpTrieStr [CLIST_SIZE];
+char dumpTrieStr [CLIST_SIZE]@zeroterm;
 
 void dumpTrie( fp, t, d )
 /* Dump the trie T; d is 0 when at the top level. */

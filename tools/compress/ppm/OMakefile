@@ -1,0 +1,22 @@
+section:
+  OBJECTS[] =
+    arithcode.o
+    model.o
+    encode.o
+
+  encode: $(OBJECTS) $(LIBCYC)
+    cc -m32 $(OBJECTS) -o $@ -lcyc $(LDFLAGS)
+
+  .DEFAULT: encode
+
+
+section:
+  OBJECTS[] =
+    arithcode.o
+    model.o
+    decode.o
+
+  decode: $(OBJECTS) $(LIBCYC)
+    cc -m32 $(OBJECTS) -o $@ -lcyc $(LDFLAGS)
+
+  .DEFAULT: decode

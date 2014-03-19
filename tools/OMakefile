@@ -3,6 +3,7 @@ SUBDIRS[] =
   banshee
   bison
   buildlib
+  compress
   cycdoc
   cyclex
   cyclone
