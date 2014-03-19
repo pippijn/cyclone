@@ -75,8 +75,7 @@ struct Cyc___cycFILE { // must match defn in boot_cstubs.c and boot_cycstubs.cyc
   *Cyc_stdout = &Cyc_stdout_v,
   *Cyc_stderr = &Cyc_stderr_v;
 
-int Cyc_main(int argc, struct _fat_argv argv) __attribute__((weak));
-int Cyc_main(int argc, struct _fat_argv argv)
+int __attribute__((weak)) Cyc_main(int argc, struct _fat_argv argv)
 {
   fputs ("no main function", stderr);
   abort ();
@@ -121,6 +120,7 @@ int main(int argc, char **argv) {
     for(i = 0; i < argc; ++i)
       args.curr[i] = Cstring_to_string(argv[i]);
     result = Cyc_main(argc, args);
+    GC_free(args.curr);
     _fini_regions();
     return result;
   }
