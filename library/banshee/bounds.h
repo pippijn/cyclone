@@ -67,6 +67,7 @@ struct bounds_scanner_ {
 typedef struct bounds_scanner_ bounds_scanner;
 
 struct annotated_bounds_scanner_ {
+  char empty;
   // TODO -- fill in these fields for annotated bounds implementation
 }; /* Opaque type: do not edit the fields  */
 

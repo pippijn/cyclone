@@ -54,7 +54,7 @@ unsigned long lcm(unsigned long x, unsigned long y);
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 #ifdef HAVE_VARIADIC_MACROS
-#define fail(args...) __fail(__FILE__, __LINE__, __FUNCTION__, args)
+#define fail(...) __fail(__FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
 #else
 void fail(const char *fmt, ...);
 #endif

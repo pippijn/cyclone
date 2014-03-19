@@ -568,7 +568,7 @@ class setsort_gen =
 		^"sv_get_name((setif_var)arg2),sv_get_stamp((setif_var)arg2));");
 	  Expr ("fprintf(arg1,\"0\");");
 	  Expr ("fprintf(arg1,\"1\");");
-	  Expr ("fprintf(arg1,setif_get_constant_name(arg2));") ] 
+	  Expr ("fprintf(arg1,\"%s\",setif_get_constant_name(arg2));") ] 
 	@ [union_statement] @ [inter_statement]
       in  
       let gen_proj_case c e' n =

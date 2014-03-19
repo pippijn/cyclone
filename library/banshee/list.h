@@ -85,7 +85,7 @@ int list_stamp(struct list *a);
 typedef struct list_scanner name ## _scanner; \
 typedef void (* name ## _app_fn) (type); \
 typedef bool (* name ## _eq_fn) (const type); \
-typedef int (* name ## _comparator_fn)(const type,const type); \
+typedef int (* name ## _comparator_fn)(const type,const type)
 
 #define DECLARE_LIST(name,type) \
 typedef struct name ## _a *name; \
@@ -120,7 +120,7 @@ bool name ## _member(name a, type data); \
 name name ## _reverse(name a); \
 int name ## _stamp(name a); \
 name name ## _from_array(region r,type data[], int length); \
-type *name ##_array_from_list(region r, name a);
+type *name ##_array_from_list(region r, name a)
 
 #define DEFINE_LIST(name,type) \
 name new_ ## name(region r) \
@@ -213,7 +213,7 @@ bool name ## _empty(name a) \
 } \
 void name ## _clear(name a) \
 { \
- return list_clear((struct list *)a); \
+ list_clear((struct list *)a); \
 } \
 bool name ## _member(name a, type data) \
 { \
@@ -234,7 +234,8 @@ int name ## _stamp(name a) \
 type *name ##_array_from_list(region r, name a) \
 {\
  return (type *)array_from_list(r,(struct list *)a);\
-}
+}\
+type *name ##_array_from_list(region r, name a)
 
 #define DEFINE_KIND_LIST(name,type,kind)		\
 name new_ ## name(region r) \
@@ -327,7 +328,7 @@ bool name ## _empty(name a) \
 } \
 void name ## _clear(name a) \
 { \
- return list_clear((struct list *)a); \
+ list_clear((struct list *)a); \
 } \
 bool name ## _member(name a, type data) \
 { \
@@ -441,7 +442,7 @@ bool name ## _empty(name a) \
 } \
 void name ## _clear(name a) \
 { \
- return list_clear((struct list *)a); \
+ list_clear((struct list *)a); \
 } \
 bool name ## _member(name a, type data) \
 { \

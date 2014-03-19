@@ -14,10 +14,6 @@ LIBBANSHEE_LDFLAGS[] =
 LIBBANSHEE = $(file ../banshee/libbanshee.so)
 
 .SUBDIRS: inference
-  CFLAGS += $(LIBBANSHEE_CFLAGS)
-
-  cycinf.c: cycinf.bsp $(BANSHEE)
-    $(BANSHEE) $<
 
 LDFLAGS		+= $(LIBBANSHEE_LDFLAGS)
 LDFLAGS_BOOT	+= $(LIBBANSHEE_LDFLAGS)

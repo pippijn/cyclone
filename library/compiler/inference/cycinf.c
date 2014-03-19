@@ -327,7 +327,7 @@ case ONE_TYPE:
 fprintf(arg1,"1");
 break;
 case CONSTANT_TYPE:
-fprintf(arg1,term_get_constant_name(ecr));
+fprintf(arg1,"%s",term_get_constant_name(ecr));
 break;
 case ATOMIC_:
 fprintf(arg1,"atomic");
@@ -521,7 +521,7 @@ case ONE_TYPE:
 fprintf(arg1,"1");
 break;
 case CONSTANT_TYPE:
-fprintf(arg1,setif_get_constant_name(arg2));
+fprintf(arg1,"%s",setif_get_constant_name(arg2));
 break;
 case UNION_TYPE:
 {
@@ -702,7 +702,7 @@ case ONE_TYPE:
 fprintf(arg1,"1");
 break;
 case CONSTANT_TYPE:
-fprintf(arg1,term_get_constant_name(ecr));
+fprintf(arg1,"%s",term_get_constant_name(ecr));
 break;
 
 default:
@@ -854,7 +854,7 @@ case ONE_TYPE:
 fprintf(arg1,"1");
 break;
 case CONSTANT_TYPE:
-fprintf(arg1,term_get_constant_name(ecr));
+fprintf(arg1,"%s",term_get_constant_name(ecr));
 break;
 
 default:
@@ -1074,7 +1074,7 @@ case ONE_TYPE:
 fprintf(arg1,"1");
 break;
 case CONSTANT_TYPE:
-fprintf(arg1,term_get_constant_name(ecr));
+fprintf(arg1,"%s",term_get_constant_name(ecr));
 break;
 case EQ_:
 {
