@@ -3,6 +3,7 @@
 #ifndef _CYC_INCLUDE_H_
 #define _CYC_INCLUDE_H_
 
+#include <setjmp.h>
 #include <stddef.h>
 
 /* Need one of these per thread (see runtime_stack.c). The runtime maintains 

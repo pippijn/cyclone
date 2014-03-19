@@ -78,7 +78,6 @@ static bool print_full_evars_r = false;
 static bool print_all_tvars_r = false;
 static bool print_all_kinds_r = false;
 static bool print_all_effects_r = false;
-static bool nocyc_setjmp_r = false;
 static bool generate_interface_r = false;
 static bool toseqc_r = true;
 static bool pthread_r = false;
@@ -608,47 +607,6 @@ list_t<Absyn::decl_t> do_lowtreeshake(bool ignore,list_t<Absyn::decl_t,`H> tds){
   else return tds;
 }
 
-static string_t cyc_setjmp = NULL;
-/* The absolute file name of cyc_include.h */
-static string_t cyc_include = NULL;
-
-static void set_cyc_include(string_t<`H> f) {
-  cyc_include = f;
-}
-
-/* return 1 on error, 0 on no error */
-int copy_internal_file(string_t file, FILE @out_file) {
-  // FIX: would be better to use open, stat, and read but we don't
-  // have all those functions in the library yet.
-  if (file == NULL) {
-    fprintf(stderr,"Internal error: copy_internal_file called with NULL\n");
-    return 1;
-  }
-  let file_f = try_file_open(file,"r","internal compiler file");
-  if (file_f == NULL) return 1;
-  size_t n_read = 1024;
-  size_t n_written;
-  char buf[1024] = { for i < 1024 : 0 }; // init to avoid warning
-  while (n_read == 1024) {
-    n_read = fread(buf,1,1024,file_f);
-    if (n_read != 1024 && !(feof(file_f))) {
-      compile_failure = true;
-      fprintf(stderr, "\nError: problem copying %s\n",file);
-      fflush(stderr);
-      return 1;
-    }
-    n_written = fwrite(buf,1,n_read,out_file);
-    if (n_read != n_written) {
-      compile_failure = true;
-      fprintf(stderr, "\nError: problem copying %s\n",file);
-      fflush(stderr);
-      return 1;
-    }
-  }
-  fclose(file_f);
-  return 0;
-}
-
 // We must remember what .c files are produced so that we can remove them
 // after we're done.
 static list_t<mstringptr_t> cfiles = NULL;
@@ -686,14 +644,8 @@ list_t<Absyn::decl_t> do_print($(FILE@`H,mstring_t<`H>) @env,
   params_r.print_all_kinds = print_all_kinds_r;
   params_r.print_all_effects = print_all_effects_r;
 
-  // Copy cyc_setjmp.h and cyc_include.h to out_file.
   if (Flags::stop_after_pass > Flags::FlowAnalysis) {
-    if (!nocyc_setjmp_r) {
-      if (Flags::compile_for_boot)
-        fprintf(out_file,"#include <setjmp.h>\n");
-      else if (copy_internal_file(cyc_setjmp,out_file)) return tds;
-    }
-    if (copy_internal_file(cyc_include,out_file)) return tds;
+    fprintf(out_file,"#include <cyc_include.h>\n");
   }
   if (pp_r) {
     Absynpp::set_params(&params_r);
@@ -1272,15 +1224,9 @@ using Arg {
   make_option(opt50,"-printalleffects",false,"",
               Set_spec,&print_all_effects_r,
               "Print effects for functions (type debugging)");
-  make_option(opt51,"-nocyc_setjmp",false,"",
-              Set_spec,&nocyc_setjmp_r,
-              "Do not use compiler special file cyc_setjmp.h");
   make_option(opt52,"-compile-for-boot",false,"",
               Set_spec,&Flags::compile_for_boot,
               "Compile using the special boot library instead of the standard library");
-  make_option(opt53,"-CI",false," <file>",
-              String_spec,set_cyc_include,
-              "Set cyc_include.h to be <file>");
   make_option(opt54,"-warnboundschecks", false, "",
               Set_spec,&Flags::warn_bounds_checks,
               "Warn when bounds checks can't be eliminated");
@@ -1409,7 +1355,7 @@ using Arg {
     &opt20,&opt21,&opt22,&opt23,&opt24,&opt25,&opt26,&opt27,&opt28,&opt29,
     &opt30,&opt31,&opt32,&opt33,&opt34,&opt35,&opt36,&opt37,&opt38,&opt39,
            &opt41,&opt42,&opt43,&opt44,&opt45,&opt46,&opt47,&opt48,&opt49,
-    &opt50,&opt51,&opt52,&opt53,&opt54,&opt55,&opt56,&opt57,&opt58,&opt59,
+    &opt50,       &opt52,       &opt54,&opt55,&opt56,&opt57,&opt58,&opt59,
     &opt60,&opt61,&opt62,&opt63,&opt64,&opt65,&opt66,&opt67,&opt68,&opt69,
     &opt70,&opt71,&opt72,&opt73,&opt74,&opt75,&opt76,&opt77,&opt78,&opt79,
     &opt80,&opt81,&opt82,&opt83,&opt84,&opt85,&opt86,&opt87,&opt88,&opt89,
@@ -1486,15 +1432,6 @@ int main(int argc, string_t<`H> ?`H argv) {
     fprintf(stderr,"missing file\n");
     exit(1);
   }
-
-  // Find the files cyc_setjmp.h and cyc_include.h, needed to produce
-  // the .c output.
-  /* The absolute file name is kept in a global variable */
-  /* don't bother if we won't translate to C or if set explicitly */
-  if (Flags::stop_after_pass > Flags::Cpp && !nocyc_setjmp_r)
-    cyc_setjmp = find_in_arch_path("cyc_setjmp.h");
-  if (Flags::stop_after_pass > Flags::Cpp && strlen(cyc_include) == 0)
-    cyc_include = find_in_exec_path("cyc_include.h");
 
   // Process each .cyc file
   try {

@@ -5,7 +5,6 @@ CYCFLAGS[] =
   -nocyc
   -noremoveunused
   -noexpandtypedefs
-  -nocyc_setjmp
 
-precore_c.new.h: $(rootdir)/include/core.h $(CYCLONE)
-  $(CYCLONE) -o $@ $(CYCFLAGS) -x cyc $<
+boot: $(rootdir)/include/core.h $(CYCLONE)
+  $(CYCLONE) -o precore_c.h $(CYCFLAGS) -x cyc $<
