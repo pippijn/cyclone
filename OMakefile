@@ -129,4 +129,4 @@ boot () =
 .PHONY: clean
 
 clean:
-  rm $(filter-proper-targets $(find $(rootdir) -name *))
+  rm $(filter-proper-targets $(find . -name *))

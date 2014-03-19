@@ -1,0 +1,26 @@
+OBJECTS[] =
+  libpcre/cstubs.o
+  libpcre/cycstubs.o
+
+libcycpcre.so: $(OBJECTS) $(LIBCYC)
+  cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) -lcyc $(LDFLAGS) -lpcre
+
+#.DEFAULT: libcycpcre.so
+
+
+########################################################################
+########################## libpcre bindings ############################
+########################################################################
+
+mkdir -p libpcre
+.SUBDIRS: libpcre
+  CYCFLAGS += -I.
+
+  STUBS[] =
+    cstubs.c
+    cycstubs.cyc
+
+  $(STUBS): $(BUILDLIB) ../libpcre.cys
+    $(BUILDLIB) -d . ../libpcre.cys
+
+  %: $(STUBS)

@@ -1,0 +1,26 @@
+OBJECTS[] =
+  libsqlite3/cstubs.o
+  libsqlite3/cycstubs.o
+
+libcycsqlite3.so: $(OBJECTS) $(LIBCYC)
+  cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) -lcyc $(LDFLAGS) -lsqlite3
+
+#.DEFAULT: libcycsqlite3.so
+
+
+########################################################################
+########################## libsqlite3 bindings ############################
+########################################################################
+
+mkdir -p libsqlite3
+.SUBDIRS: libsqlite3
+  CYCFLAGS += -I.
+
+  STUBS[] =
+    cstubs.c
+    cycstubs.cyc
+
+  $(STUBS): $(BUILDLIB) ../libsqlite3.cys
+    $(BUILDLIB) -d . ../libsqlite3.cys
+
+  %: $(STUBS)
