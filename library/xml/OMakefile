@@ -24,4 +24,9 @@ section:
   xmlecho: $(OBJECTS) libcycxml.so
     cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcycxml -lcyc
 
+  check: xmlecho test.xml
+    xmlecho test.xml > test.xml.out
+    diff test.xml test.xml.out
+    rm test.xml.out
+
   .DEFAULT: xmlecho
