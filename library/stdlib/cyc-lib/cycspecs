@@ -5,7 +5,7 @@
   gcc -m32
 
 *cyclone_inc_path:
-  /home/pippijn/code/git/github/src/lang/cyclone/new/include
+  /home/pippijn/code/git/cyclone/include
 
 *cyclone:
 

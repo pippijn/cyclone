@@ -40,7 +40,7 @@ CYCFLAGS[] =
 .SCANNER: scan-%.cyc: %.cyc
   cc -xc $(CYCFLAGS) $< -M -MT $(removesuffix $<).c
 
-%.c: %.cyc $(CYCLONE) :scanner: scan-%.cyc
+%.c: %.cyc $(CYCLONE) $(rootdir)/library/stdlib/cyc-lib/cycspecs :scanner: scan-%.cyc
   $(CYCLONE) $(CYCFLAGS) -stopafter-toc $< -o $@
 
 
