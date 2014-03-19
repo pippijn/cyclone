@@ -7,7 +7,7 @@ section:
 
   .SCANNER: scan-%.cyc: xmlparse_tab.h
 
-  libcycxml.so: $(OBJECTS) $(rootdir)/library/stdlib/libcyc.so
+  libcycxml.so: $(OBJECTS) $(LIBCYC)
     cc -m32 $(OBJECTS) -o $@ -shared -Wl,-z,defs $(LDFLAGS) -lcyc
 
   .DEFAULT: libcycxml.so
@@ -21,7 +21,7 @@ section:
     -L$(dir .)
     -Wl,-rpath,$(absname .)
 
-  xmlecho: $(OBJECTS) libcycxml.so
+  xmlecho: $(OBJECTS) $(LIBCYC) libcycxml.so
     cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcycxml -lcyc
 
   check: xmlecho test.xml

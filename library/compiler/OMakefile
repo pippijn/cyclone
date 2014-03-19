@@ -49,10 +49,13 @@ OBJECTS[] =
 
 boot ()
 
-libcyclone.so: $(OBJECTS) $(rootdir)/library/stdlib/libcyc.so
+.SCANNER: scan-%.cyc: parse_tab.h parse_errors_gen.h
+
+libcyclone.so: $(OBJECTS) $(LIBCYC)
   cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) -lcyc $(LDFLAGS)
 
-libcyclone.boot.so: $(bootname $(OBJECTS)) $(rootdir)/library/stdlib/libcyc.boot.so
-  cc -m32 -o $@ -shared -Wl,-z,defs $(bootname $(OBJECTS)) -lcyc.boot $(LDFLAGS)
+.SUBDIRS: $(bootname .)
+  libcyclone.boot.so: $(OBJECTS) $(LIBCYC_BOOT)
+    cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) -lcyc.boot $(LDFLAGS_BOOT)
 
 .DEFAULT: libcyclone.so

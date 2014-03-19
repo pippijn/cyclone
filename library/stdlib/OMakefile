@@ -42,10 +42,11 @@ OBJECTS[] =
 boot ()
 
 libcyc.so: $(OBJECTS) $(rootdir)/library/runtime/libcycrt.so
-  cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) -lcycrt $(LDFLAGS)
+  cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) $(LDFLAGS)
 
-libcyc.boot.so: $(bootname $(OBJECTS)) $(rootdir)/library/runtime/libcycrt.so
-  cc -m32 -o $@ -shared -Wl,-z,defs $(bootname $(OBJECTS)) -lcycrt $(LDFLAGS)
+.SUBDIRS: $(bootname .)
+  libcyc.boot.so: $(OBJECTS) $(rootdir)/library/runtime/libcycrt.so
+    cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) $(LDFLAGS_BOOT)
 
 .SUBDIRS: cyc-lib
 

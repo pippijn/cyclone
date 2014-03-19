@@ -24,7 +24,8 @@ boot ()
 cycbison: $(OBJECTS) $(LIBCYC)
   cc -m32 -o $@ $(OBJECTS) -lcyc $(LDFLAGS)
 
-cycbison.boot: $(bootname $(OBJECTS)) $(LIBCYC_BOOT)
-  cc -m32 -o $@ $(bootname $(OBJECTS)) -lcyc.boot $(LDFLAGS)
+.SUBDIRS: $(bootname .)
+  cycbison.boot: $(OBJECTS) $(LIBCYC_BOOT)
+    cc -m32 -o $@ $(OBJECTS) -lcyc.boot $(LDFLAGS_BOOT)
 
 .DEFAULT: cycbison

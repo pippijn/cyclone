@@ -3,23 +3,36 @@ rootdir = $(dir .)
 HAVE_THREADS	= 0
 USE_CYC_TLS	= 0
 
-BUILDLIB	= $(rootdir)/tools/buildlib/buildlib.boot
-CYCBISON	= $(rootdir)/tools/bison/cycbison.boot
-CYCLEX		= $(rootdir)/tools/cyclex/cyclex.boot
-CYCLONE		= $(rootdir)/tools/cyclone/cyclone.boot
+BUILDLIB	= $(rootdir)/boot/tools/buildlib/buildlib.boot
+CYCBISON	= $(rootdir)/boot/tools/bison/cycbison.boot
+CYCLEX		= $(rootdir)/boot/tools/cyclex/cyclex.boot
+CYCLONE		= $(rootdir)/tools/cyclone/cyclone
 ERRORGEN	= $(rootdir)/tools/errorgen/errorgen
 STRINGIFY	= $(rootdir)/tools/stringify/stringify
 
 LIBCYCRT	= $(rootdir)/library/runtime/libcycrt.so
 LIBCYC		= $(rootdir)/library/stdlib/libcyc.so $(LIBCYCRT)
-LIBCYC_BOOT	= $(rootdir)/library/stdlib/libcyc.boot.so $(LIBCYCRT)
+LIBCYC_BOOT	= $(rootdir)/boot/library/stdlib/libcyc.boot.so $(LIBCYCRT)
+
+link (libpath) =
+  LDFLAGS[] +=
+    -L$(rootdir)/$(libpath)
+    -Wl,-rpath,$(absname $(rootdir)/$(libpath))
+
+  LDFLAGS_BOOT[] +=
+    -L$(rootdir)/boot/$(libpath)
+    -Wl,-rpath,$(absname $(rootdir)/boot/$(libpath))
+
+  export LDFLAGS LDFLAGS_BOOT
+
 
 LDFLAGS[] =
-  -L$(rootdir)/library/stdlib
   -L$(rootdir)/library/runtime
-  -Wl,-rpath,$(absname $(rootdir)/library/stdlib)
   -Wl,-rpath,$(absname $(rootdir)/library/runtime)
   -lcycrt
+LDFLAGS_BOOT = $(LDFLAGS)
+
+link (library/stdlib)
 
 
 ########################################################################
@@ -49,43 +62,11 @@ elseif $(USE_CYC_TLS):
 
 
 ########################################################################
-########################### Cyclone compiler ###########################
-########################################################################
-
-CYCFLAGS[] =
-  -I$(rootdir)/include
-  -I$(rootdir)/library/stdlib/libc
-
-.SCANNER: scan-%.cyc: %.cyc
-  cc -xc $(CYCFLAGS) $< -M -MT $(removesuffix $<).c
-
-%.c: %.cyc $(CYCLONE) $(rootdir)/library/stdlib/cyc-lib/cycspecs :scanner: scan-%.cyc
-  $(CYCLONE) $(CYCFLAGS) -stopafter-toc $< -o $@
-
-
-########################################################################
-########################### Code generation ############################
-########################################################################
-
-%.cyc: %.cyl $(CYCLEX)
-  $(CYCLEX) $< $@
-
-%_tab.cyc %_tab.h: %.cyy $(CYCBISON)
-  $(CYCBISON) -d $< -o $*.cyc
-
-%_gen.h: %.err.cyc $(ERRORGEN) $(CYCLONE)
-  $(ERRORGEN) -c $(CYCLONE) $< > $@
-
-%.string.cyc: % $(STRINGIFY)
-  $(STRINGIFY) $< > $@
-
-
-########################################################################
 ############################## Boot stuff ##############################
 ########################################################################
 
 bootname (name) =
-  value $(addprefix $(rootdir)/boot/$(fullname .)/,$(name))
+  file ($(addprefix $(rootdir)/boot/$(fullname .)/,$(name)))
 
 boot () =
   boot-dirs = $(bootname $(set $(dirname $(OBJECTS))))
@@ -101,6 +82,39 @@ boot () =
 
 .SUBDIRS: $(subdirs PC, boot)
   value
+
+
+########################################################################
+########################### Cyclone compiler ###########################
+########################################################################
+
+CYCFLAGS[] =
+  -I$(rootdir)/include
+  -I$(rootdir)/library/stdlib/libc
+
+.SCANNER: scan-%.cyc: %.cyc
+  cc -xc $(CYCFLAGS) $< -M -MT $(removesuffix $<).c
+
+%.c: %.cyc $(bootname $(CYCLONE)).boot $(rootdir)/library/stdlib/cyc-lib/cycspecs :scanner: scan-%.cyc
+  $(bootname $(CYCLONE)).boot $(CYCFLAGS) -stopafter-toc $< -o $@
+
+
+########################################################################
+########################### Code generation ############################
+########################################################################
+
+%.cyc: %.cyl $(CYCLEX)
+  $(CYCLEX) $< $@
+
+%_tab.cyc %_tab.h: %.cyy $(CYCBISON)
+  $(CYCBISON) -d $< -o $*.cyc
+
+%_gen.h: %.err.cyc $(ERRORGEN) $(bootname $(CYCLONE)).boot
+  $(ERRORGEN) -c $(bootname $(CYCLONE)).boot $< > $@
+
+%.string.cyc: % $(STRINGIFY)
+  $(STRINGIFY) $< > $@
+
 
 ########################################################################
 

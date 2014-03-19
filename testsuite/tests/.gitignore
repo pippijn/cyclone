@@ -23,4 +23,6 @@
 /testexn
 /unique_patterns
 /zeroterm
+
 /*.c
+!/testbget.c
