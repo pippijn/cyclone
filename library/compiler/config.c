@@ -1,4 +1,4 @@
-char *Carch = "x86_64-unknown-linux-gnu";
+char *Carch = "i386";
 char *Cdef_lib_path = "/home/pippijn/code/git/cyclone/library/stdlib";
 char *Cversion = "1.0";
 int Wchar_t_unsigned = 0;

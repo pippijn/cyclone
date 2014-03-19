@@ -66,6 +66,9 @@ elseif $(USE_CYC_TLS):
 %.o: %.c $(rootdir)/library/stdlib/cyc-lib/cyc_include.h :scanner: scan-%.c
   cc $(CFLAGS) $< -c -o $@
 
+%.boot: %.c
+  cc $(CFLAGS) $< -o $@
+
 
 ########################################################################
 ############################## Boot stuff ##############################

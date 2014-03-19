@@ -51,6 +51,12 @@ boot ()
 
 .SCANNER: scan-%.cyc: parse_tab.h parse_errors_gen.h
 
+config.c: make-config.boot
+  $< $(absname $(rootdir)) > $@
+
+$(bootname config.c): config.c
+  cp $< $@
+
 libcyclone.so: $(OBJECTS) $(LIBCYC)
   cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) -lcyc $(LDFLAGS)
 
