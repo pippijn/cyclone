@@ -56,8 +56,6 @@ libcyc.so: $(OBJECTS) $(rootdir)/library/runtime/libcycrt.so
 ############################ libc bindings #############################
 ########################################################################
 
-clean:
-  rm -r libc
 mkdir -p libc
 .SUBDIRS: libc
   STUBS[] =
