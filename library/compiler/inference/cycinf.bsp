@@ -1,4 +1,3 @@
-
 specification cycinf : CYCINF = 
  spec
   data ptrbnd : term = atomic
