@@ -10,7 +10,7 @@ CFLAGS[] +=
   -fno-strict-aliasing
   -fno-common
 
-.SUBDIRS: rlib
+.SUBDIRS: rlib doc
 
 OBJECTS[] =
   array.o

@@ -9,6 +9,7 @@ _build
 *.a
 *.o
 *.cyp
+*.pdf
 *.omc
 *.output
 *.string.cyc

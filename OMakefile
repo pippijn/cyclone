@@ -129,6 +129,10 @@ boot () =
   $(BANSHEE) $< $*
   uncrustify --no-backup -lC -q $*.c $*.h
 
+%.pdf: %.tex
+  rubber --pdf $<
+  rubber --clean $<
+
 ########################################################################
 
 .PHONY: check
