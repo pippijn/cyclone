@@ -1,0 +1,28 @@
+INFFLAGS[] =
+  -stopafter-tc
+  -detailedlocation
+  --inf
+  --nomerge
+  --ovfat
+  --nolower
+
+RESFLAGS[] =
+  -stopafter-toc
+  -pp
+  #-ic
+  #--geninterface
+  --resolve
+
+
+sample: sample.cyc external.cyc $(LIBCYC)
+  rm -rf .cych
+  mkdir -p .cych
+  touch .cych/cvars
+  $(CYCLONE) $(INFFLAGS) $(CYCFLAGS) external.cyc
+  $(CYCLONE) $(INFFLAGS) $(CYCFLAGS) sample.cyc
+  $(CYCLONE) $(RESFLAGS) $(CYCFLAGS) .cych/external.cyc
+  $(CYCLONE) $(RESFLAGS) $(CYCFLAGS) .cych/sample.cyc
+  cc -flto -m32 .cych/sample.c .cych/external.c -o $@ $(CFLAGS) $(LDFLAGS) -lcyc
+
+check: sample
+  $<

@@ -1,6 +1,7 @@
 /boot
 /.*omakedb*
 _build
+.cych
 *.boot
 *.native
 *.byte
