@@ -10,9 +10,16 @@ CYCLONE		= $(rootdir)/tools/cyclone/cyclone.boot
 ERRORGEN	= $(rootdir)/tools/errorgen/errorgen
 STRINGIFY	= $(rootdir)/tools/stringify/stringify
 
+LIBCYCRT	= $(rootdir)/library/runtime/libcycrt.so
+LIBCYC		= $(rootdir)/library/stdlib/libcyc.so $(LIBCYCRT)
+LIBCYC_BOOT	= $(rootdir)/library/stdlib/libcyc.boot.so $(LIBCYCRT)
+
 LDFLAGS[] =
   -L$(rootdir)/library/stdlib
+  -L$(rootdir)/library/runtime
   -Wl,-rpath,$(absname $(rootdir)/library/stdlib)
+  -Wl,-rpath,$(absname $(rootdir)/library/runtime)
+  -lcycrt
 
 
 ########################################################################

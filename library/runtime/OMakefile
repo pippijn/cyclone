@@ -1,0 +1,13 @@
+OBJECTS[] =
+  bget.o
+  nogc.o
+  runtime_cyc.o
+  runtime_exception.o
+  runtime_memory.o
+  runtime_stack.o
+  runtime_zeroterm.o
+
+libcycrt.so: $(OBJECTS)
+  cc -m32 -o $(absname $@) -shared -Wl,-z,defs $(OBJECTS) $(PTHREAD_LDFLAGS)
+
+.DEFAULT: libcycrt.so

@@ -1,15 +1,7 @@
 OBJECTS[] =
   libc/cstubs.o
   libc/cycstubs.o
-
-  bget.o
   boot_cstubs.o
-  nogc.o
-  runtime_cyc.o
-  runtime_exception.o
-  runtime_memory.o
-  runtime_stack.o
-  runtime_zeroterm.o
 
   ap.o
   apq.o
@@ -49,11 +41,11 @@ OBJECTS[] =
 
 boot ()
 
-libcyc.so: $(OBJECTS)
-  cc -m32 -o $(absname $@) -shared -Wl,-z,defs $(OBJECTS) $(PTHREAD_LDFLAGS)
+libcyc.so: $(OBJECTS) $(rootdir)/library/runtime/libcycrt.so
+  cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) -lcycrt $(LDFLAGS)
 
-libcyc.boot.so: $(bootname $(OBJECTS))
-  cc -m32 -o $(absname $@) -shared -Wl,-z,defs $(bootname $(OBJECTS)) $(PTHREAD_LDFLAGS)
+libcyc.boot.so: $(bootname $(OBJECTS)) $(rootdir)/library/runtime/libcycrt.so
+  cc -m32 -o $@ -shared -Wl,-z,defs $(bootname $(OBJECTS)) -lcycrt $(LDFLAGS)
 
 .SUBDIRS: cyc-lib
 

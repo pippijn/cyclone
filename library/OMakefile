@@ -1,1 +1,1 @@
-.SUBDIRS: compiler stdlib xml
+.SUBDIRS: compiler runtime stdlib xml

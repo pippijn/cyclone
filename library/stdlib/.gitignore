@@ -1,40 +1,9 @@
 # All of the generated libc bindings.
 /libc
 
-# Generated C files.
-/ap.c
-/apq.c
-/arg.c
-/array.c
-/assert.c
-/base64.c
-/bitvec.c
-/buffer.c
-/core.c
-/dict.c
-/execinfo.c
-/filename.c
-/fn.c
-/getopt.c
-/getopt1.c
-/graph.c
-/hashtable.c
-/iter.c
-/lexing.c
-/lineno.c
+# Cyclex output
 /lineno.cyc
-/list.c
-/position.c
-/pp.c
-/printf.c
-/queue.c
-/rope.c
-/scanf.c
-/set.c
-/sexp.c
-/slowdict.c
-/splay.c
-/string.c
-/tmp.c
-/xarray.c
-/xp.c
+
+# Generated C files.
+/*.c
+!/boot_cstubs.c

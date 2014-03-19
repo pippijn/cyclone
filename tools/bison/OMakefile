@@ -21,10 +21,10 @@ OBJECTS[] =
 
 boot ()
 
-cycbison: $(OBJECTS) $(rootdir)/library/stdlib/libcyc.so
-  cc -m32 -o $@ $(LDFLAGS) -lcyc $(OBJECTS)
+cycbison: $(OBJECTS) $(LIBCYC)
+  cc -m32 -o $@ $(OBJECTS) -lcyc $(LDFLAGS)
 
-cycbison.boot: $(bootname $(OBJECTS)) $(rootdir)/library/stdlib/libcyc.boot.so
-  cc -m32 -o $@ $(LDFLAGS) -lcyc.boot $(bootname $(OBJECTS))
+cycbison.boot: $(bootname $(OBJECTS)) $(LIBCYC_BOOT)
+  cc -m32 -o $@ $(bootname $(OBJECTS)) -lcyc.boot $(LDFLAGS)
 
 .DEFAULT: cycbison

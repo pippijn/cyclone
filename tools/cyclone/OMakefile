@@ -11,10 +11,10 @@ LDFLAGS[] +=
 CYCFLAGS[] +=
   -I$(rootdir)/library/compiler
 
-cyclone: $(OBJECTS) $(rootdir)/library/compiler/libcyclone.so $(rootdir)/library/stdlib/libcyc.so
-  cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc -lcyclone
+cyclone: $(OBJECTS) $(rootdir)/library/compiler/libcyclone.so $(LIBCYC)
+  cc -m32 $(OBJECTS) -o $@ -lcyclone -lcyc $(LDFLAGS)
 
-cyclone.boot: $(bootname $(OBJECTS)) $(rootdir)/library/compiler/libcyclone.boot.so $(rootdir)/library/stdlib/libcyc.boot.so
-  cc -m32 $(bootname $(OBJECTS)) -o $@ $(LDFLAGS) -lcyc.boot -lcyclone.boot
+cyclone.boot: $(bootname $(OBJECTS)) $(rootdir)/library/compiler/libcyclone.boot.so $(LIBCYC_BOOT)
+  cc -m32 $(bootname $(OBJECTS)) -o $@ -lcyclone.boot -lcyc.boot $(LDFLAGS)
 
 .DEFAULT: cyclone

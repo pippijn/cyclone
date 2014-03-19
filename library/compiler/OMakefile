@@ -50,9 +50,9 @@ OBJECTS[] =
 boot ()
 
 libcyclone.so: $(OBJECTS) $(rootdir)/library/stdlib/libcyc.so
-  cc -m32 -o $@ -shared -Wl,-z,defs $(LDFLAGS) $(OBJECTS) -lcyc
+  cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) -lcyc $(LDFLAGS)
 
 libcyclone.boot.so: $(bootname $(OBJECTS)) $(rootdir)/library/stdlib/libcyc.boot.so
-  cc -m32 -o $@ -shared -Wl,-z,defs $(LDFLAGS) $(bootname $(OBJECTS)) -lcyc.boot
+  cc -m32 -o $@ -shared -Wl,-z,defs $(bootname $(OBJECTS)) -lcyc.boot $(LDFLAGS)
 
 .DEFAULT: libcyclone.so

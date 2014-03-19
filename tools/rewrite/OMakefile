@@ -1,7 +1,7 @@
 OBJECTS[] =
   rewrite.o
 
-rewrite: $(OBJECTS) $(rootdir)/library/stdlib/libcyc.so
-  cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc
+rewrite: $(OBJECTS) $(LIBCYC)
+  cc -m32 $(OBJECTS) -o $@ -lcyc $(LDFLAGS)
 
 .DEFAULT: rewrite

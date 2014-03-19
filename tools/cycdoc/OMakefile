@@ -8,7 +8,7 @@ LDFLAGS[] +=
 CYCFLAGS[] +=
   -I$(rootdir)/library/compiler
 
-cycdoc: $(OBJECTS) $(rootdir)/library/compiler/libcyclone.so $(rootdir)/library/stdlib/libcyc.so
-  cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc -lcyclone
+cycdoc: $(OBJECTS) $(rootdir)/library/compiler/libcyclone.so $(LIBCYC)
+  cc -m32 $(OBJECTS) -o $@ -lcyclone -lcyc $(LDFLAGS)
 
 .DEFAULT: cycdoc
