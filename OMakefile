@@ -1,5 +1,8 @@
 rootdir = $(dir .)
 
+VERSION		= 1.0
+DATE		= $(shell date $'+%B %d, %G')
+
 HAVE_THREADS	= 0
 USE_CYC_TLS	= 0
 
@@ -8,6 +11,7 @@ CYCBISON	= $(rootdir)/boot/tools/bison/cycbison.boot
 CYCLEX		= $(rootdir)/boot/tools/cyclex/cyclex.boot
 CYCLONE_BOOT	= $(rootdir)/boot/tools/cyclone/cyclone.boot
 CYCLONE		= $(rootdir)/tools/cyclone/cyclone
+CYCDOC		= $(rootdir)/tools/cycdoc/cycdoc
 ERRORGEN	= $(rootdir)/tools/errorgen/errorgen
 STRINGIFY	= $(rootdir)/tools/stringify/stringify
 BANSHEE		= $(rootdir)/tools/banshee/banshee.native
@@ -138,7 +142,7 @@ boot () =
 .PHONY: check
 .DEFAULT: check
 
-.SUBDIRS: library tools testsuite
+.SUBDIRS: doc library tools testsuite
 
 ########################################################################
 

@@ -3,5 +3,3 @@ OBJECTS[] =
 
 stringify: $(OBJECTS) $(LIBCYC)
   cc -m32 $(OBJECTS) -o $@ -lcyc $(LDFLAGS)
-
-.DEFAULT: stringify

@@ -1,3 +1,28 @@
+HEADERS[] =
+  array.h
+  bitvec.h
+  buffer.h
+  core.h
+  dict.h
+  filename.h
+  fn.h
+  graph.h
+  hashtable.h
+  iter.h
+  list.h
+  pp.h
+  queue.h
+  rope.h
+  set.h
+  slowdict.h
+  xarray.h
+
+stdlib.tex: $(HEADERS) $(CYCDOC)
+  $(CYCDOC) -cyclone $(CYCLONE) -I. $(HEADERS) > $@
+
+.DEFAULT: stdlib.tex
+
+
 OBJECTS[] =
   libc/cstubs.o
   libc/cycstubs.o
@@ -49,8 +74,6 @@ libcyc.so: $(OBJECTS) $(rootdir)/library/runtime/libcycrt.so
     cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) $(LDFLAGS_BOOT)
 
 .SUBDIRS: cyc-lib
-
-.DEFAULT: libcyc.so
 
 ########################################################################
 ############################ libc bindings #############################

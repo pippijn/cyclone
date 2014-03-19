@@ -9,5 +9,3 @@ OBJECTS[] =
 
 libcycrt.so: $(OBJECTS)
   cc -m32 -o $(absname $@) -shared -Wl,-z,defs $(OBJECTS) $(PTHREAD_LDFLAGS)
-
-.DEFAULT: libcycrt.so

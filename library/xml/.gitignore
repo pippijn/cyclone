@@ -1,5 +1,6 @@
 # Program
 /xmlecho
+/test.xml.out
 
 # Generated scanner
 /xmlscan.cyc

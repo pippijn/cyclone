@@ -5,9 +5,9 @@ Pattern matching provides a concise, convenient way to bind parts of
 large objects to new local variables.  Two Cyclone constructs use
 pattern matching, \texttt{let} declarations and \texttt{switch} statements.  Although
 the latter are more common, we first explain patterns with
-\hyperlink{let_decls}{let declarations} because they have fewer
-complications.  Then we describe all the \hyperlink{pat_forms}{pattern
-  forms}.  Then we describe \hyperlink{switch_stmt}{switch
+\hyperlink{let-decls}{let declarations} because they have fewer
+complications.  Then we describe all the \hyperlink{pat-forms}{pattern
+  forms}.  Then we describe \hyperlink{switch-stmt}{switch
   statements}.
 
 You must use patterns to access values carried by
@@ -18,7 +18,7 @@ Note that this section does not include rules for matching against
   \emph{unique pointers}; this is explained in
   \sectionref{sec:unique-patterns}.
 
-\subsection{Let Declarations}\hypertarget{let_decls}{}
+\subsection{Let Declarations}\hypertarget{let-decls}{}
 
 In Cyclone, you can write
 \begin{verbatim}
@@ -80,7 +80,7 @@ the compiler emits a warning when you use them.  In switch statements,
 possibly-failing patterns are the norm---as we explain below, the
 whole point is that one of the cases' patterns should match.
 
-\subsection{Pattern Forms}\hypertarget{pat_forms}{}
+\subsection{Pattern Forms}\hypertarget{pat-forms}{}
 
 So far, we have seen three pattern forms: variables patterns, struct
 patterns, and constant patterns.  We now describe all the pattern
@@ -269,7 +269,7 @@ first because we have already explained their use informally.
   \end{itemize}
 \end{itemize}
 
-\subsection{Switch Statements}\hypertarget{switch_stmt}{}
+\subsection{Switch Statements}\hypertarget{switch-stmt}{}
 
 In Cyclone, you can switch on a value of any type and the case
 ``labels'' (the part between case and the colon) are patterns.  The
@@ -330,7 +330,7 @@ In Cyclone terms, the code tries to match against the constant 0.  If
 it does not match (i is not 0), it tries to match against the pattern
 1.  Everything matches against default; in fact, default is just
 alternate notation for ``\texttt{case _}'', i.e., a case with a
-\hyperlink{wild_pat}{wildcard pattern}.  For performance reasons,
+\hyperlink{wild-pat}{wildcard pattern}.  For performance reasons,
 switch statements that are legal C switch statements are translated to
 C switch statements.  Other switch statements are translated to,
 ``a mess of tests and gotos''.

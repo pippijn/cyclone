@@ -5,5 +5,3 @@ link (compiler)
 
 cycdoc: $(OBJECTS) $(rootdir)/library/compiler/libcyclone.so $(LIBCYC)
   cc -m32 $(OBJECTS) -o $@ -lcyclone -lcyc $(LDFLAGS)
-
-.DEFAULT: cycdoc

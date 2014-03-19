@@ -7,3 +7,6 @@
 # Generated C files.
 /*.c
 !/boot_cstubs.c
+
+# Generated documentation
+/stdlib.tex

@@ -1,0 +1,14 @@
+DOCS[] =
+  main-a4
+  main-letter
+  main-screen
+
+PDFS = $(addsuffix .pdf, $(DOCS))
+
+.SCANNER: $(PDFS): $(find . -name *.tex)
+  echo $"$(PDFS): version.tex"
+
+version.tex:
+  echo $"{\Large Version $(VERSION), $(DATE)}\\[3ex]" > $@
+
+.DEFAULT: $(PDFS)

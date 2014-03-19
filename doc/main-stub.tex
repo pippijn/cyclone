@@ -1,11 +1,3 @@
-\newif\ifpdf
-\ifx\pdfoutput\undefined
-  \pdffalse               % we are not running PDFLaTeX
-\else
-  \pdfoutput=1            % we are running PDFLaTeX
-  \pdftrue
-\fi
-
 \usepackage{alltt}
 
 %\usepackage{index}
@@ -100,39 +92,39 @@ The latest version of this manual should be available at \\
 %END LATEX
 \newpage
 
-\input{intro} %JGM
-\input{tutorial} %JGM
-\input{pointers} %JGM
-\input{taggedunions} %JGM
-\input{patterns} %JGM
-\input{typeinference.tex} %JGM
+\input{cyclone/intro} %JGM
+\input{cyclone/tutorial} %JGM
+\input{cyclone/pointers} %JGM
+\input{cyclone/taggedunions} %JGM
+\input{cyclone/patterns} %JGM
+\input{cyclone/typeinference} %JGM
 \section{Polymorphism}
 \hypertarget{polymorphism}{}
 
 Use \texttt{`a} instead of \texttt{void *}.
 
-\input{regions} %JGM+MWH
-\input{aliasfree} %NS
-\input{namespaces} %JGM
-\input{varargs} %DG
-\input{definiteassignment} %DG
-\input{advanced} %DG
-%\input{generics} -- I'm omitting this for now since it's broken
+\input{cyclone/regions} %JGM+MWH
+\input{cyclone/aliasfree} %NS
+\input{cyclone/namespaces} %JGM
+\input{cyclone/varargs} %DG
+\input{cyclone/definiteassignment} %DG
+\input{cyclone/advanced} %DG
+%\input{cyclone/generics} -- I'm omitting this for now since it's broken
 
 \appendix
 
-\input{porting} %JGM
-\input{faq}     %JGM
-\input{libraries}
-\input{grammar}
-\input{installing}
+\input{cyclone/porting} %JGM
+\input{cyclone/faq}     %JGM
+\input{cyclone/libraries}
+\input{cyclone/grammar}
+\input{cyclone/installing}
 
 \section{Tools}
-\input{compiler}
+\input{cyclone/compiler}
 \subsection{The lexer generator}
 \subsection{The parser generator}
-\input{aprof}
-\input{buildlib}
+\input{cyclone/aprof}
+\input{cyclone/buildlib}
 
 \printindex
 

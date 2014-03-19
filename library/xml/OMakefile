@@ -12,8 +12,6 @@ section:
   libcycxml.so: $(OBJECTS) $(LIBCYC)
     cc -m32 $(OBJECTS) -o $@ -shared -Wl,-z,defs $(LDFLAGS) -lcyc
 
-  .DEFAULT: libcycxml.so
-
 
 section:
   OBJECTS[] =
@@ -26,9 +24,8 @@ section:
   xmlecho: $(OBJECTS) $(LIBCYC) libcycxml.so
     cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcycxml -lcyc
 
-  check: xmlecho test.xml
-    xmlecho test.xml > test.xml.out
-    diff test.xml test.xml.out
-    rm test.xml.out
+  check: test.xml.out
 
-  .DEFAULT: xmlecho
+  test.xml.out: xmlecho test.xml
+    $< test.xml > test.xml.out
+    diff test.xml test.xml.out

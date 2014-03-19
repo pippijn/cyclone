@@ -3,5 +3,3 @@ OBJECTS[] =
 
 errorgen: $(OBJECTS) $(LIBCYC)
   cc -m32 $(OBJECTS) -o $@ -lcyc $(LDFLAGS)
-
-.DEFAULT: errorgen

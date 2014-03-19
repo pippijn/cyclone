@@ -91,5 +91,3 @@ libcyclone.so: $(OBJECTS) $(LIBCYC)
 
   libcyclone.boot.so: $(OBJECTS) $(LIBCYC_BOOT)
     cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) -lcyc.boot $(LDFLAGS_BOOT)
-
-.DEFAULT: libcyclone.so
