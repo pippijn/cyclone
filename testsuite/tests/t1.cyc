@@ -1,7 +1,7 @@
 typedef enum Bool {false, true} bool;
 int x1 = 3;
 //int x2 = true; // int != bool
-//int x3 = 4+3;
+int x3 = 4+3;
 char x4 = 'x';
 //char x5 = "x"; // char != char[1]
 int f1() {return 2;}
