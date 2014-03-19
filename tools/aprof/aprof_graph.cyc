@@ -337,7 +337,7 @@ static void
 output_dynregion_line (stringptr_t name,
                        list_t<$(unsigned int, unsigned int) @> @pts,
                        $(int, unsigned int ?,
-                         list_t<$(unsigned int, unsigned int) @> )@env)
+                         list_t<$(unsigned int, unsigned int) @>) @env)
 {
   let &$(*num, heap_size, mempts) = env;
 
@@ -354,7 +354,7 @@ output_dynregion_line (stringptr_t name,
 
 // comparisons of list items (for deletion) based on the region name
 static int
-cmp ($(stringptr_t,`a)@x, $(stringptr_t,`a)@y)
+cmp ($(stringptr_t, `a)@x, $(stringptr_t, `a)@y)
 {
   return strptrcmp ((*x)[0], (*y)[0]);
 }
@@ -362,7 +362,7 @@ cmp ($(stringptr_t,`a)@x, $(stringptr_t,`a)@y)
 // adds a point to the list of points
 static list_t<$(unsigned int, unsigned int) @>
 add_point (int cnt, int amt,
-           list_t<$(unsigned int, unsigned int) @`H,`H> points)
+           list_t<$(unsigned int, unsigned int) @`H, `H> points)
 {
   if (points != NULL)
     {
