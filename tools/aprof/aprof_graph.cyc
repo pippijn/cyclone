@@ -216,6 +216,10 @@ output_cleanup ()
         }
       buf_print_contents ();
     }
+
+  char ?@nozeroterm`U newbuf = NULL;
+  newbuf :=: buf_buf;
+  ufree (newbuf);
 }
 
 // given a point and the current heap size, outputs a point and
