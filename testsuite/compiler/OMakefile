@@ -1,24 +1,13 @@
-check: $(CYCLONE)
-  ($(CYCLONE) $(CYCFLAGS) -stopafter-cf --manyerrors fail1.cyc >& fail1.tmp) || true
-  diff -wu fail1.tmp fail1.out
-  rm fail1.tmp
+TESTS[] =
+  fail1
+  fail2
+  fail3
+  fail4
+  testaqualdefaults
+  testaqualfail
 
-  ($(CYCLONE) $(CYCFLAGS) -stopafter-cf --manyerrors fail2.cyc >& fail2.tmp) || true
-  diff -wu fail2.tmp fail2.out
-  rm fail2.tmp
-
-  ($(CYCLONE) $(CYCFLAGS) -stopafter-cf --manyerrors fail3.cyc >& fail3.tmp) || true
-  diff -wu fail3.tmp fail3.out
-  rm fail3.tmp
-
-  ($(CYCLONE) $(CYCFLAGS) -stopafter-cf --manyerrors fail4.cyc >& fail4.tmp) || true
-  diff -wu fail4.tmp fail4.out
-  rm fail4.tmp
-
-  ($(CYCLONE) $(CYCFLAGS) -stopafter-cf --manyerrors testaqualdefaults.cyc >& testaqualdefaults.tmp) || true
-  diff -wu testaqualdefaults.tmp testaqualdefaults.out
-  rm testaqualdefaults.tmp
-
-  ($(CYCLONE) $(CYCFLAGS) -stopafter-cf --manyerrors testaqualfail.cyc >& testaqualfail.tmp) || true
-  diff -wu testaqualfail.tmp testaqualfail.out
-  rm testaqualfail.tmp
+check: $(addsuffix .out, $(TESTS))
+  
+%.out: %.ref $(CYCLONE)
+  ($(CYCLONE) $(CYCFLAGS) -stopafter-cf --manyerrors $*.cyc >& $@) || true
+  diff -wu $@ $<
