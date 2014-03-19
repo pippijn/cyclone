@@ -46,13 +46,10 @@
 #include "interproc.h"
 #include "bansheeif.h"
 #include "lower.h"
+#include "lex.h"
 
 namespace Port {
   void port(List::list_t<Absyn::decl_t>);
-}
-namespace Lex {
-  void pos_init();
-  void lex_init(bool use_cyclone_keywords);
 }
 
 using Core;
@@ -803,21 +800,9 @@ namespace Cyclone {
       ofile_string = aprintf(" > %s", sh_escape_string(preprocfile));
 
     string_t fixup_string;
-    if (produce_dependencies) {
-      // Both of the below hacks can probably be eliminated when we move
-      // to gcc 3.0
-      if (dependencies_target == NULL)
-	// Hack to fix up dependency output of gcc 2.95: the target of
-	// the dependency produced by cpp will be something like foo.cyc.o,
-	// but we want it to be foo.o.
-	fixup_string = " | sed 's/^\\(.*\\)\\.cyc\\.o:/\\1.o:/'";
-      else
-	// Hack to handle the -MT flag, which is not supported in gcc 2.95
-	// Note, we should probably make sure any special characters in
-	// *dependencies_target are escaped, but WE DON'T.
-	fixup_string = aprintf(" | sed 's/^.*\\.cyc\\.o:/%s:/'",
-			       *dependencies_target);
-    } else
+    if (produce_dependencies && dependencies_target != NULL)
+      fixup_string = aprintf(" -MT %s", *dependencies_target);
+    else
       fixup_string = "";
 
     let cmd = aprintf("%s %s%s %s%s%s",
@@ -1044,8 +1029,13 @@ static interface_t read_cycio(string_t<`H> @ n) {
   return i;
 }
 
-static bool is_cfile(string_t @ n) {
-  return (*n)[0] != '-';
+static bool is_cfile(string_t const @n) {
+  char const ?s = *n;
+  for (size_t i = 0; i < numelts(s); i++)
+    if (s[i] != ' ')
+      return s[i] != '-';
+  fprintf(stderr,"Error: filename consists solely of spaces\n");
+  return true;
 }
 
 static void set_max_vc_summary(int n) {
