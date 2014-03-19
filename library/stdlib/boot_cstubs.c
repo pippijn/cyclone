@@ -16,9 +16,6 @@
    write to the Free Software Foundation, Inc., 59 Temple Place, Suite
    330, Boston, MA 02111-1307 USA. */
 
-/* This is a hand-coded stub file for Cyclone's minimal boot library.
-   It should match up with the Cyclone code in boot_cycstubs.cyc */
-
 /* This stuff needed by ap.cyc only.  We define long_max and long_min
    as variables to try to keep things reasonably portable. */
 
