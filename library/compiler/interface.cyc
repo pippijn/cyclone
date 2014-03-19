@@ -35,9 +35,7 @@
 #include "kinds.h"
 #include "tcdecl.h"
 #include "binding.h"
-namespace Lex {
-  void lex_init();
-}
+#include "lex.h"
 using Core;
 using List;
 using Absyn;
@@ -879,70 +877,104 @@ struct Ienv * disj_merge_ienv(ienv_t ie1, ienv_t ie2, string_t<`H> *`H msg) {
 }
 
 /* --- main function --- */
-struct I * merge(i_t i1, i_t i2, $(string_t<`H>, string_t<`H>) * info) {
-  try {
-    string_t * msg = NULL;
+struct I *
+merge (i_t i1, i_t i2, $(string_t<`H>, string_t<`H>) *info)
+{
+  try
+    {
+      string_t *msg = NULL;
 
-    if (info != NULL)
-      msg = new ((string_t)aprintf("merging exports of %s and %s,",
-				   (*info)[0], (*info)[1]));
+      if (info != NULL)
+        msg = new ((string_t)aprintf ("merging exports of %s and %s,",
+                                      (*info)[0], (*info)[1]));
 
-    let exp = disj_merge_ienv(i1->exports, i2->exports, msg);
-    if (exp == NULL) return NULL;
+      let exp = disj_merge_ienv (i1->exports, i2->exports, msg);
+      if (exp == NULL)
+        return NULL;
 
-    if (info != NULL)
-      msg = new ((string_t)aprintf("merging imports of %s and %s,",
-				   (*info)[0], (*info)[1]));
+      if (info != NULL)
+        msg = new ((string_t)aprintf ("merging imports of %s and %s,",
+                                      (*info)[0], (*info)[1]));
 
-    let imp = compat_merge_ienv(i1->imports, i2->imports, exp, msg);
-    if (imp == NULL) return NULL;
+      let imp = compat_merge_ienv (i1->imports, i2->imports, exp, msg);
+      if (imp == NULL)
+        return NULL;
 
-    list_t<decl_t> newtds = NULL, l = i2->tds;
-    for(;l != NULL; l=l->tl)
-      newtds = new List(new *l->hd, newtds);
-    newtds = rev(fold_left(uniqify_decl_list, newtds, i1->tds));
-    return new I(imp, exp, newtds);
-  } catch { case &Tcdecl::Incompatible: return NULL; }
+      list_t<decl_t> newtds = NULL, l = i2->tds;
+      for (; l != NULL; l = l->tl)
+        newtds = new List (new * l->hd, newtds);
+      newtds = rev (fold_left (uniqify_decl_list, newtds, i1->tds));
+      return new I (imp, exp, newtds);
+    }
+  catch
+    {
+    case &Tcdecl::Incompatible:
+      return NULL;
+    }
 }
 
-struct I * merge_list(list_t<i_t,`H> li, list_t<string_t<`H> @`H,`H> linfo) {
-  if (li == NULL) return empty();
+struct I *
+merge_list (list_t<i_t, `H> li,
+            list_t<string_t<`H> @`H, `H> linfo)
+{
+  if (li == NULL)
+    return empty ();
 
   i_t curr_i = li->hd;
-  string_t * curr_info = (linfo != NULL ? (string_t *)linfo->hd : NULL);
-  li=li->tl;
-  if (linfo != NULL) linfo=linfo->tl;
+  string_t *curr_info = (linfo != NULL ? (string_t *)linfo->hd : NULL);
+  li = li->tl;
+  if (linfo != NULL)
+    linfo = linfo->tl;
 
-  for (; li != NULL; li=li->tl) {
-    let i = merge(curr_i, li->hd,
-		  (curr_info != NULL && linfo != NULL ? new $(*curr_info, *linfo->hd) : NULL) );
-    if (i == NULL) return NULL;
-    curr_i = i;
-    if (curr_info != NULL)
-      curr_info = (linfo != NULL ? new ((string_t)aprintf("%s+%s", *curr_info, *linfo->hd)) : NULL);
-    if (linfo != NULL) linfo = linfo->tl;
-  }
+  for (; li != NULL; li = li->tl)
+    {
+      let i = merge (curr_i, li->hd,
+                     (curr_info != NULL && linfo != NULL
+                      ? new $(*curr_info, *linfo->hd)
+                      : NULL));
+      if (i == NULL)
+        return NULL;
+      curr_i = i;
+      if (curr_info != NULL)
+        curr_info = (linfo != NULL
+                     ? new ((string_t)aprintf ("%s+%s", *curr_info, *linfo->hd))
+                     : NULL);
+      if (linfo != NULL)
+        linfo = linfo->tl;
+    }
   return curr_i;
 }
 
-struct I * get_and_merge_list(i_t (@get)(`a), list_t<`a,`H> la, list_t<string_t<`H> @`H,`H> linfo) {
-  if (la == NULL) return empty();
+struct I *
+get_and_merge_list (i_t (@get) (`a),
+                    list_t<`a, `H> la,
+                    list_t<string_t<`H> @ `H, `H> linfo)
+{
+  if (la == NULL)
+    return empty ();
 
-  i_t curr_i = get(la->hd);
-  string_t * curr_info = (linfo != NULL ? (string_t *)linfo->hd : NULL);
-  la=la->tl;
-  if (linfo != NULL) linfo=linfo->tl;
+  i_t curr_i = get (la->hd);
+  string_t *curr_info = (linfo != NULL ? (string_t *)linfo->hd : NULL);
+  la = la->tl;
+  if (linfo != NULL)
+    linfo = linfo->tl;
 
-  for (; la != NULL; la=la->tl) {
-    let i = merge(curr_i, get(la->hd),
-		  (curr_info != NULL && linfo != NULL ? new $(*curr_info, *linfo->hd) : NULL) );
-    if (i == NULL) return NULL;
-    curr_i = i;
-    if (curr_info != NULL) {
-      curr_info = (linfo != NULL ? new ((string_t)aprintf("%s+%s", *curr_info, *linfo->hd)) : NULL);
+  for (; la != NULL; la = la->tl)
+    {
+      let i = merge (curr_i, get (la->hd),
+                     (curr_info != NULL && linfo != NULL
+                      ? new $(*curr_info, *linfo->hd)
+                      : NULL));
+      if (i == NULL)
+        return NULL;
+      curr_i = i;
+      if (curr_info != NULL)
+        curr_info = (linfo != NULL
+                     ? new ((string_t)aprintf ("%s+%s", *curr_info, *linfo->hd))
+                     : NULL);
+      if (linfo != NULL)
+        linfo = linfo->tl;
     }
-    if (linfo != NULL) linfo = linfo->tl;
-  }
   return curr_i;
 }
 
@@ -967,7 +999,8 @@ static list_t<decl_t> add_namespace(list_t<decl_t,`H> tds){
     switch((*qv)[0]) {
     case {.Abs_n=x}: vs = x; break;
     case {.C_n=x}:   vs = x; break;
-    default: err("bad namespace in Interface::add_namespace"); return NULL;
+    case {.Rel_n=x}: vs = x; break;
+    case {.Loc_n=x}: err("bad namespace in Interface::add_namespace (Loc_n)"); return NULL;
     }
     vs = imp_rev(vs);
     (*qv)[0] = Rel_n(NULL);
@@ -1122,7 +1155,7 @@ void print(i_t i, FILE @ f) {
 
 // WARNING: Warn::reset must be called before using parse
 i_t parse(FILE @`H f) {
-  Lex::lex_init();
+  Lex::lex_init(true);
   let tds = Parse::parse_file(f);
   Binding::resolve_all(tds);
   let te  = Tcenv::tc_init();
