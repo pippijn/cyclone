@@ -1273,7 +1273,7 @@ void flowrow_print(FILE *f,get_stamp_fn_ptr get_stamp,
       fprintf(f, "wild");
       break;
     case VAR_TYPE:
-      fprintf(f, fv_get_name((flow_var)e));
+      fprintf(f, "%s", fv_get_name((flow_var)e));
       break;
     case ROW_TYPE:
       fprintf(f, "<");

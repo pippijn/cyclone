@@ -119,6 +119,7 @@ static void clear(void *start, __rcintptr size)
 #include "alloc.c"
 #include "serialize.c"
 
+#if RENUMBER_REGIONS
 /* Region pre-order numbering */
 static int renumber_regions(region r, int nextid)
 {
@@ -131,6 +132,7 @@ static int renumber_regions(region r, int nextid)
 
   return nextid;
 }
+#endif
 
 static void nochildren(region r)
 {
@@ -147,7 +149,9 @@ static void unlink_region(region r)
     scan = &(*scan)->sibling;
   *scan = (*scan)->sibling;
 
-/*   renumber_regions(&zeroregion, 0); */
+#if RENUMBER_REGIONS
+  renumber_regions(&zeroregion, 0); 
+#endif
 }
 
 static void link_region(region r, region parent)
@@ -156,7 +160,9 @@ static void link_region(region r, region parent)
   r->parent = parent;
   parent->children = r;
 
-/*   renumber_regions(&zeroregion, 0); */
+#if RENUMBER_REGIONS
+  renumber_regions(&zeroregion, 0); 
+#endif
 }
 
 void check_child(region r, region of)
@@ -545,7 +551,6 @@ void deleteregion_array(int n, region *regions)
 
   for (i = 0; i < n; i++)
     {
-      int rc;
       region r = regions[i];
 
       /* If regions array is not in one of the regions being deleted we must:
@@ -561,11 +566,6 @@ void deleteregion_array(int n, region *regions)
 	  regions[i] = NULL;
 	}
       
-#ifdef RCPAIRS
-      rc = 0;
-#else
-      rc = r->rc;
-#endif
       delregion(r);
     }
 

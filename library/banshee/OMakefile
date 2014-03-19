@@ -5,7 +5,6 @@ CFLAGS[] +=
   -Dtraditional=
   -Dsameregion=
   -Dparentptr=
-  -w
   -Wall
   -Werror
   -fno-strict-aliasing
