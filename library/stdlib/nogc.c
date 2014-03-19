@@ -122,18 +122,18 @@ void *GC_malloc(size_t x) {
   // FIX:  I'm calling calloc to ensure the memory is zero'd.  This
   // is because I had to define GC_calloc in runtime_memory.c
   size_t *p = calloc(1, sizeof *p + x + 1);
-  *p = x;
+  *p++ = x;
   total_bytes_allocd += GC_size(p);
-  return p + 1;
+  return p;
 }
 
 void *GC_malloc_atomic(size_t x) {
   // FIX:  I'm calling calloc to ensure the memory is zero'd.  This
   // is because I had to define GC_calloc in runtime_memory.c
   size_t *p = calloc(1, sizeof *p + x + 1);
-  *p = x;
+  *p++ = x;
   total_bytes_allocd += GC_size(p);
-  return p + 1;
+  return p;
 }
 
 void *GC_realloc(void *x, size_t n) {
