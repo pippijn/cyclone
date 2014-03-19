@@ -210,6 +210,10 @@ output_cleanup ()
         }
       buf_print_contents ();
     }
+
+  char ?@nozeroterm`U newbuf = NULL;
+  newbuf :=: buf_buf;
+  ufree (newbuf);
 }
 
 static void
