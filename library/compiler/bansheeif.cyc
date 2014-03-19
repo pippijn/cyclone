@@ -1382,6 +1382,7 @@ namespace BansheeIf
     Hashtable::iter (flush_one_variable, cvarmap);
     discharge_implications ();
   }
+
 } //namespace BansheeIf
 
 
