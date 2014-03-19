@@ -21,6 +21,7 @@ OBJECTS[] =
   ../pr.o
   ../prose.o
   ../semiring.o
+  #../ssl.o
   ../templates/corerules_grm.bnf.string.o
   ../templates/crawl_main.cyc.string.o
   ../templates/dfa_engine1.cyc.string.o

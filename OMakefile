@@ -39,6 +39,8 @@ link (lib) =
 
 CYCFLAGS[] =
   #--geninterface
+  #-noexpandtypedefs
+  #-nonullchecks
   -I$(rootdir)/library/stdlib/libc
 
 LDFLAGS[] =
