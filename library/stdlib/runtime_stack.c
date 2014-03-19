@@ -25,7 +25,7 @@
 #ifdef HAVE_THREADS
 static tlocal_key_t _current_frame_key;
 #elif !defined(USE_CYC_TLS)
-static struct _RuntimeStack *_current_frame = NULL;
+static __thread struct _RuntimeStack *_current_frame = NULL;
 #endif
 
 void _init_stack() {
@@ -106,3 +106,31 @@ struct _RuntimeStack * _pop_frame_until(int tag) {
   return _frame_until(tag,1);
 }
 
+
+#ifdef USE_CYC_TLS
+static struct tls_record_pair
+{
+  pthread_t tid;
+  tls_record_t rec;
+} tls_record_map[2000];
+
+tls_record_t *
+cyc_runtime_lookup_tls_record (void)
+{
+  size_t i;
+  pthread_t self = pthread_self ();
+  if (self == 0)
+    return &tls_record_map[0].rec;
+
+  for (i = 1; i < sizeof tls_record_map / sizeof *tls_record_map; i++)
+    {
+      struct tls_record_pair *pair = tls_record_map + i;
+      if (pair->tid == 0)
+        pair->tid = self;
+      if (pair->tid == self)
+        return &pair->rec;
+    }
+
+  return NULL;
+}
+#endif

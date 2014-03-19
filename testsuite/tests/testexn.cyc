@@ -37,7 +37,8 @@ void foo(int i) {
   int yields = rand() % 5;
   if (yields < 0) yields = -yields;
   for (int j = 0; j<yields; j++) {
-    for (int i = 0; i<busywait; i++);
+    for (int i = 0; i<busywait; i++)
+      ;
 #ifdef __linux__
     pthread_yield();
 #endif
@@ -54,14 +55,16 @@ void foo(int i) {
   if (i%10 == 0) throw &e10_val;
 }
 
-static int exn_caught[100];
+#define THREADS 100
+static int exn_caught[THREADS];
 
 void* runthread(int i) {
   try {
-    if(i%3 == 0)
+    if(i%3 == 0) {
 #ifdef __linux__
       pthread_yield();
 #endif
+    }
     foo(i);
     exn_caught[i] = -3;
   }
@@ -82,17 +85,17 @@ void* runthread(int i) {
 }
 
 int main(int argc, string_t ?args) {
-  pthread_t t[100] = {for i < 100 : 0};
-  for(int i=0;i<100;i++) {
+  pthread_t t[THREADS] = {for i < THREADS : 0};
+  for(int i=0;i<THREADS;i++) {
     exn_caught[i] = -1;
     if (pthread_create(&t[i], NULL, runthread, i)) {
       printf("main: couldn't create thread %d\n",i);
       return -1;
     }
   }
-  for(int i=0;i<100;i++)
+  for(int i=0;i<THREADS;i++)
     pthread_join(t[i], NULL);
-  for (int i=0;i<100;i++) {
+  for (int i=0;i<THREADS;i++) {
     if (exn_caught[i] != (i%10)) {
       printf("multi-threaded test failed! thread %d did not catch exn %d\n",i,i%10);
       return -1;
@@ -100,4 +103,3 @@ int main(int argc, string_t ?args) {
   }
   return 0;
 }
-

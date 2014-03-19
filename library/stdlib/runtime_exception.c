@@ -48,9 +48,9 @@ static tlocal_key_t _exn_thrown_key;
 static tlocal_key_t _exn_filename_key;
 static tlocal_key_t _exn_lineno_key;
 #elif !defined(USE_CYC_TLS)
-static const char *_exn_filename = "?";
-static int _exn_lineno = 0; // MWH: should be unsigned? Must match core.h
-static void*_exn_thrown = NULL;
+static __thread const char *_exn_filename = "?";
+static __thread int _exn_lineno = 0; // MWH: should be unsigned? Must match core.h
+static __thread void *_exn_thrown = NULL;
 #endif
 
 void _init_exceptions() {

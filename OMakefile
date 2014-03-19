@@ -1,5 +1,8 @@
 rootdir = $(dir .)
 
+HAVE_THREADS	= 0
+USE_CYC_TLS	= 0
+
 BUILDLIB	= $(rootdir)/tools/buildlib/buildlib.boot
 CYCBISON	= $(rootdir)/tools/bison/cycbison.boot
 CYCLEX		= $(rootdir)/tools/cyclex/cyclex.boot
@@ -21,6 +24,15 @@ CFLAGS[] =
   -ggdb3
   -I$(rootdir)/library/stdlib
   -I$(rootdir)/library/stdlib/cyc-lib
+
+PTHREAD_LDFLAGS[] = $(EMPTY_ARRAY)
+if $(HAVE_THREADS):
+   CFLAGS		+= -D_HAVE_PTHREAD_
+   PTHREAD_LDFLAGS	+= -lpthread
+   export
+elseif $(USE_CYC_TLS):
+   CFLAGS		+= -DUSE_CYC_TLS
+
 
 .SCANNER: scan-%.c: %.c
   cc $(CFLAGS) $< -MM

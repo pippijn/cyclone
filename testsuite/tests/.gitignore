@@ -20,6 +20,7 @@
 /testaqualsuccess
 /testasm
 /testbget
+/testexn
 /unique_patterns
 /zeroterm
 /*.c

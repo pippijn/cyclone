@@ -17,6 +17,7 @@ EXES[] =
   testaqualsuccess
   testasm
   testbget
+  testexn
   test_currgn
   test_getopt
   test_large_vc_terms
@@ -24,7 +25,7 @@ EXES[] =
   unique_patterns
   zeroterm
 
-foreach (exe, $(EXES)):
+foreach (exe => ..., $(EXES)):
   OBJECTS = $(exe).o
 
   switch $(exe):
@@ -39,7 +40,7 @@ foreach (exe, $(EXES)):
     export
 
   $(exe): $(OBJECTS) $(rootdir)/library/stdlib/libcyc.so
-    cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc -lm
+    cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcyc -lm -lpthread
 
   check: $(exe)
     if $(file-exists $(exe)_input):

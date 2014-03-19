@@ -50,10 +50,10 @@ OBJECTS[] =
 boot ()
 
 libcyc.so: $(OBJECTS)
-  cc -m32 -o $(absname $@) -shared -Wl,-z,defs $(OBJECTS)
+  cc -m32 -o $(absname $@) -shared -Wl,-z,defs $(OBJECTS) $(PTHREAD_LDFLAGS)
 
 libcyc.boot.so: $(bootname $(OBJECTS))
-  cc -m32 -o $(absname $@) -shared -Wl,-z,defs $(bootname $(OBJECTS))
+  cc -m32 -o $(absname $@) -shared -Wl,-z,defs $(bootname $(OBJECTS)) $(PTHREAD_LDFLAGS)
 
 .SUBDIRS: cyc-lib
 

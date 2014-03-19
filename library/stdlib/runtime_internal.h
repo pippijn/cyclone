@@ -92,6 +92,7 @@
    might cause problems, particularly relating to region profiling */
 #define RUNTIME_CYC
 #ifndef USE_CYC_TLS 
+#include "runtime_tls.h"
 #include "precore_c.h"
 #endif
 
