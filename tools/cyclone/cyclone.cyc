@@ -1029,12 +1029,15 @@ static interface_t read_cycio(string_t<`H> @ n) {
   return i;
 }
 
-static bool is_cfile(string_t const @n) {
-  char const ?s = *n;
-  for (size_t i = 0; i < numelts(s); i++)
+static bool
+is_cfile (stringptr_t n)
+{
+  string_t s = *n;
+
+  for (size_t i = 0; i < numelts (s); i++)
     if (s[i] != ' ')
       return s[i] != '-';
-  fprintf(stderr,"Error: filename consists solely of spaces\n");
+  fprintf (stderr, "Error: filename consists solely of spaces\n");
   return true;
 }
 
