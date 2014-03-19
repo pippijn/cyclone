@@ -1,0 +1,27 @@
+section:
+  OBJECTS[] =
+    xml.o
+    xmldump.o
+    xmlparse_tab.o
+    xmlscan.o
+
+  .SCANNER: scan-%.cyc: xmlparse_tab.h
+
+  libcycxml.so: $(OBJECTS) $(rootdir)/library/stdlib/libcyc.so
+    cc -m32 $(OBJECTS) -o $@ -shared -Wl,-z,defs $(LDFLAGS) -lcyc
+
+  .DEFAULT: libcycxml.so
+
+
+section:
+  OBJECTS[] =
+    xmlecho.o
+
+  LDFLAGS[] +=
+    -L$(dir .)
+    -Wl,-rpath,$(absname .)
+
+  xmlecho: $(OBJECTS) libcycxml.so
+    cc -m32 $(OBJECTS) -o $@ $(LDFLAGS) -lcycxml -lcyc
+
+  .DEFAULT: xmlecho

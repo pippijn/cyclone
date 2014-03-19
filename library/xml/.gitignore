@@ -1,0 +1,12 @@
+# Program
+/xmlecho
+
+# Generated scanner
+/xmlscan.cyc
+
+# Generated C sources
+/xml.c
+/xmldump.c
+/xmlecho.c
+/xmlparse_tab.c
+/xmlscan.c

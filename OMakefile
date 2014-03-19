@@ -1,7 +1,7 @@
 rootdir = $(dir .)
 
 BUILDLIB	= $(rootdir)/tools/buildlib/buildlib.boot
-CYCBISON	= $(rootdir)/tools/bison/cycbison
+CYCBISON	= $(rootdir)/tools/bison/cycbison.boot
 CYCLEX		= $(rootdir)/tools/cyclex/cyclex.boot
 CYCLONE		= $(rootdir)/tools/cyclone/cyclone.boot
 ERRORGEN	= $(rootdir)/tools/errorgen/errorgen
