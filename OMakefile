@@ -45,7 +45,7 @@ link (lib) =
 
 
 CYCFLAGS[] =
-  #--geninterface
+  --geninterface
   #-noexpandtypedefs
   #-nonullchecks
   #--no-lower
