@@ -65,10 +65,10 @@ The entry point is reader().  */
 "\n#ifndef YYLTYPE"\
 "\nextern struct Yyltype {"\
 "\n      int timestamp;"\
-"\n      int first_line;"\
-"\n      int first_column;"\
-"\n      int last_line;"\
-"\n      int last_column;"\
+"\n      unsigned first_line;"\
+"\n      unsigned first_column;"\
+"\n      unsigned last_line;"\
+"\n      unsigned last_column;"\
 "\n};"\
 "\ntypedef struct Yyltype yyltype;"\
 "\n\n"\
