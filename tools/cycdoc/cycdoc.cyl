@@ -366,6 +366,7 @@ rule token "$(int,comment_t)*" = parse
         fprintf (stderr, "\nError: preprocessing\n");
         return;
       }
+
     /* Parse the file into a list of declarations */
     Warn::reset (preprocfile);
     FILE @in_file = (FILE@)fopen (preprocfile, "r");
