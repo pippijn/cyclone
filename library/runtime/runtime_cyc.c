@@ -68,12 +68,17 @@ struct _fat_argv {
 };
 
 // Define struct __cycFILE, and initialize stdin, stdout, stderr
-struct Cyc___cycFILE { // must match defn in boot_cstubs.c and boot_cycstubs.cyc
+struct Cyc___cycFILE
+{ // must match defn in boot_cstubs.c and boot_cycstubs.cyc
   FILE *file;
-} Cyc_stdin_v, Cyc_stdout_v, Cyc_stderr_v,
-  *Cyc_stdin = &Cyc_stdin_v,
-  *Cyc_stdout = &Cyc_stdout_v,
-  *Cyc_stderr = &Cyc_stderr_v;
+};
+
+static struct Cyc___cycFILE Cyc_stdin_v,
+                            Cyc_stdout_v,
+                            Cyc_stderr_v;
+struct Cyc___cycFILE *Cyc_stdin  = &Cyc_stdin_v,
+                     *Cyc_stdout = &Cyc_stdout_v,
+                     *Cyc_stderr = &Cyc_stderr_v;
 
 int __attribute__((weak)) Cyc_main(int argc, struct _fat_argv argv)
 {

@@ -754,7 +754,7 @@ and snarfsymbols =
    a block containing an expected definition. */
 /* returns 1 if more to do, 0 if all done */
 parse
-  idchar+
+| idchar+
 { snarfed_symbols = new List(new (string_t)lexeme(lexbuf),snarfed_symbols);
   return 1; }
 | idchar+ ws* '{'
@@ -773,7 +773,9 @@ parse
   snarfed_symbols = new List(new (string_t)current_symbol,snarfed_symbols);
   current_user_defs = new List(user_def,current_user_defs);
   return 1; }
+| "//" [^'\n']* '\n'
 | ws+
+| ';'
 { return 1; }
 | '}'
 { return 0; }
