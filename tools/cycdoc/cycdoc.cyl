@@ -145,14 +145,6 @@ rule token "$(int,comment_t)*" = parse
   }
 
   /* State variables for command-line args */
-  static int width = 50;
-
-  static void
-  set_width (int w)
-  {
-    width = w;
-  }
-
   static list_t<stringptr_t> cycdoc_files = NULL;
   static void
   add_other (string_t<`H> s)
@@ -468,9 +460,6 @@ rule token "$(int,comment_t)*" = parse
       list (new $("-cyclone", false, " <file>",
                   new String_spec (set_cyclone_file),
                   "Use <file> as the cyclone compiler"),
-            new $("-w", false, " <width>",
-                  new Int_spec (set_width),
-                  "Use <width> as the max width for printing declarations"),
             new $("-D", true, "<name>[=<value>]",
                   new Flag_spec (add_cycarg),
                   "Pass definition to preprocessor"),
