@@ -6,6 +6,7 @@
 /hello
 /histogram
 /md5
+/mmap_test
 /multimethod
 /offsetof_test
 /patterns
@@ -34,6 +35,8 @@
 /unique_patterns
 /unique_test
 /zeroterm
+
+/mmap_test.txt
 
 /*.c
 !/testbget.c

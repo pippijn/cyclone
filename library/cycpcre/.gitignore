@@ -1,3 +1,4 @@
 /libpcre
 /pcredemo
 /*.c
+/*.out

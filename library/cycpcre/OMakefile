@@ -26,5 +26,8 @@ OBJECTS[] =
 link (cycpcre)
 program (pcredemo)
 
-check: pcredemo
-  $< $'(\d)+' $"hello 1234 world"
+check: pcredemo.out
+
+pcredemo.out: pcredemo pcredemo.ref
+  $< $'(\d)+' $"hello 1234 world" > $@
+  diff $@ pcredemo.ref
