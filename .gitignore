@@ -10,6 +10,7 @@ _build
 *.o
 *.cyp
 *.cyci
+*.cycio
 *.pdf
 *.omc
 *.output

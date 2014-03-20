@@ -1,0 +1,10 @@
+extern int ?firstNumber;
+extern int ?lastNumber;
+
+int
+main ()
+{
+  lastNumber = firstNumber + 4;
+
+  return 0;
+}

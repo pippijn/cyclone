@@ -1,0 +1,8 @@
+RESFLAGS[] =
+  -ic
+
+link (stdlib)
+
+sample: sample.cyc external.cyc $(LIBCYC) $(CYCLONE)
+  $(CYCLONE) $(RESFLAGS) $(CYCFLAGS) external.cyc sample.cyc
+  cc -flto -m32 sample.c external.c -o $@ $(CFLAGS) $(LDFLAGS)

@@ -10,7 +10,6 @@ RESFLAGS[] =
   -stopafter-toc
   -pp
   #-ic
-  #--geninterface
   --resolve
 
 link (stdlib)
