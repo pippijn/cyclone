@@ -2171,8 +2171,6 @@ hstub pthread_cond_wait {
   extern "C" int pthread_cond_wait (pthread_cond_t *cond, pthread_mutex_t *mutex);
 }
 hstub pthread_create {
-  // FIXME: buildlib doesn't handle "typedef T T;" well.
-  typedef union pthread_attr_t pthread_attr_t;
   int pthread_create (pthread_t @thread, const pthread_attr_t *attr,
 		      `a (@`H cycfun) (`b), `b arg: regions(`b) <= `H)
     __attribute__((initializes(1)));
@@ -2511,18 +2509,19 @@ cstub signal {
   }
 }
 hstub sigaction {
-  extern int sigaction(int, struct sigaction *, struct sigaction *);
   extern "C" struct sigaction fresh_sigaction();
 }
 cycstub sigaction {
   namespace Csignal {
     extern "C" int sigaction(int, const struct sigaction *,
 		             struct sigaction *);
-    extern "C" int sigaction_wrap(struct sigaction *);
-    extern "C" int sigaction_unwrap(struct sigaction *);
+    extern "C" int sigaction_wrap(struct sigaction const *);
+    extern "C" int sigaction_unwrap(struct sigaction const *);
   }
-  int sigaction(int sig, struct sigaction *act,
-		struct sigaction *oact) {
+  int sigaction(int sig, struct sigaction const *act,
+		struct sigaction *oact)
+    __attribute__((no_throw, cdecl))
+  {
     if (act != NULL) Csignal::sigaction_unwrap(act);
     int ret = Csignal::sigaction(sig,act,oact);
     // we really don't have to do this, since the compiler won't

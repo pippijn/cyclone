@@ -83,6 +83,24 @@ using List;
 using Core;
 using Absyn;
 
+enum name_kind
+{
+  NK_Tag,
+  NK_Ident,
+};
+
+static string_t
+nk2str (enum name_kind kind)
+{
+  switch (kind)
+    {
+    case NK_Tag: return "tag";
+    case NK_Ident: return "";
+    default: return "<invalid>";
+    }
+}
+
+
 // The string to invoke gcc
 // FIX: this should be taken from the cycspecs file as in cyclone.cyc
 static const char ?cyclone_cc = "gcc";
@@ -1758,7 +1776,20 @@ and block_comment = parse /* returns 1 if more to do, 0 if all done */
       // set up the pretty printer to emit interfaces
       Absynpp::set_params(&Absynpp::cyc_params_r);
       if (name) {
-        ifdefmacro = aprintf("_%s_def_",*name);
+        enum name_kind kind;
+        switch (decl->r)
+          {
+          case &Aggr_d(...):
+          case &Datatype_d(...):
+          case &Enum_d(...):
+            kind = NK_Tag;
+            break;
+          default:
+            kind = NK_Ident;
+            break;
+          }
+
+        ifdefmacro = aprintf ("_%s_%sdef_", *name, nk2str (kind));
         fprintf(out_file,"#ifndef %s\n",ifdefmacro);
         fprintf(out_file,"#define %s\n",ifdefmacro);
         // Because there's no decl2file and I'm lazy

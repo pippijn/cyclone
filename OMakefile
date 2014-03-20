@@ -205,8 +205,6 @@ buildlib (cys) =
 
     $(STUBS): ../$(cys).cys $(BUILDLIB)
       $(BUILDLIB) -d . $<
-      if $(file-exists $(rootdir)/library/stdlib/libc/pthread.h):
-        cat $(rootdir)/library/stdlib/libc/pthread.h
 
     %: $(STUBS)
 
