@@ -1464,7 +1464,6 @@ and block_comment = parse /* returns 1 if more to do, 0 if all done */
         for (let l = cpp_insert; l != NULL; l = l->tl) {
           fputs((const char @)(*(l->hd)),out_file);
         }
-        fprintf(out_file,"#define __DO_NOT_DEFINE_COMPILE 1\n");
         fprintf(out_file,"#include <%s>\n",filename);
         fclose(out_file);
         let cppargs_string =

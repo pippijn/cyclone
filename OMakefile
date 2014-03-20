@@ -6,7 +6,7 @@ DATE		= $(shell date $'+%B %d, %G')
 HAVE_THREADS	= 0
 USE_CYC_TLS	= 0
 
-BUILDLIB	= $(rootdir)/boot/tools/buildlib/buildlib.boot
+BUILDLIB	= $(rootdir)/tools/buildlib/buildlib
 CYCBISON	= $(rootdir)/tools/bison/cycbison
 CYCLEX		= $(rootdir)/tools/cyclex/cyclex
 CYCLONE		= $(rootdir)/tools/cyclone/cyclone
@@ -119,6 +119,7 @@ private.cyclone-rules (boot) =
     CYCLONE	= $(bootname $(CYCLONE)).boot
     CYCLEX	= $(bootname $(CYCLEX)).boot
     CYCBISON	= $(bootname $(CYCBISON)).boot
+    BUILDLIB	= $(bootname $(BUILDLIB)).boot
     export
 
   .SCANNER: scan-%.cyc: %.cyc $(CYCLONE) $(CYCSPECS)

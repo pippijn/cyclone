@@ -1211,6 +1211,20 @@ NZERO
 }
 ;
 
+link.h:
+cpp {
+#define _GNU_SOURCE 1
+}
+include {
+dl_phdr_info
+}
+hstub dl_iterate_phdr {
+  extern "C"
+  int dl_iterate_phdr (int (*__callback)(struct dl_phdr_info *, size_t, `a),
+                       `a data);
+}
+;
+
 locale.h:
 include {
 LC_CTYPE
@@ -2212,6 +2226,9 @@ hstub getpwuid {
 // Uses strings extensively, probably best to rewrite in Cyclone
 // Not supported yet
 regexp.h:
+cpp {
+#define __DO_NOT_DEFINE_COMPILE 1
+}
 ;
 
 // Real time

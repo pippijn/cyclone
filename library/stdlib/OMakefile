@@ -1,3 +1,5 @@
+CFLAGS += -D_GNU_SOURCE
+
 OBJECTS[] =
   libc/cstubs.o
   libc/cycstubs.o
