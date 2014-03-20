@@ -40,7 +40,7 @@ using Warn;
 
 namespace Cifc;
 static int glob_tvar_id=0;
-bool opt_inst_tvar = false;
+static bool opt_inst_tvar = false;
 
 static string_t get_type_kind(type_t t) {
   switch(t) {
@@ -856,15 +856,19 @@ static bool update_typedef_decl(tenv_t te, decl_t encloser, list_t<decl_t, `H> t
   switch(encloser->r) {
   case &Typedef_d(td_decl):
     let new_old_tvars = add_tvars_to_type(te, encloser, (type_t)td_decl->defn, tv_ovrs);
-    if(new_old_tvars) {
-      let &$(nt, ot) = new_old_tvars;
-      while(ot) {
-	td_decl->tvs = List::delete_cmp(Absyn::tvar_cmp, td_decl->tvs, ot->hd);
-	ot = ot->tl;
+    switch (new_old_tvars)
+      {
+      case &$(nt, ot):
+        while (ot) {
+          td_decl->tvs = List::delete_cmp(Absyn::tvar_cmp, td_decl->tvs, ot->hd);
+          ot = ot->tl;
+        }
+        td_decl->tvs = List::append(td_decl->tvs, nt);
+        changed =true;
+        break;
+      case NULL:
+        break;
       }
-      td_decl->tvs = List::append(td_decl->tvs, nt);
-      changed =true;
-    }
     break;
   default:
     impos("expect only a typedef_d");

@@ -41,11 +41,18 @@ link (lib) =
   CYCFLAGS[] +=
     -I$(rootdir)/library/$(lib)
 
-  export LDFLAGS LDFLAGS_BOOT CYCFLAGS LIBCYC LIBCYC_BOOT
+  export
 
 
 CYCFLAGS[] =
   --geninterface
+  --better-widen
+  #--cifc-inst-tvar
+  #--warnassert
+  #-warnaliascoercion
+  #-warnregioncoerce
+  #-Wlose-unique
+  #--unprovable
   #-noexpandtypedefs
   #-nonullchecks
   #--no-lower
