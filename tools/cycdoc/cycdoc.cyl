@@ -238,7 +238,7 @@ rule token "$(int,comment_t)*" = parse
 
     /* No single quotes, we can just single quote s */
     if (single_quotes == 0)
-      return strconcat_l (list (new "'", new (string_t)s, new "'"));
+      return strconcat_l (List::list (new "'", new (string_t)s, new "'"));
 
     /* We'll quote all special chars by prefixing with a backslash */
     let len2 = len + single_quotes + other_special;
@@ -293,7 +293,7 @@ rule token "$(int,comment_t)*" = parse
     for (; x != NULL; x = x->tl)
       if (strcmp ((*x->hd)[0]->logical_file, file) == 0)
         result = new List (x->hd, result);
-    result = imp_rev (result);
+    result = List::imp_rev (result);
     return result;
   }
 
@@ -320,7 +320,7 @@ rule token "$(int,comment_t)*" = parse
           case &ExternC_d (tdl):
             fallthru (tdl);
           case &ExternCinclude_d (tdl, ...):
-            decls = append (tdl, decls->tl);
+            decls = List::append (tdl, decls->tl);
             break;
           case &Aggr_d (_):
           case &Var_d (_):
@@ -340,7 +340,7 @@ rule token "$(int,comment_t)*" = parse
             break;
           }
       }
-    return imp_rev (result);
+    return List::imp_rev (result);
   }
 
   /* Main loop */
@@ -352,7 +352,8 @@ rule token "$(int,comment_t)*" = parse
     let preprocfile = (const char @)strconcat (basename, ".cyp");
     let cycargs_string =
       str_sepstr (new List (new (string_t)"",
-                            List::map (sh_escape_stringptr, rev (cycargs))),
+                            List::map (sh_escape_stringptr,
+                                       List::rev (cycargs))),
                   " ");
     let cmd = (const char @)aprintf ("%s %s -E -o %s -x cyc %s",
                                      cyclone_file,
@@ -374,14 +375,14 @@ rule token "$(int,comment_t)*" = parse
     file_close ((FILE@)in_file);
     decls = flatten_decls (decls);
     /* Find the location (pos_t) of each declaration */
-    let poss = map (start2pos, map (decl2start, decls));
+    let poss = List::map (start2pos, List::map (decl2start, decls));
     Lineno::poss_of_abss (preprocfile, poss);
     remove (preprocfile);
-    let pos_decls = zip (map (snd, poss), decls);
+    let pos_decls = List::zip (List::map (snd, poss), decls);
     /* Filter out declarations from other files (from #include) */
     pos_decls = this_file (filename, pos_decls);
-    let lineno_decls = zip (map (lineno, map (fst, pos_decls)),
-                            map (snd, pos_decls));
+    let lineno_decls = List::zip (List::map (lineno, List::map (fst, pos_decls)),
+                                  List::map (snd, pos_decls));
     /* Scan the file again, this time for the comments */
     /* Note, we don't use the preprocfile, because it has no comments */
     let f = (FILE @)fopen ((const char @)filename, "r");
@@ -393,16 +394,16 @@ rule token "$(int,comment_t)*" = parse
       {
         let $(index, comment) = *tok;
         comments = new List (comment, comments);
-        indices = new List (index, indices);
+        indices  = new List (index, indices);
       }
     fclose (f);
-    comments = imp_rev (comments);
-    indices = imp_rev (indices);
+    comments = List::imp_rev (comments);
+    indices  = List::imp_rev (indices);
     /* Find the location (pos_t) of each comment */
-    let poss = map (start2pos, indices);
+    let poss = List::map (start2pos, indices);
     Lineno::poss_of_abss (filename, poss);
-    let lineno_comments = zip (map (lineno, map (snd, poss)),
-                               comments);
+    let lineno_comments = List::zip (List::map (lineno, List::map (snd, poss)),
+                                     comments);
 
     /* Print all decls followed immediately by comments;
      * discard all other decls and comments */
@@ -457,19 +458,19 @@ rule token "$(int,comment_t)*" = parse
     GC_blacklist_warn_clear ();
 
     Arg::speclist_t<`H, `H> options =
-      list (new $("-cyclone", false, " <file>",
-                  new String_spec (set_cyclone_file),
-                  "Use <file> as the cyclone compiler"),
-            new $("-D", true, "<name>[=<value>]",
-                  new Flag_spec (add_cycarg),
-                  "Pass definition to preprocessor"),
-            new $("-I", true, "<dir>",
-                  new Flag_spec (add_cycarg),
-                  "Add to the list of directories to search for include files"),
-            new $("-B", true, "<file>",
-                  new Flag_spec (add_cycarg),
-                  "Add to the list of directories to search for compiler files")
-            );
+      List::list (new $("-cyclone", false, " <file>",
+                        new String_spec (set_cyclone_file),
+                        "Use <file> as the cyclone compiler"),
+                  new $("-D", true, "<name>[=<value>]",
+                        new Flag_spec (add_cycarg),
+                        "Pass definition to preprocessor"),
+                  new $("-I", true, "<dir>",
+                        new Flag_spec (add_cycarg),
+                        "Add to the list of directories to search for include files"),
+                  new $("-B", true, "<file>",
+                        new Flag_spec (add_cycarg),
+                        "Add to the list of directories to search for compiler files")
+                 );
 
     Arg::parse (options, add_other, no_other, "Options:", argv);
 
@@ -489,7 +490,7 @@ rule token "$(int,comment_t)*" = parse
     Absynpp::set_params (&Absynpp::tc_params_r);
     Absynpp::print_for_cycdoc = true;
 
-    for (let l = rev (cycdoc_files); l != NULL; l = l->tl)
+    for (let l = List::rev (cycdoc_files); l != NULL; l = l->tl)
       process_file (*l->hd);
 
     return 0;
