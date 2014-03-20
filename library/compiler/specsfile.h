@@ -20,8 +20,9 @@
 #ifndef _SPECSFILE_H_
 #define _SPECSFILE_H_
 
-#include <list.h>
+#include <arg.h>
 #include <core.h>
+#include <list.h>
 
 namespace Specsfile {
   using List;

@@ -19,7 +19,7 @@
 #ifndef _ABSYNDUMP_H_
 #define _ABSYNDUMP_H_
 
-#include "absyn.h"
+#include "absynpp.h"
 
 // not re-entrant.
 namespace Absyndump {
