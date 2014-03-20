@@ -20,47 +20,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-/* Put the unsafe C interface in a separate namespace. */
-namespace UnsafePcre {
-extern "C include" {  /* tell Cyclone that <pcre.h> is C code */
-#if defined(__CYGWIN__)
-#include <pcre.h>     /* include the pcre C interface */
-#else
-#include "/usr/include/pcre/pcre.h"
-#endif
-} export {
-  pcre_compile, pcre_exec; /* export these functions */
-}}
-
-
-/* Make a nice wrapper for the unsafe C code */
-namespace Pcre {
-  typedef UnsafePcre::pcre pcre;
-  typedef UnsafePcre::pcre_extra pcre_extra;
-
-  /* wrapper for pcre_compile -- doesn't do much */
-  pcre *pcre_compile(const char ?pattern, int options,
-                     const char *`H *errptr, int *erroffset,
-                     unsigned char ?tableptr) {
-    return UnsafePcre::pcre_compile(pattern, options, errptr, erroffset,
-                                    tableptr == NULL ? NULL :
-                                    (unsigned char *)tableptr);
-  }
-
-  /* wrapper for pcre_exec -- checks that sizes and offsets are in bounds */
-  int pcre_exec(const pcre @code, const pcre_extra *extra,
-                const char ?subject, int length, int startoffset,
-                int options, int ?ovector, int ovecsize) {
-    assert(length >= 0 && numelts(subject) >= length);
-    assert(startoffset >= 0 && startoffset < length);
-    assert(ovecsize >= 0 && numelts(ovector) >= ovecsize);
-    return UnsafePcre::pcre_exec(code, extra, subject, length, startoffset,
-                                 options, ovector, ovecsize);
-  }
-}
-
-/* Open up the safe Pcre namespace for the client */
-using Pcre;
+#include "libpcre/pcre.h"
 
 
 /* Here is the original demo for using the Pcre library */
@@ -69,7 +29,7 @@ using Pcre;
 int main(int argc, const char ?`H ?`H argv)
 {
   pcre *re;
-  const char *error = NULL;
+  const char *@zeroterm error = NULL;
   int erroffset;
   int ovector[OVECCOUNT];
   int rc, i;
@@ -95,7 +55,7 @@ int main(int argc, const char ?`H ?`H argv)
   if (re == NULL)
     {
       printf("PCRE compilation failed at offset %d: %s\n",
-             erroffset, error);
+             erroffset, strdup (error));
       return 1;
     }
 

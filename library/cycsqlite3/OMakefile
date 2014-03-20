@@ -2,8 +2,13 @@ OBJECTS[] =
   libsqlite3/cstubs.o
   libsqlite3/cycstubs.o
 
+LDFLAGS  += -lsqlite3
+CYCFLAGS += -I.
+
 link (stdlib)
 
 library ()
 
 buildlib (libsqlite3)
+
+.DEFAULT: libcycsqlite3.so

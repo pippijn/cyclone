@@ -52,6 +52,8 @@ CYCFLAGS[] =
   -I$(rootdir)/library/stdlib/libc
 
 LDFLAGS[] =
+  -flto
+  -Werror
   -L$(rootdir)/library/runtime
   -Wl,-rpath,$(absname $(rootdir)/library/runtime)
   -lcycrt
@@ -63,6 +65,7 @@ LDFLAGS_BOOT = $(LDFLAGS)
 ########################################################################
 
 CFLAGS[] =
+  -flto
   -m32
   -ggdb3
   -I$(rootdir)/library/runtime
