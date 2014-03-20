@@ -101,7 +101,7 @@ namespace Parse {
   // Flag that's turned on when processing tempest code instead of cyclone.
   // We interpreter "*" as a fat pointer there and intend for regions to
   // default to the heap (along with some other trickery).
-  bool parsing_tempest = false; // FLAG
+  static bool parsing_tempest = false; // FLAG
 
   // flattened lists
   struct FlatList<`a::A,`r> { struct FlatList<`a,`r> *`r tl; `a hd; };
