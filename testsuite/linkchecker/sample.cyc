@@ -1,10 +1,9 @@
-extern int ?firstNumber;
-extern int ?lastNumber;
+extern void foo ();
 
 int
 main ()
 {
-  lastNumber = firstNumber + 4;
+  foo ();
 
   return 0;
 }
