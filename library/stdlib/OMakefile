@@ -1,5 +1,3 @@
-CFLAGS += -D_GNU_SOURCE
-
 OBJECTS[] =
   libc/cstubs.o
   libc/cycstubs.o
@@ -25,6 +23,7 @@ OBJECTS[] =
   iter.o
   lexing.o
   lineno.o
+  libc.o
   list.o
   position.o
   pp.o
@@ -41,7 +40,10 @@ OBJECTS[] =
   xarray.o
   xp.o
 
-CYCFLAGS += -I$(dir .)
+CFLAGS		+= -D_GNU_SOURCE
+CYCFLAGS	+= -I$(dir .)
+LDFLAGS		+= -lpthread
+LDFLAGS_BOOT	+= -lpthread
 
 boot-library ()
 

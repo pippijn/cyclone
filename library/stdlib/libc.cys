@@ -1876,11 +1876,6 @@ monetary.h:
 mqueue.h:
 ;
 
-// Defines a structure containing a void *
-// Not supported yet
-ndbm.h:
-;
-
 // Defines a structure containing a char *
 // Not supported yet
 net/if.h:
@@ -2139,6 +2134,11 @@ hstub pthread_cond_wait {
 hstub pthread_create {
   // FIXME: buildlib doesn't handle "typedef T T;" well.
   typedef union pthread_attr_t pthread_attr_t;
+  int pthread_create (pthread_t @thread, const pthread_attr_t *attr,
+		      `a (@`H cycfun) (`b), `b arg: regions(`b) <= `H)
+    __attribute__((initializes(1)));
+}
+cycstub pthread_create {
       // TODO: could change the type of pthread_t to be pthread_t<`a>
       // where `a is the return type for the invocation function.
       // Then the type of join() could be changed to properly
@@ -2150,7 +2150,8 @@ hstub pthread_create {
 				   `a (*__start_routine) (`b), `b arg)
           __attribute__((initializes(1)));
   }
-  static int pthread_create (pthread_t @thread, const pthread_attr_t *attr,
+
+  int pthread_create (pthread_t @thread, const pthread_attr_t *attr,
 		      `a (@`H cycfun) (`b), `b arg: regions(`b) <= `H)
     __attribute__((initializes(1)))
     {
@@ -4888,6 +4889,7 @@ hstub openlog {
 extern "C" void openlog(const char @, int, int);
 }
 hstub syslog {
+  #include <stdio.h>
   extern void syslog(int, const char ?,... inject parg_t)
     __attribute__((format(printf,2,3)));
   extern void vsyslog(int, const char ?, parg_t ? ap)
@@ -5110,11 +5112,6 @@ hstub timezone {
 hstub daylight {
   extern "C" int daylight;
 }
-;
-
-// Tracing
-// Not supported yet
-trace.h:
 ;
 
 // User context
