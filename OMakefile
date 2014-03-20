@@ -52,8 +52,6 @@ CYCFLAGS[] =
   -I$(rootdir)/library/stdlib/libc
 
 LDFLAGS[] =
-  -flto
-  -Werror
   -L$(rootdir)/library/runtime
   -Wl,-rpath,$(absname $(rootdir)/library/runtime)
   -lcycrt
@@ -65,7 +63,6 @@ LDFLAGS_BOOT = $(LDFLAGS)
 ########################################################################
 
 CFLAGS[] =
-  -flto
   -m32
   -ggdb3
   -I$(rootdir)/library/runtime
@@ -208,6 +205,8 @@ buildlib (cys) =
 
     $(STUBS): ../$(cys).cys $(BUILDLIB)
       $(BUILDLIB) -d . $<
+      if $(file-exists $(rootdir)/library/stdlib/libc/pthread.h):
+        cat $(rootdir)/library/stdlib/libc/pthread.h
 
     %: $(STUBS)
 
@@ -221,7 +220,8 @@ buildlib (cys) =
 
 %.c %.h: %.bsp $(BANSHEE)
   $(BANSHEE) $< $*
-  uncrustify --no-backup -lC -q $*.c $*.h
+  if $(file-exists $(HOME)/.uncrustify.cfg):
+    uncrustify --no-backup -lC -q $*.c $*.h
 
 %.pdf: %.tex
   rubber --pdf $<

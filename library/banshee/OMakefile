@@ -44,7 +44,7 @@ OBJECTS[] =
   utils.o
 
 fn_ptrs.c: build_funptr_table.py $(OBJECTS)
-  build_funptr_table.py $(nth-tl 1, $+) > $@
+  $< $(nth-tl 1, $+) > $@
 
 OBJECTS[] +=
   rlib/regions.o

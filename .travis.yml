@@ -1,0 +1,17 @@
+language: c
+script:
+   - ./configure
+   - omake -k
+
+install:
+   # Add PPA to download from.
+   - sudo apt-add-repository -y ppa:pippijn/ppa
+   - sudo apt-get update
+   # Package dependencies.
+   - sudo apt-get install omake ocaml ocaml-native-compilers ocaml-findlib gcc-multilib uncrustify rubber
+
+# whitelist
+branches:
+   only:
+      - master
+      - /.*\/staging/

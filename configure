@@ -1,0 +1,5 @@
+#!/bin/sh
+
+if [ ! -d boot ]; then
+   git clone --depth 1 git://github.com/pippijn/cyclone-boot boot
+fi
