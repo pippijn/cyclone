@@ -30,3 +30,6 @@ sample.out: sample sample.ref
   diff $@ sample.ref
 
 check: sample.out
+
+clean:
+  rm -rf .cych

@@ -193,6 +193,10 @@ boot-library () =
 
 buildlib (cys) =
   mkdir -p $(cys)
+
+  clean:
+    rm -r $(cys)
+
   .SUBDIRS: $(cys)
     STUBS[] =
       cstubs.c
@@ -221,14 +225,15 @@ buildlib (cys) =
 
 ########################################################################
 
-.PHONY: check
-.DEFAULT: check
-
-.SUBDIRS: doc library tools testsuite
-
-########################################################################
-
 .PHONY: clean
 
 clean:
   rm $(filter-proper-targets $(find . -name *))
+  rm $(shell find . -name $"*.omc")
+
+########################################################################
+
+.PHONY: check
+.DEFAULT: check
+
+.SUBDIRS: doc library tools testsuite

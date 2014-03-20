@@ -1,2 +1,5 @@
 banshee.native: $(glob *.ml *.mli)
   ocamlbuild -use-ocamlfind $@
+
+clean:
+  ocamlbuild -clean

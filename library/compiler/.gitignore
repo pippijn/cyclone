@@ -1,5 +1,4 @@
 /*.c
 /lex.cyc
-!/config.c
 !/make-config.c
 /parse_errors_gen.h
