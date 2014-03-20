@@ -1484,6 +1484,7 @@ static void dumptms(bool is_char_ptr, list_t<type_modifier_t> tms,
     case &AppType(&HeapCon,_):   if (!qvar_to_Cids) dump("`H"); break;
     case &AppType(&UniqueHeapCon,_): dump("`U");  break;
     case &AppType(&RefCntHeapCon,_): dump("`RC"); break;
+    case &AppType(&JoinCon,_): dumpeff(rgn); break;
     case &VarType(tv): dumptvar(tv); break;
     case &Evar(_,NULL,_,_): dumpntyp(compress(rgn)); break;
     case &TypedefType(...): dump("@region("); dumptyp(rgn); dump(")"); break;
