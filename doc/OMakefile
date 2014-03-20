@@ -6,7 +6,10 @@ DOCS[] =
 PDFS = $(addsuffix .pdf, $(DOCS))
 
 .SCANNER: $(PDFS): $(find . -name *.tex)
-  echo $"$(PDFS): version.tex"
+  foreach (FILE => ..., $^):
+    awk ($(FILE))
+    case $'\\input\{\([^}]*\)\}':
+      echo $"$(PDFS): $1.tex"
 
 version.tex:
   echo $"{\Large Version $(VERSION), $(DATE)}\\[3ex]" > $@
