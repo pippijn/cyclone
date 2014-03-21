@@ -8,7 +8,7 @@ install:
    - sudo apt-add-repository -y ppa:pippijn/ppa
    - sudo apt-get update
    # Package dependencies.
-   - sudo apt-get install `sed -e 's/#.*//' .dependencies`
+   - sudo apt-get install --no-install-recommends `sed -e 's/#.*//' .dependencies`
 
 # whitelist
 branches:
