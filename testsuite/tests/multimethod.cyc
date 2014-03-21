@@ -19,6 +19,7 @@ typedef struct Object obj_t;
  * tostring, and one multi-method cmp.
  */
 struct Class<`a::A> {
+  unsigned int id;
   const char @(@tostring)(struct Obj<`a> @self);
   int (@cmp)(struct Obj<`a>@, struct Obj<`a>@);
   struct Obj<`a> *cast_value;
@@ -71,7 +72,7 @@ int cmp(obj_t x, obj_t y) {
   let Object{<`y> yobj} = y;
   struct Obj<`x> *yasx_opt = cast_obj(xobj->vtable,yobj);
   if (yasx_opt == NULL)
-    return (int)(xobj->vtable) - (int)(yobj->vtable);
+    return xobj->vtable->id - yobj->vtable->id;
   struct Obj<`x> @yasx = (_@)yasx_opt;
   return xobj->vtable->cmp(xobj,yasx);
 }
@@ -102,6 +103,7 @@ static int intcmp(struct Obj<int> @x, struct Obj<int> @y) {
 /* Constructor for Obj<int> */
 struct Obj<int> @int_ctor(int i) {
   static struct Class<int> intvtable = {
+    .id = 1,
     .tostring = int2string,
     .cmp = intcmp,
     .cast_value = NULL
@@ -122,6 +124,7 @@ int doublecmp(struct Obj<double> @x, struct Obj<double> @y) {
 /* Constructor for Obj<double> */
 struct Obj<double> @double_ctor(double d) {
   static struct Class<double> doublevtable = {
+    .id = 2,
     .tostring = double2string,
     .cmp = doublecmp,
     .cast_value = NULL
@@ -141,6 +144,7 @@ int stringptrcmp(struct Obj<const char ?`H>@x, struct Obj<const char ?`H>@y) {
 /* Constructor for Obj<string_t> */
 struct Obj<const char ?>@ string_ctor(const char ?`H s) {
   static struct Class<const char ?`H> stringvtable = {
+    .id = 3,
     .tostring = string2string,
     .cmp = stringptrcmp,
     .cast_value = NULL
