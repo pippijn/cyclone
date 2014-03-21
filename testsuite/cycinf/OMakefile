@@ -14,7 +14,7 @@ RESFLAGS[] =
 
 link (stdlib)
 
-sample: sample.cyc external.cyc $(LIBCYC) $(CYCLONE)
+sample: sample.cyc external.cyc $(CYCLONE) $(LIBCYC)
   rm -rf .cych
   mkdir -p .cych
   touch .cych/cvars

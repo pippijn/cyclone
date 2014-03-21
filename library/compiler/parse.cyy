@@ -67,26 +67,13 @@ extern void yyprint(int, union YYSTYPE<`yy>);
 #include "parse.h"
 #include "position.h"
 #include "bansheeif.h"
+#include "lex.h"
+
 using Core;
 using List;
 using Absyn;
 using BansheeIf;
 using Hashtable;
-
-// Typedef processing must be split between the parser and lexer.
-// These functions are called by the parser to communicate typedefs
-// to the lexer, so the lexer can distinguish typedefs from identifiers.
-namespace Lex {
-  void register_typedef(qvar_t);
-  void enter_namespace(var_t);
-  void leave_namespace();
-  void enter_using(qvar_t);
-  void leave_using();
-  void enter_extern_c();
-  void leave_extern_c();
-  extern qvar_t token_qvar;
-  extern string_t token_string;
-}
 
 // State that we thread through the lexer and parser.
 #define YYLEX_PARAM_ARG Lexing::Lexbuf<Lexing::Function_lexbuf_state<FILE@>>,union YYSTYPE<`yy> @yylval_ptr, YYLTYPE @yylloc

@@ -124,7 +124,7 @@ qvar_cmp (qvar_t q1, qvar_t q2)
 int
 hash_qvar (qvar_t q)
 {
-  return Hashtable::hash_string (*((*q)[1]));
+  return Hashtable::hash_string (*(*q)[1]);
 }
 
 // WARNING: Ignores the kinds.
@@ -290,9 +290,9 @@ static List<type_t>		N##_argl = List { A, NULL };			\
 static datatype Type.AppType	N##_tval = AppType (&N##_cval, &N##_argl);	\
 type_t				N = &N##_tval
 
-// e.g., MAKE_NULLARY_TYPE(void_type,VoidCon) becomes
+// e.g., MAKE_NULLARY_TYPE (void_type, VoidCon) becomes
 // static datatype TyCon.VoidCon void_type_cval = VoidCon;
-// static datatype Type.AppType  void_type_tval = AppType(&void_type_cval,NULL);
+// static datatype Type.AppType  void_type_tval = AppType (&void_type_cval, NULL);
 // type_t void_type = &void_type_tval
 #define MAKE_TYPE(N, F, C)							\
 static datatype TyCon.F		N##_cval = C;					\
@@ -630,7 +630,7 @@ exn_tud ()
         );
 
       tud_opt = new Datatypedecl (Extern, exn_name, NULL,
-                                  new Opt(tufs), true);
+                                  new Opt (tufs), true);
     }
 
   return tud_opt;
@@ -2625,7 +2625,7 @@ no_side_effects_exp (exp_t e)
  * Variable may appear in expression?
  */
 
-static struct Env
+static struct VarMapAppearEnv
 {
   qvar_t var;
   bool result;
@@ -2634,7 +2634,7 @@ static struct Env
 // FIX?: rules out statement expressions
 // FIX?: could use exceptions to short-circuit more
 static bool
-var_may_appear_f1 (struct Env @env, exp_t e)
+var_may_appear_f1 (struct VarMapAppearEnv @env, exp_t e)
 {
   switch (e->r)
     {
@@ -2655,7 +2655,7 @@ var_may_appear_f1 (struct Env @env, exp_t e)
 }
 
 static bool
-var_may_appear_f2 (struct Env @env, stmt_t e)
+var_may_appear_f2 (struct VarMapAppearEnv @env, stmt_t e)
 {
   Warn::impos2 ("Absyn::no_side_effects looking at a statement");
 }
@@ -2663,7 +2663,7 @@ var_may_appear_f2 (struct Env @env, stmt_t e)
 bool
 var_may_appear_exp (qvar_t v, exp_t e)
 {
-  struct Env env = Env (v, false);
+  let env = VarMapAppearEnv (v, false);
   visit_exp (var_may_appear_f1, var_may_appear_f2, &env, e);
   return env.result;
 }
@@ -2696,7 +2696,7 @@ static bool
 do_nested_stmt_f2 (struct NestedStmtEnv<`a> @env, stmt_t s)
 {
   // always return false because f is doing its own recurring (for now)
-  (env->f) (env->env, s);
+  env->f (env->env, s);
   return false;
 }
 

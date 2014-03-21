@@ -7,7 +7,7 @@ TESTS[] =
   testaqualfail
 
 check: $(addsuffix .out, $(TESTS))
-  
-%.out: %.ref $(CYCLONE)
+
+%.out: %.ref $(CYCLONE) $(LIBS)
   ($(CYCLONE) $(CYCFLAGS) -stopafter-cf --manyerrors $*.cyc >& $@) || true
   diff -wu $@ $<

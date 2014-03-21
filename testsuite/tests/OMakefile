@@ -42,14 +42,14 @@ LDFLAGS += -lm -lpthread
 touch mmap_test.txt
 
 
-%.out: % %.ref
+%.out: % %.ref $(LIBCYC)
   if $(file-exists $*_input):
     $< < $*_input >& $@
   elseif $(file-exists $*.txt):
     $< $*.txt >& $@
   else
     $< $< >& $@
-  diff $@ $*.ref
+  diff -u $@ $*.ref
 
 
 foreach (exe => ..., $(EXES)):
