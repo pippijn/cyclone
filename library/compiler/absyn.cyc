@@ -793,7 +793,8 @@ star_type ( type_t t
 
 type_t
 cstar_type ( type_t t
-           , tqual_t tq)
+           , tqual_t tq
+           )
 {
   return star_type (t, heap_rgn_type, al_qual_type, tq, false_type, false_type);
 }
@@ -1015,7 +1016,8 @@ exp_t
 New_exp ( exp_opt_t rgn_handle
         , exp_t e
         , exp_opt_t qual_hdl
-        , seg_t loc)
+        , seg_t loc
+        )
 {
   return new_exp (new New_e (rgn_handle, e, qual_hdl), loc);
 }
@@ -1926,10 +1928,10 @@ is_lvalue (exp_t e)
         default:                        return true;
         }
 
-    case &Var_e ( ...):
-    case &AggrArrow_e ( ...):
-    case &Deref_e ( ...):
-    case &Subscript_e ( ...):           return true;
+    case &Var_e (...):
+    case &AggrArrow_e (...):
+    case &Deref_e (...):
+    case &Subscript_e (...):            return true;
 
     case &AggrMember_e (e1, ...):       return is_lvalue (e1);
     case &Instantiate_e (e1, ...):      return is_lvalue (e1);
@@ -1977,14 +1979,14 @@ decl_name (decl_t decl)
     case &Portoff_d:
     case &Tempeston_d:
     case &Tempestoff_d:
-    case &Let_d ( ...):
+    case &Let_d (...):
     case &Datatype_d (_):
     case &Letv_d (_):
     case &Namespace_d (_, _):
     case &Using_d (_, _):
-    case &ExternC_d ( ...):
-    case &ExternCinclude_d ( ...):
-    case &Region_d ( ...):
+    case &ExternC_d (...):
+    case &ExternCinclude_d (...):
+    case &Region_d (...):
       return NULL;
     }
 }
@@ -2589,15 +2591,15 @@ no_side_effects_f1 (bool @env, exp_t e)
 {
   switch (e->r)
     {
-    case &FnCall_e ( ...):
-    case &AssignOp_e ( ...):
-    case &Swap_e ( ...):
-    case &Asm_e ( ...):
+    case &FnCall_e (...):
+    case &AssignOp_e (...):
+    case &Swap_e (...):
+    case &Asm_e (...):
     case &StmtExp_e (_):
-    case &Increment_e ( ...):
+    case &Increment_e (...):
       *env = false;
       return false;
-    case &Sizeofexp_e ( ...):
+    case &Sizeofexp_e (...):
       return false;
     default:
       return true;
