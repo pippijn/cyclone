@@ -17,7 +17,7 @@ HEADERS[] =
   ../slowdict.h
   ../xarray.h
 
-stdlib.tex: $(HEADERS) $(CYCDOC) $(CYCLONE)
+stdlib.tex: $(HEADERS) $(CYCDOC) $(CYCLONE) $(LIBS)
   $(CYCDOC) -cyclone $(CYCLONE) -I.. $(HEADERS) > $@
 
 .DEFAULT: stdlib.tex

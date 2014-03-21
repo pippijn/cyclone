@@ -3,8 +3,15 @@ rootdir = $(dir .)
 VERSION		= 1.0
 DATE		= $(shell date $'+%B %d, %G')
 
-HAVE_THREADS	= 0
+HAVE_THREADS	= 1
 USE_CYC_TLS	= 0
+
+LIBCOMPILER	= $(rootdir)/library/compiler/libcompiler.so
+LIBSTDLIB	= $(rootdir)/library/stdlib/libstdlib.so
+LIBCYCRT	= $(rootdir)/library/runtime/libcycrt.so
+
+LIBCYC		= $(LIBCYCRT)
+LIBCYC_BOOT	= $(LIBCYCRT)
 
 BUILDLIB	= $(rootdir)/tools/buildlib/buildlib
 CYCBISON	= $(rootdir)/tools/bison/cycbison
@@ -16,10 +23,6 @@ STRINGIFY	= $(rootdir)/tools/stringify/stringify
 BANSHEE		= $(rootdir)/tools/banshee/banshee.native
 
 CYCSPECS	= $(rootdir)/library/stdlib/cyc-lib/cycspecs
-
-LIBCYCRT	= $(rootdir)/library/runtime/libcycrt.so
-LIBCYC		= $(LIBCYCRT)
-LIBCYC_BOOT	= $(LIBCYCRT)
 
 link (lib) =
   LDFLAGS[] +=
@@ -99,10 +102,20 @@ elseif $(USE_CYC_TLS):
 ########################################################################
 
 bootname (name) =
-  file ($(addprefix $(rootdir)/boot/$(fullname .)/,$(name)))
+  SUFF = $(suffix $(name))
+  switch $(SUFF)
+  case:
+  case $".so":
+    name = $(removesuffix $(name)).boot$(SUFF)
+    export
+  value $(file $(addprefix $(rootdir)/boot/$(fullname .)/, $(name)))
+
+bootnames (names) =
+  foreach (name => ..., $(names)):
+    bootname ($(name))
 
 boot () =
-  boot-dirs = $(bootname $(set $(dirname $(OBJECTS))))
+  boot-dirs = $(bootnames $(set $(dirname $(OBJECTS))))
 
   boot: $(addsuffix .c, $(removesuffix $(OBJECTS)))
     #rm -rf $(boot-dirs)
@@ -123,25 +136,29 @@ boot () =
 
 private.cyclone-rules (boot) =
   if $(boot):
+    LIBCOMPILER	= $(bootname $(LIBCOMPILER))
+    LIBSTDLIB	= $(bootname $(LIBSTDLIB))
     CYCLONE	= $(bootname $(CYCLONE)).boot
     CYCLEX	= $(bootname $(CYCLEX)).boot
     CYCBISON	= $(bootname $(CYCBISON)).boot
     BUILDLIB	= $(bootname $(BUILDLIB)).boot
     export
 
-  .SCANNER: scan-%.cyc: %.cyc $(CYCLONE) $(CYCSPECS)
+  LIBS = $(LIBCOMPILER) $(LIBSTDLIB) $(LIBCYCRT)
+
+  .SCANNER: scan-%.cyc: %.cyc $(CYCLONE) $(CYCSPECS) $(LIBS)
     $(CYCLONE) $(CYCFLAGS) $< -M -MT $(removesuffix $<).c
 
-  %.c: %.cyc $(CYCLONE) $(CYCSPECS) :scanner: scan-%.cyc
+  %.c: %.cyc $(CYCLONE) $(CYCSPECS) $(LIBS) :scanner: scan-%.cyc
     $(CYCLONE) $(CYCFLAGS) -stopafter-toc $< -o $@
 
-  %.cyc: %.cyl $(CYCLEX)
+  %.cyc: %.cyl $(CYCLEX) $(LIBSTDLIB)
     $(CYCLEX) $< $@
 
-  %_tab.cyc %_tab.h: %.cyy $(CYCBISON)
+  %_tab.cyc %_tab.h: %.cyy $(CYCBISON) $(LIBSTDLIB)
     $(CYCBISON) -d $< -o $*.cyc
 
-  %_gen.h: %.err.cyc $(ERRORGEN) $(CYCLONE)
+  %_gen.h: %.err.cyc $(ERRORGEN) $(CYCLONE) $(LIBSTDLIB)
     $(ERRORGEN) -c $(CYCLONE) $< > $@
 
   export
@@ -210,7 +227,7 @@ buildlib (cys) =
       cstubs.c
       cycstubs.cyc
 
-    $(STUBS): ../$(cys).cys $(BUILDLIB)
+    $(STUBS): ../$(cys).cys $(BUILDLIB) $(LIBS)
       $(BUILDLIB) -d . $<
 
     %: $(STUBS)
