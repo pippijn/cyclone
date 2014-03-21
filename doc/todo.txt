@@ -218,6 +218,9 @@ THINGS NEEDED TO MAKE REGIONS MORE REAL:
 
 THINGS THAT WOULD BE NICE OR THAT HAVE SEX APPEAL:
 --------------------------------------------------
+* add "@strong typedef" that needs a cast to be converted to its
+  definition type.
+
 * better type error messages:  it would be good to drop region information
   when it's not germaine to the error (e.g., regions).
 
