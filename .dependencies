@@ -5,4 +5,5 @@ ocaml-findlib
 ocaml-native-compilers
 omake
 rubber
+texlive-fonts-recommended
 texlive-latex-extra
