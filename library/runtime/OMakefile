@@ -1,6 +1,7 @@
 OBJECTS[] =
   bget.o
   nogc.o
+  #runtime_backtrace.o
   runtime_cyc.o
   runtime_exception.o
   runtime_memory.o
@@ -8,4 +9,4 @@ OBJECTS[] =
   runtime_zeroterm.o
 
 libcycrt.so: $(OBJECTS)
-  cc -m32 -o $(absname $@) -shared -Wl,-z,defs $(OBJECTS) $(PTHREAD_LDFLAGS)
+  cc -m32 -o $(absname $@) -shared -Wl,-z,defs $(OBJECTS) $(PTHREAD_LDFLAGS) #-ldl
