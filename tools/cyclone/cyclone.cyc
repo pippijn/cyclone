@@ -634,7 +634,6 @@ list_t<Absyn::decl_t> do_print($(FILE@`H,mstring_t<`H>) @env,
   let &$(out_file,cfile) = env;
     let params_r = (Flags::stop_after_pass < Flags::Toc) ? Absynpp::cyc_params_r : Absynpp::c_params_r;
   params_r.expand_typedefs = ! Flags::noexpand_r;
-  params_r.to_VC = Flags::tovc_r;
   params_r.add_cyc_prefix = add_cyc_namespace_r;
   params_r.generate_line_directives = generate_line_directives_r;
   params_r.print_full_evars = print_full_evars_r;

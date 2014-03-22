@@ -80,10 +80,6 @@ static stringptr_t nocyc_strptr = &nocyc_str;
 // Flag controlling whether to add the cyc prefix to the C-identifiers
 static bool add_cyc_prefix;
 
-// Flag controlling whether the (C) output should be for VC instead of gcc.
-// (Differences: long long vs. __int64 and inline vs. __inline)
-static bool to_VC;
-
 // Flag controlling whether declarations have to be at the beginning of blocks
 static bool decls_first;
 
@@ -133,7 +129,6 @@ struct Params {
   bool expand_typedefs;
   bool qvar_to_Cids;
   bool add_cyc_prefix;
-  bool to_VC;
   bool decls_first;
   bool rewrite_temp_tvars;
   bool print_all_tvars;
@@ -153,7 +148,6 @@ void set_params(struct Params @ fs) {
   expand_typedefs = fs->expand_typedefs;
   qvar_to_Cids = fs->qvar_to_Cids;
   add_cyc_prefix = fs->add_cyc_prefix;
-  to_VC = fs->to_VC;
   decls_first = fs->decls_first;
   rewrite_temp_tvars = fs->rewrite_temp_tvars;
   print_all_tvars = fs->print_all_tvars;
@@ -174,7 +168,6 @@ struct Params cyc_params_r =
     .expand_typedefs = false,
     .qvar_to_Cids = false,
     .add_cyc_prefix = false,
-    .to_VC = false,
     .decls_first = false,
     .rewrite_temp_tvars = true,
     .print_all_tvars = false,
@@ -195,7 +188,6 @@ struct Params cycinf_params_r =
     .expand_typedefs = false,
     .qvar_to_Cids = false,
     .add_cyc_prefix = false,
-    .to_VC = false,
     .decls_first = false,
     .rewrite_temp_tvars = true,
     .print_all_tvars = false,
@@ -216,7 +208,6 @@ struct Params cyci_params_r =
     .expand_typedefs = true,
     .qvar_to_Cids = false,
     .add_cyc_prefix = true,
-    .to_VC = false,
     .decls_first = false,
     .rewrite_temp_tvars = true,
     .print_all_tvars = false,
@@ -237,7 +228,6 @@ struct Params c_params_r =
     .expand_typedefs = true,
     .qvar_to_Cids = true,
     .add_cyc_prefix = true,
-    .to_VC = false,
     .decls_first = true,
     .rewrite_temp_tvars = false,
     .print_all_tvars = false,
@@ -258,7 +248,6 @@ struct Params tc_params_r =
     .expand_typedefs = false,
     .qvar_to_Cids = false,
     .add_cyc_prefix = false,
-    .to_VC = false,
     .decls_first = false,
     .rewrite_temp_tvars = true,
     .print_all_tvars = false,

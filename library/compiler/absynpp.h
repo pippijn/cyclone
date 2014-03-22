@@ -32,7 +32,6 @@ extern struct Params {
   bool expand_typedefs;
   bool qvar_to_Cids;
   bool add_cyc_prefix;
-  bool to_VC;
   bool decls_first;
   bool rewrite_temp_tvars;
   bool print_all_tvars;
