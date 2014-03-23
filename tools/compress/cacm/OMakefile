@@ -1,3 +1,7 @@
+HEADERS[] =
+  arithmetic_coding.h
+  model.h
+
 OBJECTS[] =
   adaptive_model.o
   arithmetic_decode.o

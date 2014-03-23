@@ -1,3 +1,6 @@
+HEADERS[] =
+  aprof_event.h
+
 OBJECTS[] =
   aprof.o
   aprof_event.o

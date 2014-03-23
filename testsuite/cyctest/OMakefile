@@ -1,3 +1,36 @@
+HEADERS[] =
+  suites/arg_suite.h
+  suites/array_suite.h
+  suites/attribute_suite.h
+  suites/bad_suite.h
+  suites/bitvec_suite.h
+  suites/buffer_suite.h
+  suites/core_suite.h
+  suites/ctype_suite.h
+  suites/dict_suite.h
+  suites/extern_c_suite.h
+  suites/filename_suite.h
+  suites/float_suite.h
+  suites/fn_suite.h
+  suites/hash_suite.h
+  suites/letv_suite.h
+  suites/list_suite.h
+  suites/pattern_match_suite.h
+  suites/pp_suite.h
+  suites/printf_suite.h
+  suites/queue_suite.h
+  suites/rope_suite.h
+  suites/scanf_suite.h
+  suites/set_suite.h
+  suites/signals_suite.h
+  suites/string_suite.h
+  suites/swap_suite.h
+  suites/try_suite.h
+  suites/tuple_suite.h
+  suites/union_suite.h
+  suites/xarray_suite.h
+  support.h
+
 OBJECTS[] =
   cyctest.o
 

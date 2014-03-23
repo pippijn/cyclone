@@ -1,1 +1,23 @@
-.SUBDIRS: .
+top_srcdir	= $(dir .)
+
+VPATH = true
+#VPATH = false
+
+if $(VPATH):
+  SUBDIRS[] =
+    boot
+    doc
+    library
+    testsuite
+    tools
+
+  srcdirs		= $(subdirs PC, $(SUBDIRS))
+
+  mkdir -p $(addprefix _build/, $(srcdirs))
+  vmount (-l, ., _build)
+
+  add-project-directories (.)
+
+  .SUBDIRS: _build
+else
+  .SUBDIRS: .

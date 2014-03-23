@@ -1,3 +1,14 @@
+HEADERS[] =
+  files.h
+  gram.h
+  lex.h
+  machine.h
+  new.h
+  state.h
+  symtab.h
+  system.h
+  types.h
+
 OBJECTS[] =
   LR0.o
   closure.o

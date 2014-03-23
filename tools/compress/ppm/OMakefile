@@ -1,3 +1,7 @@
+HEADERS[] =
+  arithcode.h
+  model.h
+
 OBJECTS[] =
   arithcode.o
   model.o

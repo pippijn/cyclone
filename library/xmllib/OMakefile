@@ -2,6 +2,12 @@
 ############################# XML Library ##############################
 ########################################################################
 
+HEADERS[] =
+  xmlscan.h
+  xml/xml.h
+  xml/xmldump.h
+  xml/xmlparse.h
+
 OBJECTS[] =
   xml.o
   xmldump.o

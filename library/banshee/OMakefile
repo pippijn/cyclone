@@ -12,6 +12,48 @@ CFLAGS[] +=
 
 .SUBDIRS: rlib doc
 
+HEADERS[] =
+  rlib/alloc.c
+  rlib/dhash.c
+  rlib/dhash.h
+  rlib/linkage.h
+  rlib/pages.c
+  rlib/regions.h
+  rlib/serialize.c
+  annotations.h
+  array.h
+  banshee.h
+  banshee_persist_kinds.h
+  banshee_region_persist_kinds.h
+  bfix.h
+  bool.h
+  bounds.h
+  buffer.h
+  compiler.h
+  cstring.h
+  flowrow-sort.h
+  flow-var.h
+  hash.h
+  hashset.h
+  jcollection.h
+  linkage.h
+  list.h
+  persist.h
+  regexp.h
+  setif-sort.h
+  setif-var.h
+  setst-sort.h
+  setst-var.h
+  stamp.h
+  termhash.h
+  term-sort.h
+  term-var.h
+  ufind.h
+  usage.h
+  utils.h
+
+.DEFAULT: $(HEADERS)
+
 OBJECTS[] =
   #bounds.o
   hash_bounds.o

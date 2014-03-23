@@ -1,4 +1,17 @@
-banshee.native: $(glob *.ml *.mli)
+SOURCES[] =
+  banshee.ml
+  cgen.ml
+  engspec.ml
+  lexer.mll
+  parser.mly
+  row_sort.ml
+  setst_sort.ml
+  set_sort.ml
+  sort_utils.ml
+  spec_to_c.ml
+  term_sort.ml
+
+banshee.native: $(SOURCES) _tags
   ocamlbuild -use-ocamlfind $@
 
 clean:

@@ -5,7 +5,7 @@ DOCS[] =
 
 PDFS = $(addsuffix .pdf, $(DOCS))
 
-.SCANNER: $(PDFS): $(find . -name *.tex)
+.SCANNER: $(PDFS): $(find $(abs_srcname .) -name *.tex)
   foreach (FILE => ..., $^):
     awk ($(FILE))
     case $'\\input\{\([^}]*\)\}':

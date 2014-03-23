@@ -21,6 +21,53 @@ LDFLAGS_BOOT	+= $(LIBBANSHEE_LDFLAGS)
 LIBCYC		+= $(LIBBANSHEE)
 LIBCYC_BOOT	+= $(LIBBANSHEE)
 
+HEADERS[] =
+  absyn.h
+  absyndump.h
+  absynpp.h
+  assndef.h
+  attributes.h
+  bansheeif.h
+  binding.h
+  callgraph.h
+  cf_flowinfo.h
+  cifc.h
+  currgn.h
+  evexp.h
+  flags.h
+  formatstr.h
+  insert_checks.h
+  interface.h
+  jump_analysis.h
+  kinds.h
+  lex.h
+  lower.h
+  low_treeshake.h
+  new_control_flow.h
+  parse.h
+  pratt_prover.h
+  remove_aggregates.h
+  remove_casts.h
+  remove_labels.h
+  rename_temps.h
+  rgnorder.h
+  specsfile.h
+  subtype.h
+  tc.h
+  tcdecl.h
+  tcenv.h
+  tcexp.h
+  tcpat.h
+  tcstmt.h
+  tctyp.h
+  tcutil.h
+  toc.h
+  toseqc.h
+  tovc.h
+  unify.h
+  vcgen.h
+  warn.h
+
 OBJECTS[] =
   inference/cycinf.o
   absyndump.o
@@ -94,3 +141,5 @@ libcompiler.so: $(OBJECTS) $(LIBCYC)
 
   libcompiler.boot.so: $(OBJECTS) $(LIBCYC_BOOT)
     cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) $(LDFLAGS_BOOT)
+
+.DEFAULT: $(HEADERS)

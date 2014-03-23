@@ -1,3 +1,7 @@
+HEADERS[] =
+  md5.h
+  streambuff.h
+
 EXES[] =
   cinclude
   dynregion

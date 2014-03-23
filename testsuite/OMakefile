@@ -11,3 +11,8 @@ SUBDIRS[] =
   tests
 
 .SUBDIRS: $(SUBDIRS)
+
+HEADERS[] =
+  cyctest.h
+
+.DEFAULT: $(HEADERS)

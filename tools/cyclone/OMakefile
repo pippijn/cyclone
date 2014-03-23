@@ -1,3 +1,7 @@
+HEADERS[] =
+  cyclone.h
+  interproc.h
+
 OBJECTS[] =
   cyclone.o
   interproc.o

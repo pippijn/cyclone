@@ -1,3 +1,11 @@
+HEADERS[] =
+  compact.h
+  lexer.h
+  lexgen.h
+  output.h
+  parser.h
+  syntax.h
+
 OBJECTS[] =
   compact.o
   lexer.o

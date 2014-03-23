@@ -1,3 +1,41 @@
+HEADERS[] =
+  ap.h
+  apq.h
+  arg.h
+  array.h
+  assert.h
+  base64.h
+  bitvec.h
+  buffer.h
+  core.h
+  cycboot.h
+  dict.h
+  execinfo.h
+  filename.h
+  fn.h
+  gc_ifc.h
+  getopt.h
+  graph.h
+  hashtable.h
+  iter.h
+  lexing.h
+  lineno.h
+  list.h
+  position.h
+  pp.h
+  queue.h
+  rope.h
+  set.h
+  sexp.h
+  slowdict.h
+  splay.h
+  string.h
+  strings.h
+  xarray.h
+  xp.h
+
+.DEFAULT: $(HEADERS)
+
 OBJECTS[] =
   libc/cstubs.o
   libc/cycstubs.o

@@ -48,6 +48,10 @@ link (lib) =
 
 
 CYCFLAGS[] =
+  #-noexpandtypedefs
+  #-nochecks
+  #-nonullchecks
+  #-noboundschecks
   --geninterface
   --better-widen
   #--cifc-inst-tvar
@@ -56,8 +60,6 @@ CYCFLAGS[] =
   #-warnregioncoerce
   #-Wlose-unique
   #--unprovable
-  #-noexpandtypedefs
-  #-nonullchecks
   #--no-lower
   -I$(rootdir)/library/stdlib/libc
 
@@ -101,6 +103,21 @@ elseif $(USE_CYC_TLS):
 ############################## Boot stuff ##############################
 ########################################################################
 
+srcname (name) =
+  name = $(fullname $(name))
+  match $(name)
+  case $"^$(fullname $(rootdir))/\(.+\)$$":
+    value $1
+  case $"^$(fullname $(rootdir))$$":
+    value .
+  default:
+    value $(name)
+ 
+
+abs_srcname (name) =
+  absname ($(top_srcdir)/$(srcname $(name)))
+ 
+
 bootname (name) =
   SUFF = $(suffix $(name))
   switch $(SUFF)
@@ -108,7 +125,7 @@ bootname (name) =
   case $".so":
     name = $(removesuffix $(name)).boot$(SUFF)
     export
-  value $(file $(addprefix $(rootdir)/boot/$(fullname .)/, $(name)))
+  value $(file $(addprefix $(rootdir)/boot/$(srcname .)/, $(name)))
 
 bootnames (names) =
   foreach (name => ..., $(names)):
@@ -149,8 +166,8 @@ private.cyclone-rules (boot) =
   .SCANNER: scan-%.cyc: %.cyc $(CYCLONE) $(CYCSPECS) $(LIBS)
     $(CYCLONE) $(CYCFLAGS) $< -M -MT $(removesuffix $<).c
 
-  %.c: %.cyc $(CYCLONE) $(CYCSPECS) $(LIBS) :scanner: scan-%.cyc
-    $(CYCLONE) $(CYCFLAGS) -stopafter-toc $< -o $@
+  %.c %.cyci: %.cyc $(CYCLONE) $(CYCSPECS) $(LIBS) :scanner: scan-%.cyc
+    $(CYCLONE) $(CYCFLAGS) -stopafter-toc $< -o $*.c
 
   %.cyc: %.cyl $(CYCLEX) $(LIBSTDLIB)
     $(CYCLEX) $< $@
@@ -170,6 +187,9 @@ program (name) =
 
   .DEFAULT: $(name)
 
+  if $(defined HEADERS):
+    .DEFAULT: $(HEADERS)
+
   cyclone-rules (false)
   export
 
@@ -179,6 +199,9 @@ library () =
 
   lib$(name).so: $(OBJECTS) $(LIBCYC)
     cc -m32 -o $@ $(OBJECTS) -shared -Wl,-z,defs $(LDFLAGS)
+
+  if $(defined HEADERS):
+    .DEFAULT: $(HEADERS)
 
   cyclone-rules (false)
   export
@@ -196,6 +219,9 @@ boot-program (name) =
 
   .DEFAULT: $(name)
 
+  if $(defined HEADERS):
+    .DEFAULT: $(HEADERS)
+
   cyclone-rules (true)
   export
 
@@ -212,25 +238,33 @@ boot-library () =
     lib$(name).boot.so: $(OBJECTS) $(LIBCYC_BOOT)
       cc -m32 -o $@ $(OBJECTS) -shared -Wl,-z,defs $(LDFLAGS_BOOT)
 
+  if $(defined HEADERS):
+    .DEFAULT: $(HEADERS)
+
   cyclone-rules (true)
   export
     
 
 buildlib (cys) =
+  STUBS[] =
+    $(file $(cys)/cstubs.c)
+    $(file $(cys)/cycstubs.cyc)
+
   mkdir -p $(cys)
 
   clean:
     rm -r $(cys)
 
-  .SUBDIRS: $(cys)
-    STUBS[] =
-      cstubs.c
-      cycstubs.cyc
+  .SCANNER: scan-%.cyc: $(STUBS)
 
+  .SUBDIRS: $(cys)
     $(STUBS): ../$(cys).cys $(BUILDLIB) $(LIBS)
       $(BUILDLIB) -d . $<
 
-    %: $(STUBS)
+    %.h: $(STUBS)
+      value
+
+  export .RULE
 
 
 ########################################################################
@@ -244,6 +278,13 @@ buildlib (cys) =
   $(BANSHEE) $< $*
   if $(file-exists $(HOME)/.uncrustify.cfg):
     uncrustify --no-backup -lC -q $*.c $*.h
+
+.SCANNER: %.pdf: %.tex
+  awk ($<)
+  case $'\\input\{\([^}]*\)\}':
+    echo $"$@: $1.tex"
+  if $(file-exists $*.bib):
+    echo $"$@: $*.bib"
 
 %.pdf: %.tex
   rubber --pdf $<

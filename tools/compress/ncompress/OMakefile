@@ -1,3 +1,6 @@
+HEADERS[] =
+  patchlevel.h
+
 OBJECTS[] =
   compress42.o
 

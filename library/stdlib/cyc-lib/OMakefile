@@ -8,3 +8,11 @@ CYCFLAGS[] =
 
 boot: ../core.h $(CYCLONE)
   $(CYCLONE) -o precore_c.h $(CYCFLAGS) -x cyc $<
+
+
+HEADERS[] =
+  cyc_include.h
+  cycspecs
+  precore_c.h
+
+.DEFAULT: $(HEADERS)

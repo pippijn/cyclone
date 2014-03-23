@@ -17,3 +17,41 @@ SUBDIRS[] =
   yakker
 
 .SUBDIRS: $(SUBDIRS)
+
+HEADERS[] =
+  analyze.h
+  axarray.h
+  bnf.h
+  corerules.h
+  crawlergen.h
+  cs.h
+  dfa.h
+  dfa-core.h
+  dfa-impl.h
+  earley.h
+  earley-backend.h
+  earley-parsetree.h
+  extract.h
+  fa.h
+  flatten.h
+  funtable.h
+  imap_scanf.h
+  instantiate.h
+  leftfactor.h
+  namespaces.h
+  nfa_eager.h
+  nfa_lazy.h
+  pads.h
+  parsergen.h
+  pm_bnf.h
+  pr.h
+  prose.h
+  semiring.h
+  ssl.h
+  termgrammar.h
+  tge-scanf.h
+  tg_stack.h
+  util.h
+  ykbuf.h
+
+.DEFAULT: $(HEADERS)
