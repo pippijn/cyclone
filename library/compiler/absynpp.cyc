@@ -16,20 +16,25 @@
    along with the Cyclone compiler; see the file COPYING. If not,
    write to the Free Software Foundation, Inc., 59 Temple Place -
    Suite 330, Boston, MA 02111-1307, USA. */
+
+#include "absynpp.h"
+#include "evexp.h"
+#include "flags.h"
+#include "kinds.h"
+#include "tcutil.h"
+#include "warn.h"
+
+#include <assert.h>
 #include <buffer.h>
 #include <string.h>
-#include <assert.h>
-#include "evexp.h"
-#include "tcutil.h"
-#include "kinds.h"
-#include "warn.h"
-#include "flags.h"
-#include "absynpp.h"
+
 using Core;
 using PP;
 using Absyn;
 using List;
+
 namespace Absynpp;
+
 #ifndef PP_WIDTH
 #define PP_WIDTH 72
 #endif

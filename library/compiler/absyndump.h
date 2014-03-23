@@ -22,10 +22,11 @@
 #include "absynpp.h"
 
 // not re-entrant.
-namespace Absyndump {
-void set_params(struct Absynpp::Params @ `r fs);
-void dumpdecllist2file(List::list_t<Absyn::decl_t> tdl, FILE @`H f);
-void dump_interface(List::list_t<Absyn::decl_t> ds, FILE @`H f);
+namespace Absyndump
+{
+  void set_params (struct Absynpp::Params @`r fs);
+  void dumpdecllist2file (List::list_t<Absyn::decl_t> tdl, FILE @`H f);
+  void dump_interface (List::list_t<Absyn::decl_t> ds, FILE @`H f);
 }
 
 #endif

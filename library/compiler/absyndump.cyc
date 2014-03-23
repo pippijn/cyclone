@@ -75,7 +75,7 @@ static void dumpntyp (type_t);
 static void dumpexp (exp_t);
 static void dumpexp_prec (int, exp_t);
 static void dumppat (pat_t);
-static void dumpstmt (stmt_t, bool expstmt, Dict::dict_t<qvar_t, qvar_t, `H> );
+static void dumpstmt (stmt_t, bool expstmt, Dict::dict_t<qvar_t, qvar_t, `H>);
 static void dumpvardecl (vardecl_t, Position::seg_t, bool do_semi);
 static void dump_aggrdecl (aggrdecl_t);
 static void dump_enumdecl (enumdecl_t);
@@ -83,8 +83,8 @@ static void dump_datatypedecl (datatypedecl_t);
 static void dumpdecl (decl_t);
 static void dumptms (bool is_char_ptr, list_t<type_modifier_t>, void f (`a), `a);
 static void dumptqtd (tqual_t, type_t, void f (`a), `a);
-static void dumpaggrfields (list_t<aggrfield_t> );
-static void dumpenumfields (list_t<enumfield_t> );
+static void dumpaggrfields (list_t<aggrfield_t>);
+static void dumpenumfields (list_t<enumfield_t>);
 // really want to change this to char[] (need a control character for format
 // prims and the ability to cast to untagged (from Tagged requires Toc hlep,
 // from Fixed requires trivial Toc help)
