@@ -1,6 +1,6 @@
 OBJECTS[] =
   stringify.o
 
-link (stdlib)
+link (std)
 
 program (stringify)

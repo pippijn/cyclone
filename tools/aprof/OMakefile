@@ -9,6 +9,6 @@ OBJECTS[] =
   aprof_summary.o
   aprof_svg.o
 
-link (stdlib)
+link (std)
 
 program (aprof)

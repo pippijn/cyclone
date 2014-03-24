@@ -5,7 +5,7 @@ OBJECTS[] =
 LDFLAGS  += -lsqlite3
 CYCFLAGS += -I.
 
-link (stdlib)
+link (std)
 
 library ()
 

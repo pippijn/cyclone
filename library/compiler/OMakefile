@@ -119,7 +119,7 @@ OBJECTS[] =
   vcgen.o
   warn.o
 
-link (stdlib)
+link (std)
 
 boot ()
 cyclone-rules (true)
@@ -132,14 +132,14 @@ config.c: make-config.boot
 $(bootname config.c): config.c
   cp $< $@
 
-libcompiler.so: $(OBJECTS) $(LIBCYC)
+libcyccompiler.so: $(OBJECTS) $(LIBCYC)
   cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) $(LDFLAGS)
 
 .SUBDIRS: $(bootname .)
   .SUBDIRS: inference
     CFLAGS += $(LIBBANSHEE_CFLAGS)
 
-  libcompiler.boot.so: $(OBJECTS) $(LIBCYC_BOOT)
+  libcyccompiler.boot.so: $(OBJECTS) $(LIBCYC_BOOT)
     cc -m32 -o $@ -shared -Wl,-z,defs $(OBJECTS) $(LDFLAGS_BOOT)
 
 .DEFAULT: $(HEADERS)

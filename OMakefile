@@ -6,12 +6,12 @@ DATE		= $(shell date $'+%B %d, %G')
 HAVE_THREADS	= 1
 USE_CYC_TLS	= 0
 
-LIBCOMPILER	= $(rootdir)/library/compiler/libcompiler.so
-LIBSTDLIB	= $(rootdir)/library/stdlib/libstdlib.so
-LIBCYCRT	= $(rootdir)/library/runtime/libcycrt.so
+LIBCOMPILER	= $(rootdir)/library/compiler/libcyccompiler.so
+LIBSTD		= $(rootdir)/library/std/libcycstd.so
+LIBRT		= $(rootdir)/library/runtime/libcycrt.so
 
-LIBCYC		= $(LIBCYCRT)
-LIBCYC_BOOT	= $(LIBCYCRT)
+LIBCYC		= $(LIBRT)
+LIBCYC_BOOT	= $(LIBRT)
 
 BUILDLIB	= $(rootdir)/tools/buildlib/buildlib
 CYCBISON	= $(rootdir)/tools/bison/cycbison
@@ -22,24 +22,24 @@ ERRORGEN	= $(rootdir)/tools/errorgen/errorgen
 STRINGIFY	= $(rootdir)/tools/stringify/stringify
 BANSHEE		= $(rootdir)/tools/banshee/banshee.native
 
-CYCSPECS	= $(rootdir)/library/stdlib/cyc-lib/cycspecs
+CYCSPECS	= $(rootdir)/library/std/cyc-lib/cycspecs
 
 link (lib) =
   LDFLAGS[] +=
     -L$(rootdir)/library/$(lib)
     -Wl,-rpath,$(absname $(rootdir)/library/$(lib))
-    -l$(lib)
+    -lcyc$(lib)
 
   LDFLAGS_BOOT[] +=
     -L$(rootdir)/boot/library/$(lib)
     -Wl,-rpath,$(absname $(rootdir)/boot/library/$(lib))
-    -l$(lib).boot
+    -lcyc$(lib).boot
 
   LIBCYC[] +=
-    $(rootdir)/library/$(lib)/lib$(lib).so
+    $(rootdir)/library/$(lib)/libcyc$(lib).so
 
   LIBCYC_BOOT[] +=
-    $(rootdir)/boot/library/$(lib)/lib$(lib).boot.so
+    $(rootdir)/boot/library/$(lib)/libcyc$(lib).boot.so
 
   CYCFLAGS[] +=
     -I$(rootdir)/library/$(lib)
@@ -48,6 +48,7 @@ link (lib) =
 
 
 CYCFLAGS[] =
+  #-pp
   #-noexpandtypedefs
   #-nochecks
   #-nonullchecks
@@ -61,7 +62,7 @@ CYCFLAGS[] =
   #-Wlose-unique
   #--unprovable
   #--no-lower
-  -I$(rootdir)/library/stdlib/libc
+  -I$(rootdir)/library/std/libc
 
 LDFLAGS[] =
   -L$(rootdir)/library/runtime
@@ -78,7 +79,7 @@ CFLAGS[] =
   -m32
   -ggdb3
   -I$(rootdir)/library/runtime
-  -I$(rootdir)/library/stdlib/cyc-lib
+  -I$(rootdir)/library/std/cyc-lib
 
 PTHREAD_LDFLAGS[] = $(EMPTY_ARRAY)
 if $(HAVE_THREADS):
@@ -92,7 +93,7 @@ elseif $(USE_CYC_TLS):
 .SCANNER: scan-%.c: %.c
   cc $(CFLAGS) $< -MM
 
-%.o: %.c $(rootdir)/library/stdlib/cyc-lib/cyc_include.h :scanner: scan-%.c
+%.o: %.c $(rootdir)/library/std/cyc-lib/cyc_include.h :scanner: scan-%.c
   cc $(CFLAGS) $< -c -o $@
 
 %.boot: %.c
@@ -154,14 +155,14 @@ boot () =
 private.cyclone-rules (boot) =
   if $(boot):
     LIBCOMPILER	= $(bootname $(LIBCOMPILER))
-    LIBSTDLIB	= $(bootname $(LIBSTDLIB))
+    LIBSTD	= $(bootname $(LIBSTD))
     CYCLONE	= $(bootname $(CYCLONE)).boot
     CYCLEX	= $(bootname $(CYCLEX)).boot
     CYCBISON	= $(bootname $(CYCBISON)).boot
     BUILDLIB	= $(bootname $(BUILDLIB)).boot
     export
 
-  LIBS = $(LIBCOMPILER) $(LIBSTDLIB) $(LIBCYCRT)
+  LIBS = $(LIBCOMPILER) $(LIBSTD) $(LIBRT)
 
   .SCANNER: scan-%.cyc: %.cyc $(CYCLONE) $(CYCSPECS) $(LIBS)
     $(CYCLONE) $(CYCFLAGS) $< -M -MT $(removesuffix $<).c
@@ -169,13 +170,13 @@ private.cyclone-rules (boot) =
   %.c %.cyci: %.cyc $(CYCLONE) $(CYCSPECS) $(LIBS) :scanner: scan-%.cyc
     $(CYCLONE) $(CYCFLAGS) -stopafter-toc $< -o $*.c
 
-  %.cyc: %.cyl $(CYCLEX) $(LIBSTDLIB)
+  %.cyc: %.cyl $(CYCLEX) $(LIBSTD)
     $(CYCLEX) $< $@
 
-  %_tab.cyc %_tab.h: %.cyy $(CYCBISON) $(LIBSTDLIB)
+  %_tab.cyc %_tab.h: %.cyy $(CYCBISON) $(LIBSTD)
     $(CYCBISON) -d $< -o $*.cyc
 
-  %_gen.h: %.err.cyc $(ERRORGEN) $(CYCLONE) $(LIBSTDLIB)
+  %_gen.h: %.err.cyc $(ERRORGEN) $(CYCLONE) $(LIBSTD)
     $(ERRORGEN) -c $(CYCLONE) $< > $@
 
   export
@@ -197,7 +198,7 @@ program (name) =
 library () =
   private.name = $(basename $(fullname .))
 
-  lib$(name).so: $(OBJECTS) $(LIBCYC)
+  libcyc$(name).so: $(OBJECTS) $(LIBCYC)
     cc -m32 -o $@ $(OBJECTS) -shared -Wl,-z,defs $(LDFLAGS)
 
   if $(defined HEADERS):
@@ -231,11 +232,11 @@ boot-library () =
 
   boot ()
 
-  lib$(name).so: $(OBJECTS) $(LIBCYC)
+  libcyc$(name).so: $(OBJECTS) $(LIBCYC)
     cc -m32 -o $@ $(OBJECTS) -shared -Wl,-z,defs $(LDFLAGS)
 
   .SUBDIRS: $(bootname .)
-    lib$(name).boot.so: $(OBJECTS) $(LIBCYC_BOOT)
+    libcyc$(name).boot.so: $(OBJECTS) $(LIBCYC_BOOT)
       cc -m32 -o $@ $(OBJECTS) -shared -Wl,-z,defs $(LDFLAGS_BOOT)
 
   if $(defined HEADERS):

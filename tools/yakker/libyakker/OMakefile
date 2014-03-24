@@ -9,7 +9,7 @@ OBJECTS[] =
   ../ssl.o
   ../util.o
 
-link (stdlib)
+link (std)
 
 libyakker.a: $(OBJECTS)
   ar cru $@ $(OBJECTS)

@@ -1,6 +1,6 @@
 CYCFLAGS += -I$(dir .)
 
-link (stdlib)
+link (std)
 cyclone-rules (false)
 
 SUBDIRS[] =

@@ -1,7 +1,7 @@
 RESFLAGS[] =
   -ic
 
-link (stdlib)
+link (std)
 
 sample sample.cycio external.cycio: sample.cyc external.cyc $(LIBCYC) $(CYCLONE)
   $(CYCLONE) $(RESFLAGS) $(CYCFLAGS) external.cyc sample.cyc

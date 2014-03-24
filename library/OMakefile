@@ -2,15 +2,15 @@ SUBDIRS[] =
   banshee
   compiler
   runtime
-  stdlib
-  xmllib
+  std
+  xml
 
 if $(file-exists /usr/lib/i386-linux-gnu/libpcre.so):
-  SUBDIRS += cycpcre
+  SUBDIRS += pcre
   export
 
 if $(file-exists /usr/lib/i386-linux-gnu/libsqlite3.so):
-  SUBDIRS += cycsqlite3
+  SUBDIRS += sqlite3
   export
 
 .SUBDIRS: $(SUBDIRS)

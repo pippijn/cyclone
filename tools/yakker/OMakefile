@@ -1,7 +1,7 @@
 CYCFLAGS += -I$(dir .)
 CYCFLAGS += -DNULL_PLAN_C
 
-link (stdlib)
+link (std)
 cyclone-rules (false)
 
 instantiate.cyc: instantiate.yk yakker/yakker

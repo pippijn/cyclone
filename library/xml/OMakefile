@@ -14,7 +14,7 @@ OBJECTS[] =
   xmlparse_tab.o
   xmlscan.o
 
-link (stdlib)
+link (std)
 
 CYCFLAGS += -I.
 
@@ -29,7 +29,7 @@ library ()
 OBJECTS[] =
   xmlecho.o
 
-link (xmllib)
+link (xml)
 program (xmlecho)
 
 check: test.xml.out

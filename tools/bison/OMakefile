@@ -30,6 +30,6 @@ OBJECTS[] =
   warshall.o
   cycbison_simple.string.o
 
-link (stdlib)
+link (std)
 
 boot-program (cycbison)

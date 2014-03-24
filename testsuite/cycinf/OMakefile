@@ -12,7 +12,7 @@ RESFLAGS[] =
   #-ic
   --resolve
 
-link (stdlib)
+link (std)
 
 sample: sample.cyc external.cyc $(CYCLONE) $(LIBCYC)
   rm -rf .cych

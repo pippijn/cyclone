@@ -1,7 +1,7 @@
 top_srcdir	= $(dir .)
 
-VPATH = true
-#VPATH = false
+#VPATH = true
+VPATH = false
 
 if $(VPATH):
   SUBDIRS[] =

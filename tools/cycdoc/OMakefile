@@ -2,6 +2,6 @@ OBJECTS[] =
   cycdoc.o
 
 link (compiler)
-link (stdlib)
+link (std)
 
 program (cycdoc)

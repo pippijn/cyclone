@@ -1,6 +1,6 @@
 OBJECTS[] =
   errorgen.o
 
-link (stdlib)
+link (std)
 
 boot-program (errorgen)

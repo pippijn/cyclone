@@ -18,7 +18,7 @@ main (int argc, char *argv[])
 #endif
 
   printf ("char *Carch = \"%s\";\n", arch);
-  printf ("char *Cdef_lib_path = \"%s/library/stdlib\";\n", argv[1]);
+  printf ("char *Cdef_lib_path = \"%s/library/std\";\n", argv[1]);
   printf ("char *Cversion = \"1.0\";\n");
   printf ("int Wchar_t_unsigned = %d;\n", (wchar_t)-1 > 0);
   printf ("int Sizeof_wchar_t = %d;\n", sizeof (wchar_t));

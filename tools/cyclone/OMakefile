@@ -7,6 +7,6 @@ OBJECTS[] =
   interproc.o
 
 link (compiler)
-link (stdlib)
+link (std)
 
 boot-program (cyclone)

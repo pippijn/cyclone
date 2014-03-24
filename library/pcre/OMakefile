@@ -9,7 +9,7 @@ OBJECTS[] =
 LDFLAGS  += -lpcre
 CYCFLAGS += -I.
 
-link (stdlib)
+link (std)
 
 library ()
 
@@ -23,7 +23,7 @@ buildlib (libpcre)
 OBJECTS[] =
   pcredemo.o
 
-link (cycpcre)
+link (pcre)
 program (pcredemo)
 
 check: pcredemo.out
