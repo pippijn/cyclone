@@ -45,6 +45,9 @@ LDFLAGS += -lm -lpthread
 
 touch mmap_test.txt
 
+clean:
+  rm mmap_test.txt
+
 
 %.out: % %.ref $(LIBCYC)
   if $(file-exists $*_input):
