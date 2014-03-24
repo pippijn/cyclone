@@ -102,6 +102,8 @@ GC_register_finalizer_no_order (GC_PTR obj, GC_finalization_proc fn, GC_PTR cd,
 
 /* This is the platform default allocator (malloc) */
 
+#include "precore_c.h"
+
 #include <stdlib.h>
 
 /* hack: assumes this is called immediately after an allocation */
@@ -122,6 +124,9 @@ void *GC_malloc(size_t x) {
   // FIX:  I'm calling calloc to ensure the memory is zero'd.  This
   // is because I had to define GC_calloc in runtime_memory.c
   size_t *p = calloc(1, sizeof *p + x + 1);
+  if (!p)
+    _throw_badalloc ();
+
   *p++ = x;
   total_bytes_allocd += GC_size(p);
   return p;
@@ -131,6 +136,9 @@ void *GC_malloc_atomic(size_t x) {
   // FIX:  I'm calling calloc to ensure the memory is zero'd.  This
   // is because I had to define GC_calloc in runtime_memory.c
   size_t *p = calloc(1, sizeof *p + x + 1);
+  if (!p)
+    _throw_badalloc ();
+
   *p++ = x;
   total_bytes_allocd += GC_size(p);
   return p;
@@ -146,6 +154,9 @@ void *GC_realloc(void *x, size_t n) {
 #else
   p = realloc(p, n);
 #endif
+  if (!p)
+    _throw_badalloc ();
+
   *p = n;
 
   total_bytes_allocd += n - sz;
