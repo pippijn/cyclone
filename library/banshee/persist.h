@@ -139,6 +139,16 @@ bool string_data_set_fields(void *obj);
 
 void *update_funptr_data(int id);
 
+#define fread_s(ptr, size, nmemb, stream) do {		\
+  size_t bytes = fread (ptr, size, nmemb, stream);	\
+  assert (bytes == nmemb);				\
+} while (0)
+
+#define fwrite_s(ptr, size, nmemb, stream) do {		\
+  size_t bytes = fwrite (ptr, size, nmemb, stream);	\
+  assert (bytes == nmemb);				\
+} while (0)
+
 EXTERN_C_END
 
 #endif /* PERSIST_H */

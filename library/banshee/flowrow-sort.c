@@ -1336,7 +1336,7 @@ bool flowrow_field_serialize(FILE *f, void *obj)
   assert(field);
 
   string_data_serialize(f, field->label);
-  fwrite(&field->expr, sizeof(gen_e), 1, f);
+  fwrite_s(&field->expr, sizeof(gen_e), 1, f);
   serialize_banshee_object(field->expr, gen_e);
 
   return TRUE;
@@ -1351,7 +1351,7 @@ void *flowrow_field_deserialize(FILE *f)
   result = ralloc(flowrow_field_region, struct flowrow_field_);
 
   result->label = (char *)string_data_deserialize(f);
-  fread(&result->expr, sizeof(gen_e), 1 ,f);
+  fread_s(&result->expr, sizeof(gen_e), 1 ,f);
   
   return result;
 }
@@ -1372,9 +1372,9 @@ bool flowrow_rollback_serialize(FILE *f, banshee_rollback_info i)
   assert(f);
   assert(info);
 
-/*   fwrite((void *)&info->added_edges, sizeof(hash_table), 1, f); */
-/*   fwrite((void *)&info->set_aliases, sizeof(flow_var_list), 1, f); */
-  fwrite(&info->added_edges, sizeof(hash_table) + sizeof(flow_var_list), 1 ,f);
+/*   fwrite_s((void *)&info->added_edges, sizeof(hash_table), 1, f); */
+/*   fwrite_s((void *)&info->set_aliases, sizeof(flow_var_list), 1, f); */
+  fwrite_s(&info->added_edges, sizeof(hash_table) + sizeof(flow_var_list), 1 ,f);
 
   serialize_banshee_object(info->added_edges, hash_table);
   serialize_banshee_object(info->set_aliases, list);
@@ -1389,9 +1389,9 @@ banshee_rollback_info flowrow_rollback_deserialize(FILE *f)
   
   assert(f);
 
-/*   fread((void *)&info->added_edges, sizeof(hash_table), 1, f); */
-/*   fread((void *)&info->set_aliases, sizeof(flow_var_list), 1, f); */
-  fread(&info->added_edges, sizeof(hash_table) + sizeof(flow_var_list), 1, f);
+/*   fread_s((void *)&info->added_edges, sizeof(hash_table), 1, f); */
+/*   fread_s((void *)&info->set_aliases, sizeof(flow_var_list), 1, f); */
+  fread_s(&info->added_edges, sizeof(hash_table) + sizeof(flow_var_list), 1, f);
 
   return (banshee_rollback_info)info;
 }
@@ -1415,12 +1415,12 @@ void *flowrow_expr_deserialize(FILE *f)
 #endif	/* NONSPEC */
 
   assert(f);
-  fread((void *)&type, sizeof(int), 1, f);
+  fread_s((void *)&type, sizeof(int), 1, f);
 
 #ifdef NONSPEC
   if (type == ZERO_TYPE || type == ONE_TYPE || type == ABS_TYPE ||
       type == WILD_TYPE) {
-    fread(&base_type, sizeof(int), 1, f);
+    fread_s(&base_type, sizeof(int), 1, f);
   }  
 #endif
 
@@ -1455,13 +1455,13 @@ void *flowrow_expr_deserialize(FILE *f)
     case ROW_TYPE:
       {
 	flowrow frow = ralloc(flowrow_region, struct flowrow);
-	fread(&frow->st, sizeof(stamp), 1, f);
+	fread_s(&frow->st, sizeof(stamp), 1, f);
 #ifdef NONSPEC      
-	fread(&frow->base_sort, sizeof(int), 1, f);
+	fread_s(&frow->base_sort, sizeof(int), 1, f);
 #endif
-/* 	fread((void *)&frow->fields, sizeof(flowrow_map), 1, f); */
-/* 	fread((void *)&frow->rest, sizeof(gen_e), 1, f); */
-	fread(&frow->fields, sizeof(flowrow_map) + sizeof(gen_e), 1, f);
+/* 	fread_s((void *)&frow->fields, sizeof(flowrow_map), 1, f); */
+/* 	fread_s((void *)&frow->rest, sizeof(gen_e), 1, f); */
+	fread_s(&frow->fields, sizeof(flowrow_map) + sizeof(gen_e), 1, f);
 	frow->type = type;
 	return frow;
       }
@@ -1479,7 +1479,7 @@ bool flowrow_expr_serialize(FILE *f, void *obj)
   assert(f);
   assert(row);
 
-  fwrite(&row->type, sizeof(int), 1, f);
+  fwrite_s(&row->type, sizeof(int), 1, f);
   switch (row->type)
     {
     case ZERO_TYPE:
@@ -1487,7 +1487,7 @@ bool flowrow_expr_serialize(FILE *f, void *obj)
     case ABS_TYPE:
     case WILD_TYPE:
 #ifdef NONSPEC      
-      fwrite(&row->base_sort, sizeof(int), 1, f);
+      fwrite_s(&row->base_sort, sizeof(int), 1, f);
 #endif
       return TRUE;
     case ALIAS_TYPE:
@@ -1496,13 +1496,13 @@ bool flowrow_expr_serialize(FILE *f, void *obj)
     case ROW_TYPE:
       {
 	flowrow frow = (flowrow)row;
-	fwrite(&frow->st, sizeof(stamp), 1, f);
+	fwrite_s(&frow->st, sizeof(stamp), 1, f);
 #ifdef NONSPEC      
-	fwrite(&frow->base_sort, sizeof(int), 1, f);
+	fwrite_s(&frow->base_sort, sizeof(int), 1, f);
 #endif
-/* 	fwrite(&frow->fields, sizeof(flowrow_map), 1, f); */
-/* 	fwrite(&frow->rest, sizeof(gen_e), 1, f); */
-	fwrite(&frow->fields, sizeof(flowrow_map) + sizeof(gen_e), 1 ,f);
+/* 	fwrite_s(&frow->fields, sizeof(flowrow_map), 1, f); */
+/* 	fwrite_s(&frow->rest, sizeof(gen_e), 1, f); */
+	fwrite_s(&frow->fields, sizeof(flowrow_map) + sizeof(gen_e), 1 ,f);
 	serialize_banshee_object(frow->fields, list);
 	serialize_banshee_object(frow->rest, gen_e);
 	return TRUE;
@@ -1540,8 +1540,8 @@ void flowrow_serialize(FILE *f)
 {
   assert(f);
 
-  fwrite(&flowrow_hash, sizeof(term_hash), 1, f);
-  fwrite(&flowrow_current_rollback_info, 
+  fwrite_s(&flowrow_hash, sizeof(term_hash), 1, f);
+  fwrite_s(&flowrow_current_rollback_info, 
 	 sizeof(flowrow_rollback_info), 1, f);
 
   serialize_banshee_object(flowrow_hash, term_hash);
@@ -1551,8 +1551,8 @@ void flowrow_serialize(FILE *f)
 
 void flowrow_deserialize(FILE *f)
 {
-  fread(&flowrow_hash, sizeof(term_hash), 1, f);
-  fread(&flowrow_current_rollback_info, sizeof(flowrow_rollback_info), 1, f);
+  fread_s(&flowrow_hash, sizeof(term_hash), 1, f);
+  fread_s(&flowrow_current_rollback_info, sizeof(flowrow_rollback_info), 1, f);
 }
 
 void flowrow_set_fields(void)
@@ -1564,16 +1564,16 @@ void flowrow_set_fields(void)
 
 void write_module_flowrow(FILE *f)
 {
-  fwrite(&flowrow_hash, sizeof(term_hash), 1, f);
-  fwrite(&flowrow_current_rollback_info, 
+  fwrite_s(&flowrow_hash, sizeof(term_hash), 1, f);
+  fwrite_s(&flowrow_current_rollback_info, 
 	 sizeof(flowrow_rollback_info), 1, f);
   return;
 }
 
 void update_module_flowrow(translation t, FILE *f)
 {
-  fread(&flowrow_hash, sizeof(term_hash), 1, f);
-  fread(&flowrow_current_rollback_info, sizeof(flowrow_rollback_info), 1, f);
+  fread_s(&flowrow_hash, sizeof(term_hash), 1, f);
+  fread_s(&flowrow_current_rollback_info, sizeof(flowrow_rollback_info), 1, f);
   update_pointer(t, (void **)&flowrow_hash);
   update_pointer(t, (void **)&flowrow_current_rollback_info);
 

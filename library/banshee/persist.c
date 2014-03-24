@@ -285,7 +285,7 @@ void *funptr_data_deserialize(FILE *f)
   int id = 0;
   assert(f);
 
-  fread((void *)&id, sizeof(int), 1, f);
+  fread_s((void *)&id, sizeof(int), 1, f);
 
   return fn_ptr_array[id];
 }
@@ -304,8 +304,8 @@ bool string_data_serialize(FILE *f, void *obj)
 {
   int length = strlen((char *)obj);
   /* write the string length */
-  fwrite((void *)&length, sizeof(long), 1, f);
-  fwrite((void *)obj, sizeof(char),strlen((char *)obj), f);
+  fwrite_s((void *)&length, sizeof(long), 1, f);
+  fwrite_s((void *)obj, sizeof(char),strlen((char *)obj), f);
 
   return TRUE;
 }
@@ -315,9 +315,9 @@ void *string_data_deserialize(FILE *f)
   long length;
   char buf[512];
 
-  fread((void *)&length, sizeof(long), 1, f);
+  fread_s((void *)&length, sizeof(long), 1, f);
   assert(length < 512);
-  fread((void *)buf, sizeof(char), length, f);
+  fread_s((void *)buf, sizeof(char), length, f);
   buf[length] = '\0';
   
   return (void *)strdup(buf);

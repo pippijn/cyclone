@@ -238,7 +238,7 @@ bool setif_var_serialize(FILE *f, void *obj)
   /* No need to serialize the type, since it must be VAR_TYPE */
   
   /* Serialize the sv_elt's id */
-  fwrite(&var->elt, sizeof(void *), 1, f);
+  fwrite_s(&var->elt, sizeof(void *), 1, f);
 
   /* Mark the uf element for serialization */
   serialize_banshee_object(var->elt, uf_element);
@@ -254,7 +254,7 @@ void *setif_var_deserialize(FILE *f)
   var = ralloc(setif_var_region, struct setif_var_);
 
   var->type = VAR_TYPE;
-  fread(&var->elt, sizeof(void *), 1, f);
+  fread_s(&var->elt, sizeof(void *), 1, f);
 
   return var;
 }
@@ -279,12 +279,12 @@ bool sv_info_serialize(FILE *f, void *obj)
   assert(info);
   assert(f);
 
-/*   fwrite((void *)&info->st, sizeof(stamp), 1, f); */
-/*   fwrite((void *)&info->lbs, sizeof(bounds), 1, f); */
-/*   fwrite((void *)&info->ubs, sizeof(bounds), 1, f); */
-/*   fwrite((void *)&info->ub_projs, sizeof(gen_e_list), 1, f); */
-/*   fwrite((void *)&info->component, sizeof(uf_element), 1, f); */
-  fwrite(&info->st, sizeof(stamp) + sizeof(bounds) *2 + sizeof(gen_e_list) + 
+/*   fwrite_s((void *)&info->st, sizeof(stamp), 1, f); */
+/*   fwrite_s((void *)&info->lbs, sizeof(bounds), 1, f); */
+/*   fwrite_s((void *)&info->ubs, sizeof(bounds), 1, f); */
+/*   fwrite_s((void *)&info->ub_projs, sizeof(gen_e_list), 1, f); */
+/*   fwrite_s((void *)&info->component, sizeof(uf_element), 1, f); */
+  fwrite_s(&info->st, sizeof(stamp) + sizeof(bounds) *2 + sizeof(gen_e_list) + 
 	 sizeof(uf_element), 1, f);
 
   string_data_serialize(f,info->name);
@@ -303,12 +303,12 @@ void *sv_info_deserialize(FILE *f)
   assert(f);
   assert(permanent);
 
-  /* fread((void *)&info->st, sizeof(stamp), 1, f); */
-/*   fread((void *)&info->lbs, sizeof(bounds), 1, f); */
-/*   fread((void *)&info->ubs, sizeof(bounds), 1, f); */
-/*   fread((void *)&info->ub_projs, sizeof(gen_e_list), 1, f); */
-/*   fread((void *)&info->component, sizeof(uf_element), 1, f); */
-  fread(&info->st, sizeof(stamp) + sizeof(bounds) *2 + sizeof(gen_e_list) + 
+  /* fread_s((void *)&info->st, sizeof(stamp), 1, f); */
+/*   fread_s((void *)&info->lbs, sizeof(bounds), 1, f); */
+/*   fread_s((void *)&info->ubs, sizeof(bounds), 1, f); */
+/*   fread_s((void *)&info->ub_projs, sizeof(gen_e_list), 1, f); */
+/*   fread_s((void *)&info->component, sizeof(uf_element), 1, f); */
+  fread_s(&info->st, sizeof(stamp) + sizeof(bounds) *2 + sizeof(gen_e_list) + 
 	sizeof(uf_element), 1, f);
 
   info->name = string_data_deserialize(f);

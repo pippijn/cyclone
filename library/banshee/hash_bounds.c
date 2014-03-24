@@ -133,7 +133,7 @@ bool bounds_serialize(FILE *f, void *obj)
   assert(f);
   assert(obj);
 
-  fwrite(b, sizeof(struct bounds_), 1, f);
+  fwrite_s(b, sizeof(struct bounds_), 1, f);
   serialize_banshee_object(b->table, hash_table);
   
   return TRUE;
@@ -144,7 +144,7 @@ void *bounds_deserialize(FILE *f)
   bounds b = ralloc(bounds_region, struct bounds_);
 
   assert(f);
-  fread(b, sizeof(struct bounds_), 1, f);
+  fread_s(b, sizeof(struct bounds_), 1, f);
 
   return b;
 }
@@ -169,7 +169,7 @@ bool added_edge_info_serialize(FILE *f, void *obj)
   added_edge_info info = (added_edge_info)obj;
   assert(f);
 
-  fwrite(info, sizeof(struct added_edge_info_), 1, f);
+  fwrite_s(info, sizeof(struct added_edge_info_), 1, f);
 
   serialize_banshee_object(info->b, bounds);
   serialize_banshee_object(info->sl, list);
@@ -183,7 +183,7 @@ void *added_edge_info_deserialize(FILE *f)
     ralloc(added_edge_info_region, struct added_edge_info_);
 
   assert(f);
-  fread(info, sizeof(struct added_edge_info_), 1, f);
+  fread_s(info, sizeof(struct added_edge_info_), 1, f);
 
   return info;
 }

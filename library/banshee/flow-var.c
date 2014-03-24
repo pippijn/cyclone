@@ -216,12 +216,12 @@ bool flow_var_serialize(FILE *f, void *obj)
   assert(f);
   assert(obj);
 
-  fwrite((void *)&var->st, sizeof(stamp), 1, f);
-  fwrite((void *)&var->alias, sizeof(gen_e), 1, f);
-  fwrite((void *)&var->ubs, sizeof(bounds), 1, f);
-  fwrite((void *)&var->lbs, sizeof(bounds), 1, f);
-  fwrite((void *)&var->elt, sizeof(contour_elt), 1, f);
-  fwrite((void *)&var->extra_info, sizeof(void *), 1, f);
+  fwrite_s((void *)&var->st, sizeof(stamp), 1, f);
+  fwrite_s((void *)&var->alias, sizeof(gen_e), 1, f);
+  fwrite_s((void *)&var->ubs, sizeof(bounds), 1, f);
+  fwrite_s((void *)&var->lbs, sizeof(bounds), 1, f);
+  fwrite_s((void *)&var->elt, sizeof(contour_elt), 1, f);
+  fwrite_s((void *)&var->extra_info, sizeof(void *), 1, f);
   string_data_serialize(f,var->name);
   
   serialize_banshee_object(var->ubs, bounds);
@@ -238,12 +238,12 @@ void *flow_var_deserialize(FILE *f)
 
   var = ralloc(flow_var_region, struct flow_var_);
 
-  fread((void *)&var->st, sizeof(stamp), 1, f);
-  fread((void *)&var->alias, sizeof(gen_e), 1, f);
-  fread((void *)&var->ubs, sizeof(bounds), 1, f);
-  fread((void *)&var->lbs, sizeof(bounds), 1, f);
-  fread((void *)&var->elt, sizeof(contour_elt), 1, f);
-  fread((void *)&var->extra_info, sizeof(void *), 1, f);
+  fread_s((void *)&var->st, sizeof(stamp), 1, f);
+  fread_s((void *)&var->alias, sizeof(gen_e), 1, f);
+  fread_s((void *)&var->ubs, sizeof(bounds), 1, f);
+  fread_s((void *)&var->lbs, sizeof(bounds), 1, f);
+  fread_s((void *)&var->elt, sizeof(contour_elt), 1, f);
+  fread_s((void *)&var->extra_info, sizeof(void *), 1, f);
   
   var->name = (char *)string_data_deserialize(f);
 
@@ -272,10 +272,10 @@ bool contour_serialize(FILE *f, void *obj)
   assert(f);
   assert(c);
 
-  fwrite((void *)&c->shape, sizeof(gen_e), 1, f);
-  fwrite((void *)&c->fresh, sizeof(fresh_fn_ptr), 1, f);
-  fwrite((void *)&c->get_stamp, sizeof(get_stamp_fn_ptr), 1, f);
-  fwrite((void *)&c->instantiate, sizeof(contour_inst_fn_ptr), 1, f);
+  fwrite_s((void *)&c->shape, sizeof(gen_e), 1, f);
+  fwrite_s((void *)&c->fresh, sizeof(fresh_fn_ptr), 1, f);
+  fwrite_s((void *)&c->get_stamp, sizeof(get_stamp_fn_ptr), 1, f);
+  fwrite_s((void *)&c->instantiate, sizeof(contour_inst_fn_ptr), 1, f);
 
   serialize_banshee_object(c->shape, gen_e);
   serialize_banshee_object(c->fresh, funptr);
@@ -290,10 +290,10 @@ void *contour_deserialize(FILE *f)
   contour c = ralloc(contour_region, struct contour);
   assert(f);
 
-  fread((void *)&c->shape, sizeof(gen_e), 1, f);
-  fread((void *)&c->fresh, sizeof(fresh_fn_ptr), 1, f);
-  fread((void *)&c->get_stamp, sizeof(get_stamp_fn_ptr), 1, f);
-  fread((void *)&c->instantiate, sizeof(contour_inst_fn_ptr), 1, f);
+  fread_s((void *)&c->shape, sizeof(gen_e), 1, f);
+  fread_s((void *)&c->fresh, sizeof(fresh_fn_ptr), 1, f);
+  fread_s((void *)&c->get_stamp, sizeof(get_stamp_fn_ptr), 1, f);
+  fread_s((void *)&c->instantiate, sizeof(contour_inst_fn_ptr), 1, f);
 
   return c;
 }

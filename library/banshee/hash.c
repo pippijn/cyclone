@@ -482,7 +482,7 @@ bool hash_table_serialize(FILE *f, void *obj)
   assert(f);
   assert(obj);
 
-  fwrite(&ht->hash, sizeof(void *) * 2 + sizeof(unsigned long) * 3 + 
+  fwrite_s(&ht->hash, sizeof(void *) * 2 + sizeof(unsigned long) * 3 + 
 	 sizeof(int) *4, 1, f);
   
   serialize_object(ht->hash, 1);
@@ -491,9 +491,9 @@ bool hash_table_serialize(FILE *f, void *obj)
   /* Write out all the key/value pairs */
   for (i = 0; i < ht->size; i++) {
     unsigned long num_buckets = get_num_buckets(ht->table[i]);
-    fwrite(&num_buckets, sizeof(unsigned long), 1, f); 
+    fwrite_s(&num_buckets, sizeof(unsigned long), 1, f); 
     scan_bucket(ht->table[i], cur) {
-      fwrite(&cur->key, sizeof(hash_key) + sizeof(hash_data), 1, f);
+      fwrite_s(&cur->key, sizeof(hash_key) + sizeof(hash_data), 1, f);
       serialize_object(cur->key,ht->key_persist_kind);
       serialize_object(cur->data, ht->data_persist_kind);
     }
@@ -516,17 +516,17 @@ void *hash_table_deserialize(FILE *f)
   ht->hash = NULL;
   ht->cmp = NULL;
 
-  fread(&ht->hash, sizeof(void *) * 2 + sizeof(unsigned long) * 3 + 4 * sizeof(int), 1, f);
+  fread_s(&ht->hash, sizeof(void *) * 2 + sizeof(unsigned long) * 3 + 4 * sizeof(int), 1, f);
 
   /* Read all the key/value pairs into the temporary region */
   ht->table = rarrayalloc(ht->r, ht->size, bucket);
   for (i = 0; i < ht->size; i++) {
     unsigned long num_buckets,j;
-    fread(&num_buckets, sizeof(unsigned long), 1, f); 
+    fread_s(&num_buckets, sizeof(unsigned long), 1, f); 
     prev = &ht->table[i];
     for (j = 0; j < num_buckets; j++) {
       newbucket = ralloc(ht->r, struct bucket_);
-      fread(&newbucket->key, sizeof(hash_key) + sizeof(hash_data), 1 ,f);
+      fread_s(&newbucket->key, sizeof(hash_key) + sizeof(hash_data), 1 ,f);
       newbucket->next = NULL;
       assert(!*prev);
       *prev = newbucket;

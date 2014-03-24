@@ -86,7 +86,7 @@ void write_extra_info(const char *filename, unsigned long num_regions)
 
   assert(f);
 
-  fwrite((void *)&num_regions, sizeof(unsigned long), 1, f);
+  fwrite_s((void *)&num_regions, sizeof(unsigned long), 1, f);
 
   hash_table_scan(extra_regions, &scan);
   assert(fn_ptr_table);
@@ -96,14 +96,14 @@ void write_extra_info(const char *filename, unsigned long num_regions)
     bool success = hash_table_lookup(fn_ptr_table, (hash_key)next_updater, (hash_data *)&id);
     if (!success) { 
       if (next_updater == extra_update_fn)
-	fwrite((void *)&unknown_id, sizeof(int), 1, f);
+	fwrite_s((void *)&unknown_id, sizeof(int), 1, f);
       else if (next_updater == extra_update_fn2)
-	fwrite((void *)&unknown_id2, sizeof(int), 1, f);
+	fwrite_s((void *)&unknown_id2, sizeof(int), 1, f);
       else 
 	fail("Error: couldn't figure out what function %d corresponds to\n", id);
     }
     else {
-      fwrite((void *)&id, sizeof(int), 1 , f);
+      fwrite_s((void *)&id, sizeof(int), 1 , f);
     }
     count++;
   }
@@ -118,13 +118,13 @@ Updater *read_extra_info(const char *filename)
   Updater *result;
   assert(f);
 
-  fread((void *)&num_extra_regions, sizeof(unsigned long), 1, f);
+  fread_s((void *)&num_extra_regions, sizeof(unsigned long), 1, f);
 
   result = rarrayalloc(permanent,num_extra_regions + NUM_REGIONS, 
 		       Updater);
 
   for (i = NUM_REGIONS; i < NUM_REGIONS + num_extra_regions; i++) {
-    fread((void *)&next_id, sizeof(int), 1, f); 
+    fread_s((void *)&next_id, sizeof(int), 1, f); 
     if (next_id == UNKNOWN_ID) {
       assert(extra_update_fn);
       result[i] = extra_update_fn;

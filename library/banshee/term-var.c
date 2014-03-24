@@ -151,10 +151,10 @@ bool term_var_serialize(FILE *f, void *obj)
   assert(f);
   assert(var);
 
-  fwrite((void *)&var->st, sizeof(stamp), 1, f);
-  fwrite((void *)&var->pending, sizeof(bounds), 1, f);
+  fwrite_s((void *)&var->st, sizeof(stamp), 1, f);
+  fwrite_s((void *)&var->pending, sizeof(bounds), 1, f);
   string_data_serialize(f, var->name);
-  fwrite((void *)&var->elt, sizeof(tv_elt), 1, f);
+  fwrite_s((void *)&var->elt, sizeof(tv_elt), 1, f);
 
   serialize_banshee_object(var->pending, bounds);
   serialize_banshee_object(var->elt, uf_element);
@@ -171,10 +171,10 @@ void *term_var_deserialize(FILE *f)
   
   var = ralloc(term_var_region, struct term_var_);
 
-  fread((void *)&var->st, sizeof(stamp), 1, f);
-  fread((void *)&var->pending, sizeof(bounds), 1, f);
+  fread_s((void *)&var->st, sizeof(stamp), 1, f);
+  fread_s((void *)&var->pending, sizeof(bounds), 1, f);
   var->name = (char *)string_data_deserialize(f);
-  fread((void *)&var->elt, sizeof(tv_elt), 1, f);
+  fread_s((void *)&var->elt, sizeof(tv_elt), 1, f);
   
   return var;
 }

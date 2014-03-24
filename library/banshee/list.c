@@ -587,12 +587,12 @@ bool list_serialize(FILE *f, void *obj)
   assert(f);
   assert(obj);
 
-/*   fwrite((void *)&l->length, sizeof(int), 1, f); */
-/*   fwrite((void *)&l->persist_kind, sizeof(int), 1, f); */
-  fwrite(&l->st, 3 *sizeof(int), 1 ,f);
+/*   fwrite_s((void *)&l->length, sizeof(int), 1, f); */
+/*   fwrite_s((void *)&l->persist_kind, sizeof(int), 1, f); */
+  fwrite_s(&l->st, 3 *sizeof(int), 1 ,f);
 
   scan_node(l->head, n) {
-    fwrite((void *)&n->data, sizeof(void *), 1, f);
+    fwrite_s((void *)&n->data, sizeof(void *), 1, f);
     serialize_object(n->data, l->persist_kind);
   }
 
@@ -609,19 +609,19 @@ void *list_deserialize(FILE *f)
   assert(f);
 
   /* Read in the stamp */
-  fread(&st, sizeof(int), 1, f);
+  fread_s(&st, sizeof(int), 1, f);
   
   /* Read in the length */
-  fread(&length, sizeof(int), 1, f);
+  fread_s(&length, sizeof(int), 1, f);
   
   /* Read in the persist kind */
-  fread(&persist_kind, sizeof(int), 1, f);
+  fread_s(&persist_kind, sizeof(int), 1, f);
   
   result = new_list(permanent, persist_kind);
   
   for (i = 0; i < length; i++) {
     void *data = NULL;
-    fread((void *)&data, sizeof(void *), 1, f);
+    fread_s((void *)&data, sizeof(void *), 1, f);
     list_append_tail(data, result);
   }
   
