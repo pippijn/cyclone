@@ -40,24 +40,26 @@ using Fn;
 
 namespace PP;
 
+typedef struct Doc *doc_opt_t;
+
 typedef int dummy_t;
 
 datatype Alist<`a> {
-  Empty (dummy_t);
+  Empty;
   Single (`a);
   Append (datatype Alist<`a> @, datatype Alist<`a> @);
 };
 
 typedef datatype Alist<`a> @alist_t<`a>;
-datatype Alist.Empty<stringptr_t> Empty_stringptr = Empty (0);
-datatype Alist.Empty<$(int, int, int, string_t) @> Empty_link = Empty (0);
+datatype Alist.Empty<stringptr_t> Empty_stringptr = Empty;
+datatype Alist.Empty<$(int, int, int, string_t) @> Empty_link = Empty;
 
 alist_t<`a>
 append (alist_t<`a> a1, alist_t<`a> a2)
 {
   switch $(a1, a2) {
-  case $(&Empty (_), _): return a2;
-  case $(_, &Empty (_)): return a1;
+  case $(&Empty, _): return a2;
+  case $(_, &Empty): return a1;
   default:
     return new Append (a1, a2);
   }
@@ -68,7 +70,7 @@ list_of_alist_f (alist_t<`a> y, list_t<`a, `H> l)
 {
   switch (y)
     {
-    case &Empty (_): 	   return l;
+    case &Empty: 	   return l;
     case &Single (z): 	   return new List (z, l);
     case &Append (a1, a2): return list_of_alist_f (a1, list_of_alist_f (a2, l));
     }
@@ -119,7 +121,7 @@ dump_out (FILE @f, alist_t<stringptr_t> al)
     {
       switch (Xarray::get (xarr, last))
         {
-        case &Empty (_):
+        case &Empty:
           --last;
           break;
         case &Single (s):
@@ -143,6 +145,7 @@ dump_out (FILE @f, alist_t<stringptr_t> al)
 void
 file_of_doc (doc_t d, int w, FILE @f)
 {
+  assert (w >= 0);
   out_t o = apply (d->f, new Ppstate (0, 0, 1, w, w));
 
   dump_out (f, o->ppout);
@@ -152,6 +155,7 @@ file_of_doc (doc_t d, int w, FILE @f)
 string_t
 string_of_doc (doc_t d, int w)
 {
+  assert (w >= 0);
   out_t o = apply (d->f, new Ppstate (0, 0, 1, w, w));
 
   return str_sepstr (list_of_alist (o->ppout), "");
@@ -162,6 +166,7 @@ string_of_doc (doc_t d, int w)
 $(string_t, list_t<$(int, int, int, string_t) @>) @
 string_and_links (doc_t d, int w)
 {
+  assert (w >= 0);
   out_t o = apply (d->f, new Ppstate (0, 0, 1, w, w));
 
   return new $((string_t)
@@ -169,20 +174,23 @@ string_and_links (doc_t d, int w)
                list_of_alist (o->links));
 }
 
-static opt_t<table_t<int, stringptr_t>> bhashtbl = NULL;
-
 int tex_output = false;
 
+// a newline followed by i blanks
 string_t
 nlblanks (int i)
 {
-  // a newline followed by i blanks
-  if (bhashtbl == NULL)
-    bhashtbl = new Opt (Hashtable::create (61, intcmp, identity));
+  static table_opt_t<int, stringptr_t> bhashtbl_cache = NULL;
+
+  table_t<int, stringptr_t> bhashtbl =
+    bhashtbl_cache == NULL
+      ? bhashtbl_cache = Hashtable::create (61, intcmp, identity)
+      : bhashtbl_cache;
+
   if (i < 0)
     throw new Failure ("nlblanks");
   try
-    return *Hashtable::lookup (bhashtbl->v, i);
+    return *Hashtable::lookup (bhashtbl, i);
   catch
     {
     case &Not_found:
@@ -197,7 +205,7 @@ nlblanks (int i)
             nlb[j + 1] = '\t';
           for (int j = 0; j < num_spaces; j++)
             nlb[j + 1 + num_tabs] = ' ';
-          Hashtable::insert (bhashtbl->v, i, new { (string_t)nlb });
+          Hashtable::insert (bhashtbl, i, new { (string_t)nlb });
           return nlb;
         }
       else
@@ -211,7 +219,7 @@ nlblanks (int i)
           nlb[2] = '\n';
           for (int j = 3; j < total; j++)
             nlb[j] = '~';
-          Hashtable::insert (bhashtbl->v, i, new { (string_t)nlb });
+          Hashtable::insert (bhashtbl, i, new { (string_t)nlb });
           return nlb;
         }
     }
@@ -246,26 +254,24 @@ doc_t
 text (string_t<`H> s)
 {
   // hash the strings...
-  static opt_t<table_t<stringptr_t, doc_t> > str_hashtbl = NULL;
+  static table_opt_t<stringptr_t, doc_t> str_hashtbl = NULL;
 
-  table_t<stringptr_t<`H, `H>, doc_t> t;
   if (str_hashtbl == NULL)
-    {
-      t = Hashtable::create (101, zstrptrcmp, hash_stringptr);
-      str_hashtbl = new Opt (t);
-    }
-  else
-    t = str_hashtbl->v;
+    str_hashtbl = Hashtable::create (101, zstrptrcmp, hash_stringptr);
+
+  let p = new s;
+
   try
-    return Hashtable::lookup (t, new s);
+    return Hashtable::lookup (str_hashtbl, p);
   catch
     {
     case &Not_found:
       doc_t d = text_doc (s);
-      Hashtable::insert (t, new s, d);
+      Hashtable::insert (str_hashtbl, p, d);
       return d;
     }
 }
+
 doc_t
 textptr (stringptr_t<`H> s)
 {
@@ -288,58 +294,57 @@ text_width_doc (string_t<`H> s, int slen)
 doc_t
 text_width (string_t<`H> s, int slen)
 {
-  static opt_t<table_t<stringptr_t, doc_t>> str_hashtbl2 = NULL;
+  static table_opt_t<stringptr_t, doc_t> str_hashtbl = NULL;
 
-  table_t<stringptr_t<`H, `H>, doc_t> t;
-  if (str_hashtbl2 == NULL)
-    {
-      t = Hashtable::create (101, zstrptrcmp, hash_stringptr);
-      str_hashtbl2 = new Opt (t);
-    }
-  else
-    t = str_hashtbl2->v;
+  if (str_hashtbl == NULL)
+    str_hashtbl = Hashtable::create (101, zstrptrcmp, hash_stringptr);
+
+  let p = new s;
+
   try
-    return Hashtable::lookup (t, new s);
+    return Hashtable::lookup (str_hashtbl, p);
   catch
     {
     case &Not_found:
       doc_t d = text_width_doc (s, slen);
-      Hashtable::insert (t, new s, d);
+      Hashtable::insert (str_hashtbl, p, d);
       return d;
     }
 }
 
 // FIX: ineffecient to create an out_t for the empty string!!
+static doc_opt_t nil_doc_opt = NULL;
+
 // This is made a function because non-constant initializers not allowed
 doc_t
 nil_doc ()
 {
-  static opt_t<doc_t> nil_doc_opt = NULL;
   if (nil_doc_opt == NULL)
-    nil_doc_opt = new Opt (text (""));
-  return nil_doc_opt->v;
+    nil_doc_opt = text ("");
+  return nil_doc_opt;
 }
 
 // This is made a function because non-constant initializers not allowed
 doc_t
 blank_doc ()
 {
-  static opt_t<doc_t> blank_doc_opt = NULL;
+  static doc_opt_t blank_doc_opt = NULL;
   if (blank_doc_opt == NULL)
-    blank_doc_opt = new Opt (text (" "));
-  return blank_doc_opt->v;
+    blank_doc_opt = text (" ");
+  return blank_doc_opt;
 }
 
 
 static out_t
 hyperlink_f ($(int, string_t<`H>, string_t<`H>) @clo, ppstate_t st)
 {
-  let & $(slen, shrt, full) = clo;
+  let &$(slen, shrt, full) = clo;
   return new Out (st->cc + slen,
                   st->cl,
                   new Single (new { shrt }),
                   new Single (new $(st->cl, st->cc, slen, full)));
 }
+
 doc_t
 hyperlink (string_t<`H> shrt, string_t<`H> full)
 {
@@ -363,10 +368,10 @@ line_f (ppstate_t st)
 doc_t
 line_doc ()
 {
-  static opt_t<doc_t> line_doc_opt = NULL;
+  static doc_opt_t line_doc_opt = NULL;
   if (line_doc_opt == NULL)
-    line_doc_opt = new Opt (new Doc (0, 0, fp2fn (line_f)));
-  return line_doc_opt->v;
+    line_doc_opt = new Doc (0, 0, fp2fn (line_f));
+  return line_doc_opt;
 }
 
 
@@ -374,6 +379,7 @@ static out_t
 nest_f ($(int, doc_t) @clo, ppstate_t st)
 {
   let &$(k, d) = clo;
+  assert (k >= 0);
   ppstate_t st2 =
     new Ppstate (st->ci + k,
                  st->cc,
@@ -382,6 +388,7 @@ nest_f ($(int, doc_t) @clo, ppstate_t st)
                  st->epw);
   return apply (d->f, st2);
 }
+
 doc_t
 nest (int k, doc_t d)
 {
@@ -414,6 +421,9 @@ static out_t
 concat_f ($(doc_t, doc_t) @clo, ppstate_t st)
 {
   let &$(d1, d2) = clo;
+  assert (d1 != nil_doc_opt);
+  assert (d2 != nil_doc_opt);
+
   int epw2 = max (st->pw - d2->mw, st->epw - d1->mwo);
   ppstate_t st2 = new Ppstate (st->ci, st->cc, st->cl, st->pw, epw2);
   out_t o1 = apply (d1->f, st2);
@@ -429,8 +439,12 @@ concat_f ($(doc_t, doc_t) @clo, ppstate_t st)
 static doc_t
 concat (doc_t d1, doc_t d2)
 {
+  if (d1 == nil_doc_opt)
+    return d2;
+  if (d2 == nil_doc_opt)
+    return d1;
   return new Doc (min (d1->mw, d1->mwo + d2->mwo),
-                  min (d1->mw, d1->mwo + d2->mw),
+                  min (d1->mw, d1->mwo + d2->mw ),
                   make_fn (concat_f, new $(d1, d2)));
 }
 
@@ -453,19 +467,26 @@ long_cats_f (list_t<doc_t> ds0, ppstate_t st)
   for (let ds = ds0; ds != NULL; ds = ds->tl)
     {
       doc_t d = ds->hd;
+      if (d == nil_doc_opt)
+        continue;
+
       out_t o = apply (d->f, st);
       st = new Ppstate (st->ci, o->newcc, o->newcl, st->pw, st->epw - d->mwo);
       os = new List (o, os);
     }
+
   int newcc = os->hd->newcc;
   int newcl = os->hd->newcl;
+
   alist_t<stringptr_t> s = &Empty_stringptr;
   alist_t<$(int, int, int, string_t) @> links = &Empty_link;
+
   for (; os != NULL; os = os->tl)
     {
       s = append (os->hd->ppout, s);
       links = append (os->hd->links, links);
     }
+
   return new Out (newcc, newcl, s, links);
 }
 
@@ -483,11 +504,12 @@ long_cats (list_t<doc_t, `H> doclist)
 
   for (let ds = doclist; ds != NULL; ds = ds->tl)
     {
-      int mw2 = min (mw, mwo + ds->hd->mwo);
+      int mw2  = min (mw, mwo + ds->hd->mwo);
       int mwo2 = min (mw, mwo + ds->hd->mw);
-      mw = mw2;
+      mw  = mw2;
       mwo = mwo2;
     }
+
   return new Doc (mw, mwo, make_fn (long_cats_f, orig));
 }
 
@@ -510,23 +532,29 @@ cats_arr_f (doc_t ?`H @docs_ptr, ppstate_t st)
 {
   list_t<out_t> os = NULL;
   doc_t ?docs = *docs_ptr;
+
   int sz = numelts (docs);
   for (int i = 0; i < sz; ++i)
     {
       doc_t d = docs[i];
+      assert (d != nil_doc_opt);
       out_t o = apply (d->f, st);
       st = new Ppstate (st->ci, o->newcc, o->newcl, st->pw, st->epw - d->mwo);
       os = new List (o, os);
     }
+
   int newcc = os->hd->newcc;
   int newcl = os->hd->newcl;
+
   alist_t<stringptr_t> s = &Empty_stringptr;
   alist_t<$(int, int, int, string_t) @> links = &Empty_link;
+
   for (; os != NULL; os = os->tl)
     {
       s = append (os->hd->ppout, s);
       links = append (os->hd->links, links);
     }
+
   return new Out (newcc, newcl, s, links);
 }
 
@@ -534,17 +562,17 @@ cats_arr_f (doc_t ?`H @docs_ptr, ppstate_t st)
 doc_t
 cats_arr (doc_t ?`H docs)
 {
-  int sz = numelts (docs);
+  size_t sz = numelts (docs);
 
   if (sz == 0)
     throw new Failure ("cats_arr -- size zero array");
   doc_t d = docs[0];
   int mw = d->mw;
   int mwo = d->mw;
-  for (int i = 1; i < sz; ++i)
+  for (size_t i = 1; i < sz; ++i)
     {
-      int mw2 = min (mw, mwo + docs[i]->mwo);
-      int mwo2 = min (mw, mwo + docs[i]->mw);
+      int mw2  = min (mw, mwo + docs[i]->mwo);
+      int mwo2 = min (mw, mwo + docs[i]->mw );
       mw = mw2;
       mwo = mwo2;
     }
