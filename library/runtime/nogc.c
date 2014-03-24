@@ -18,8 +18,6 @@
 
 #include <stddef.h> // for size_t
 
-void GC_init () {}
-
 #ifdef CYC_REGION_PROFILE
 #undef GC_malloc
 #undef GC_malloc_atomic
@@ -36,21 +34,21 @@ void GC_init () {}
 
 #include <linux/string.h>
 
-extern void *kmalloc(size_t, int);
-extern void * __vmalloc (unsigned long size, int gfp_mask, pgprot_t prot);
-extern void kfree(const void *);
-extern void vfree(const void *);
+extern void *kmalloc (size_t, int);
+extern void *__vmalloc (unsigned long size, int gfp_mask, pgprot_t prot);
+extern void kfree (const void *);
+extern void vfree (const void *);
 
 #define calloc cyc_kcalloc
 #define realloc cyc_krealloc
 #define free kfree
 //forward decls
-static void* cyc_kcalloc(size_t s, int mult);
-void* cyc_krealloc(void *ptr, size_t oldsize, size_t newsize);
+static void *cyc_kcalloc (size_t s, int mult);
+void *cyc_krealloc (void *ptr, size_t oldsize, size_t newsize);
 #endif
 
-void* cyc_vmalloc(size_t s);
-void cyc_vfree(void *ptr);
+void *cyc_vmalloc (size_t s);
+void cyc_vfree (void *ptr);
 
 /****************************************************************************/
 /* Stuff that's shared amongst all the different ways to implement malloc() */
@@ -69,6 +67,7 @@ static size_t total_bytes_allocd = 0;
 GC_word GC_gc_no = 0;
 int GC_dont_expand = 0;
 int GC_use_entire_heap = 0;
+static void *GC_spare_memory;
 
 size_t
 GC_get_total_bytes ()
@@ -106,56 +105,96 @@ GC_register_finalizer_no_order (GC_PTR obj, GC_finalization_proc fn, GC_PTR cd,
 
 #include <stdlib.h>
 
-/* hack: assumes this is called immediately after an allocation */
-size_t GC_size(void const *x) {
+void
+GC_init (void)
+{
+  /* 4MiB of spare memory in case of OOM. */
+  GC_spare_memory = GC_malloc_atomic (4 * 1024 * 1024);
+}
+
+size_t
+GC_size (void const *x)
+{
   size_t const *p = x;
+
   return p[-1];
 }
 
-size_t GC_get_heap_size() {
+size_t
+GC_get_heap_size (void)
+{
   return 0;
 }
 
-size_t GC_get_free_bytes() {
+size_t
+GC_get_free_bytes (void)
+{
   return 0;
 }
 
-void *GC_malloc(size_t x) {
-  // FIX:  I'm calling calloc to ensure the memory is zero'd.  This
-  // is because I had to define GC_calloc in runtime_memory.c
-  size_t *p = calloc(1, sizeof *p + x + 1);
-  if (!p)
-    _throw_badalloc ();
-
-  *p++ = x;
-  total_bytes_allocd += GC_size(p);
-  return p;
-}
-
-void *GC_malloc_atomic(size_t x) {
-  // FIX:  I'm calling calloc to ensure the memory is zero'd.  This
-  // is because I had to define GC_calloc in runtime_memory.c
-  size_t *p = calloc(1, sizeof *p + x + 1);
-  if (!p)
-    _throw_badalloc ();
-
-  *p++ = x;
-  total_bytes_allocd += GC_size(p);
-  return p;
-}
-
-void *GC_realloc(void *x, size_t n) {
-  size_t sz = GC_size(x);
+void
+GC_free (void *x)
+{
   size_t *p = x;
+
+  free (p - 1);
+}
+
+static void
+out_of_memory (void)
+{
+  // Free some amount of reserved memory so that the exception
+  // handler has some free space.
+  GC_free (GC_spare_memory);
+  GC_spare_memory = NULL;
+  _throw_badalloc ();
+}
+
+void *
+GC_malloc (size_t x)
+{
+  // FIX:  I'm calling calloc to ensure the memory is zero'd.  This
+  // is because I had to define GC_calloc in runtime_memory.c
+  size_t *p = calloc (1, sizeof *p + x + 1);
+
+  if (!p)
+    out_of_memory ();
+
+  *p++ = x;
+  total_bytes_allocd += GC_size (p);
+  return p;
+}
+
+void *
+GC_malloc_atomic (size_t x)
+{
+  // FIX:  I'm calling calloc to ensure the memory is zero'd.  This
+  // is because I had to define GC_calloc in runtime_memory.c
+  size_t *p = calloc (1, sizeof *p + x + 1);
+
+  if (!p)
+    out_of_memory ();
+
+  *p++ = x;
+  total_bytes_allocd += GC_size (p);
+  return p;
+}
+
+void *
+GC_realloc (void *x, size_t n)
+{
+  size_t sz = GC_size (x);
+  size_t *p = x;
+
   p--;
 
 #if (defined(__linux__) && defined(__KERNEL__))
-  p = realloc(p, sz, n);
+  p = realloc (p, sz, n);
 #else
-  p = realloc(p, n);
+  p = realloc (p, n);
 #endif
   if (!p)
-    _throw_badalloc ();
+    out_of_memory ();
 
   *p = n;
 
@@ -164,59 +203,63 @@ void *GC_realloc(void *x, size_t n) {
   return p + 1;
 }
 
-void GC_free(void *x) {
-  size_t *p = x;
-  free(p - 1);
-}
-
 #if (defined(__linux__) && defined(__KERNEL__))
-static void* cyc_kcalloc(size_t s, int mult) {
-  int alloc_size = s*mult;
-  void *res =kmalloc(alloc_size, GFP_KERNEL); //look at multiple allocation modes
-  memset(res, '\0', alloc_size);
+static void *
+cyc_kcalloc (size_t s, int mult)
+{
+  int alloc_size = s * mult;
+  void *res = kmalloc (alloc_size, GFP_KERNEL); //look at multiple allocation modes
+
+  memset (res, '\0', alloc_size);
   return res;
 }
 
-void* cyc_krealloc(void *ptr, size_t oldsize, size_t newsize) {
-  if(!ptr)
-    return kmalloc(newsize, GFP_KERNEL);
-  if(!newsize) {
-    kfree(ptr);
-    return 0; //?
-  }
-  void *res = kmalloc(newsize, GFP_KERNEL);
-  memcpy(res, ptr, oldsize);
-  kfree(ptr);
+void *
+cyc_krealloc (void *ptr, size_t oldsize, size_t newsize)
+{
+  if (!ptr)
+    return kmalloc (newsize, GFP_KERNEL);
+  if (!newsize)
+    {
+      kfree (ptr);
+      return 0; //?
+    }
+  void *res = kmalloc (newsize, GFP_KERNEL);
+  memcpy (res, ptr, oldsize);
+  kfree (ptr);
   total_bytes_allocd = total_bytes_allocd + newsize - oldsize;
-  malloc_sizeb(p, newsize);
+  malloc_sizeb (p, newsize);
 }
 
-void *cyc_vmalloc(size_t s) {
-  unsigned long adr=0;
-  void *mem = __vmalloc(s, GFP_KERNEL | __GFP_HIGHMEM, PAGE_KERNEL);
+void *
+cyc_vmalloc (size_t s)
+{
+  void *mem = __vmalloc (s, GFP_KERNEL | __GFP_HIGHMEM, PAGE_KERNEL);
+
   if (mem)
-    {
-      memset(mem, 0, s); /* Clear the ram out, no junk to the user */
-    }
+    memset (mem, 0, s);  /* Clear the ram out, no junk to the user */
   return mem;
 }
 
-void cyc_vfree(void *mem) {
-  unsigned long adr;
+void
+cyc_vfree (void *mem)
+{
   if (mem)
-    {
-      vfree(mem);
-    }
+    vfree (mem);
 }
 
 #else
 
-void *cyc_vmalloc(size_t s) {
-  return GC_malloc(s);
+void *
+cyc_vmalloc (size_t s)
+{
+  return GC_malloc (s);
 }
 
-void cyc_vfree(void *ptr) {
-  GC_free(ptr);
+void
+cyc_vfree (void *ptr)
+{
+  GC_free (ptr);
 }
 
 #endif
@@ -233,70 +276,82 @@ void cyc_vfree(void *ptr) {
 #error "Region profiling not supported for GeekOS (no GC_size function)"
 #endif
 
-size_t GC_get_heap_size() {
+size_t
+GC_get_heap_size ()
+{
   bool iflag;
   bufsize allocsize, freesize, ign2, ign3, ign4;
 
-  iflag = Begin_Int_Atomic();
-  bstats(&allocsize,&freesize,&ign2,&ign3,&ign4);
-  End_Int_Atomic(iflag);
+  iflag = Begin_Int_Atomic ();
+  bstats (&allocsize, &freesize, &ign2, &ign3, &ign4);
+  End_Int_Atomic (iflag);
 
-  return allocsize+freesize;
+  return allocsize + freesize;
 }
 
-size_t GC_get_free_bytes() {
+size_t
+GC_get_free_bytes ()
+{
   bool iflag;
   bufsize freesize, ign1, ign2, ign3, ign4;
 
-  iflag = Begin_Int_Atomic();
-  bstats(&ign1,&freesize,&ign2,&ign3,&ign4);
-  End_Int_Atomic(iflag);
+  iflag = Begin_Int_Atomic ();
+  bstats (&ign1, &freesize, &ign2, &ign3, &ign4);
+  End_Int_Atomic (iflag);
 
   return freesize;
 }
 
-void *GC_malloc(int x) {
+void *
+GC_malloc (int x)
+{
   bool iflag;
   void *result;
 
-  KASSERT(x > 0);
+  KASSERT (x > 0);
 
-  iflag = Begin_Int_Atomic();
+  iflag = Begin_Int_Atomic ();
   /* FIX: I'm calling bgetz to ensure the memory is zero'd.  This is
-     because I had to define GC_calloc in runtime_memory.c */
-  result = bgetz(x);
+   * because I had to define GC_calloc in runtime_memory.c */
+  result = bgetz (x);
   total_bytes_allocd += x; /* FIX: include overhead? */
-  End_Int_Atomic(iflag);
+  End_Int_Atomic (iflag);
 
   return result;
 }
 
-void *GC_malloc_atomic(int x) {
-  return GC_malloc(x);
+void *
+GC_malloc_atomic (int x)
+{
+  return GC_malloc (x);
 }
 
-void *GC_realloc(void *x, size_t n) {
+void *
+GC_realloc (void *x, size_t n)
+{
   bool iflag;
   void *result;
 
-  KASSERT(n > 0);
+  KASSERT (n > 0);
 
-  iflag = Begin_Int_Atomic();
+  iflag = Begin_Int_Atomic ();
   /* FIX: I'm calling bgetz to ensure the memory is zero'd.  This is
-     because I had to define GC_calloc in runtime_memory.c */
-  result = bgetr(x,n);
+   * because I had to define GC_calloc in runtime_memory.c */
+  result = bgetr (x, n);
   total_bytes_allocd += n; /* FIX: subtract old size, add overhead */
-  End_Int_Atomic(iflag);
+  End_Int_Atomic (iflag);
 
   return result;
 }
 
-void GC_free(void *x) {
+void
+GC_free (void *x)
+{
   bool iflag;
 
-  iflag = Begin_Int_Atomic();
-  brel(x);
-  End_Int_Atomic(iflag);
+  iflag = Begin_Int_Atomic ();
+  brel (x);
+  End_Int_Atomic (iflag);
 }
 
 #endif
