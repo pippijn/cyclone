@@ -42,9 +42,8 @@ namespace PP;
 
 typedef struct Doc *doc_opt_t;
 
-typedef int dummy_t;
-
-datatype Alist<`a> {
+datatype Alist<`a>
+{
   Empty;
   Single (`a);
   Append (datatype Alist<`a> @, datatype Alist<`a> @);
@@ -57,12 +56,12 @@ datatype Alist.Empty<$(int, int, int, string_t) @> Empty_link = Empty;
 alist_t<`a>
 append (alist_t<`a> a1, alist_t<`a> a2)
 {
-  switch $(a1, a2) {
-  case $(&Empty, _): return a2;
-  case $(_, &Empty): return a1;
-  default:
-    return new Append (a1, a2);
-  }
+  switch $(a1, a2)
+    {
+    case $(&Empty, _): return a2;
+    case $(_, &Empty): return a1;
+    default:           return new Append (a1, a2);
+    }
 }
 
 list_t<`a>
@@ -176,21 +175,27 @@ string_and_links (doc_t d, int w)
 
 int tex_output = false;
 
+static Hashtable::table_t<`a, `b, `H>
+init_table (Hashtable::table_opt_t<`a, `b, `H> @`H tbl,
+            int (@`H cmp)(`a, `a),
+            int (@`H hash)(`a))
+{
+  if (*tbl == NULL)
+    *tbl = Hashtable::create (101, cmp, hash);
+  return *tbl;
+}
+
 // a newline followed by i blanks
 string_t
 nlblanks (int i)
 {
-  static table_opt_t<int, stringptr_t> bhashtbl_cache = NULL;
-
-  table_t<int, stringptr_t> bhashtbl =
-    bhashtbl_cache == NULL
-      ? bhashtbl_cache = Hashtable::create (61, intcmp, identity)
-      : bhashtbl_cache;
+  static table_opt_t<int, stringptr_t> bhashtbl = NULL;
+  let t = init_table (&bhashtbl, intcmp, identity);
 
   if (i < 0)
     throw new Failure ("nlblanks");
   try
-    return *Hashtable::lookup (bhashtbl, i);
+    return *Hashtable::lookup (t, i);
   catch
     {
     case &Not_found:
@@ -205,7 +210,7 @@ nlblanks (int i)
             nlb[j + 1] = '\t';
           for (int j = 0; j < num_spaces; j++)
             nlb[j + 1 + num_tabs] = ' ';
-          Hashtable::insert (bhashtbl, i, new { (string_t)nlb });
+          Hashtable::insert (t, i, new { (string_t)nlb });
           return nlb;
         }
       else
@@ -219,16 +224,16 @@ nlblanks (int i)
           nlb[2] = '\n';
           for (int j = 3; j < total; j++)
             nlb[j] = '~';
-          Hashtable::insert (bhashtbl, i, new { (string_t)nlb });
+          Hashtable::insert (t, i, new { (string_t)nlb });
           return nlb;
         }
     }
 }
 
-int infinity = 9999999;
+static int const infinity = 9999999;
 
 static out_t
-text_doc_f ($(int, string_t<`H> ) @clo, ppstate_t st)
+text_doc_f ($(int, string_t<`H>) @clo, ppstate_t st)
 {
   let &$(slen, s) = clo;
   return new Out (st->cc + slen,
@@ -255,19 +260,17 @@ text (string_t<`H> s)
 {
   // hash the strings...
   static table_opt_t<stringptr_t, doc_t> str_hashtbl = NULL;
-
-  if (str_hashtbl == NULL)
-    str_hashtbl = Hashtable::create (101, zstrptrcmp, hash_stringptr);
+  let t = init_table (&str_hashtbl, zstrptrcmp, hash_stringptr);
 
   let p = new s;
 
   try
-    return Hashtable::lookup (str_hashtbl, p);
+    return Hashtable::lookup (t, p);
   catch
     {
     case &Not_found:
       doc_t d = text_doc (s);
-      Hashtable::insert (str_hashtbl, p, d);
+      Hashtable::insert (t, p, d);
       return d;
     }
 }
@@ -295,19 +298,17 @@ doc_t
 text_width (string_t<`H> s, int slen)
 {
   static table_opt_t<stringptr_t, doc_t> str_hashtbl = NULL;
-
-  if (str_hashtbl == NULL)
-    str_hashtbl = Hashtable::create (101, zstrptrcmp, hash_stringptr);
+  let t = init_table (&str_hashtbl, zstrptrcmp, hash_stringptr);
 
   let p = new s;
 
   try
-    return Hashtable::lookup (str_hashtbl, p);
+    return Hashtable::lookup (t, p);
   catch
     {
     case &Not_found:
       doc_t d = text_width_doc (s, slen);
-      Hashtable::insert (str_hashtbl, p, d);
+      Hashtable::insert (t, p, d);
       return d;
     }
 }
