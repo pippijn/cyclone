@@ -211,15 +211,12 @@ is_cyclone_sourcefile (string_t s)
 //
 // We treat Cyclone libraries differently from C libraries.  As a hack,
 // we place any library that begins with prefix "cyc" in the ccargs,
-// otherwise in the libargs.  Should probably change the XML library
-// to begin with the cyc prefix.
+// otherwise in the libargs.
 static list_t<stringptr_t> libargs = NULL;
 static void
 add_libarg (string_t<`H> s)
 {
-  if (strcmp (s, "-lxml") == 0)
-    add_ccarg (pa_r ? "-lxml_a" : s);
-  else if (strncmp (s, "-lcyc", 5) == 0)
+  if (strncmp (s, "-lcyc", 5) == 0)
     add_ccarg (s);
   else
     {
@@ -339,21 +336,22 @@ warn_noinf (string_t option)
 {
   Warn::warn (0,
               "Interprocedural inference is not supported by this build of Cyclone; "
-              "ignoring ", option, " option");
+              "ignoring %s option", option);
 }
 
 static bool binit_done = false;
 
-static void set_resolve() {
-  if(!binit_done) {
-    binit_done = true;
-    if(BansheeIf::banshee_init()) {
-      Flags::resolve = true;
+static void
+set_resolve ()
+{
+  if (!binit_done)
+    {
+      binit_done = true;
+      if (BansheeIf::banshee_init ())
+        Flags::resolve = true;
+      else
+        warn_noinf ("--inf");
     }
-    else {
-      warn_noinf ("--inf");
-    }
-  }
 }
 
 static void
