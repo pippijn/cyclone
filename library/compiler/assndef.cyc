@@ -23,19 +23,20 @@
 
 #include "absyn.h"
 #include "absynpp.h"
-#include "flags.h"
-#include "evexp.h"
-#include "tcutil.h"
-#include "warn.h"
 #include "assndef.h"
-#include "unify.h"
+#include "evexp.h"
+#include "flags.h"
 #include "pratt_prover.h"
+#include "tcutil.h"
+#include "unify.h"
+#include "warn.h"
+
+#include <dict.h>
 #include <hashtable.h>
 #include <list.h>
-#include <dict.h>
 #include <set.h>
 
-// #define USE_SUBST_VCGEN
+#define USE_SUBST_VCGEN 1
 
 namespace Hashtable {
   using List;
@@ -2331,7 +2332,7 @@ $(term_t,assn_map_t) lookup_var_map(vardecl_t vd, assn_map_t am){
 
 // update the nonescvar_map to associate vd with a new term newt
 assn_map_t update_var_map(vardecl_t vd,term_t newt,assn_map_t am){
-#ifndef USE_SUBST_VCGEN
+#if !USE_SUBST_VCGEN
   let newm = Dict::insert(am.map,vd,newt);
   return AssnMap{am.assn,newm};
 #else
