@@ -36,6 +36,9 @@ typedef struct Table<`a,`b,`r> @`r table_t<`a,`b,`r>;
   /** A [table_t<`a,`b>] is a hash table with keys of type [`a]
       and values of type [`b]. */
 
+typedef struct Table<`a,`b,`r> *`r table_opt_t<`a,`b,`r>;
+  /** A [table_opt_t] is a nullable [table_t]. */
+
 extern table_t<`a,`b> create(int sz, int (@`H cmp)(`a,`a), int (@`H hash)(`a));
   /** [create(sz,cmp,hash)] returns a new hash table that starts out
       with [sz] buckets.  [cmp] should be a comparison function on
