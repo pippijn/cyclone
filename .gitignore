@@ -1,5 +1,6 @@
 /boot
 /.*omakedb*
+/config.om
 _build
 .cych
 *.boot

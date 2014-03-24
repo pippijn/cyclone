@@ -76,6 +76,7 @@ LDFLAGS_BOOT = $(LDFLAGS)
 ########################################################################
 
 CFLAGS[] =
+  #-O3
   -m32
   -ggdb3
   -I$(rootdir)/library/runtime
@@ -285,7 +286,7 @@ buildlib (cys) =
   case $'\\input\{\([^}]*\)\}':
     echo $"$@: $1.tex"
   if $(file-exists $*.bib):
-    echo $"$@: $*.bib"
+    echo $"$@: $(dir .)/$*.bib"
 
 %.pdf: %.tex
   rubber --pdf $<

@@ -1,7 +1,6 @@
 top_srcdir	= $(dir .)
 
-#VPATH = true
-VPATH = false
+include config.om
 
 if $(VPATH):
   SUBDIRS[] =
