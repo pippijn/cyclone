@@ -38,36 +38,9 @@
 
 #define USE_SUBST_VCGEN 0
 
-namespace Hashtable {
-  using List;
-  struct Cell<`a,`b,`r> {
-    `a key;
-    `b value;
-    struct Cell<`a,`b,`r>*`r next;
-  };
-
-  typedef struct Cell<`a,`b,`r>*`r cell_t<`a,`b,`r>;
-
-  typedef struct Bucket<`a,`b,`r> {
-    unsigned int length;
-    cell_t<`a,`b,`r> cells;
-  } bucket_t<`a,`b,`r>;
-
-  /*abstract*/
-  struct Table<`a,`b,`r> {
-    region_t<`r> r;
-    int          (@cmp)(`a,`a);
-    int          (@hash)(`a);
-    int	       max_len; // maximum length of bucket list before resize
-    bucket_t<`a,`b,`r>?`r tab;
-  };
-
-  extern void print_hist(table_t<`a,`b> t);
-}
-
 namespace AssnDef;
+
 using List;
-using Hashtable;
 
 
 ///////////////////// Terms /////////////////////
@@ -485,19 +458,10 @@ static term_t hash_cons_term(datatype Term @t) {
     return (*resopt)->term;
 }
 
-static `a*`r lookup_term_opt(Hashtable::table_t<term_t,`a,`r> h, datatype Term @t) {
-  let tab = h->tab;
-  let p = tab[termhash(t) % numelts(tab)].cells;
-  for (; p != NULL; p = p->next) {
-    if (termcmp(p->key,t) == 0) return &p->value;
-  }
-  return NULL;
-}
-
 // compute and cache the size of a term
 unsigned term_size(term_t t) {
   let h = get_term_hash_cons_table();
-  let resopt = lookup_term_opt(h,t);
+  let resopt = Hashtable::lookup_opt(h,t);
   if (resopt == NULL) {
     hash_cons_term(t);
     return term_size(t);
@@ -511,11 +475,11 @@ unsigned term_size(term_t t) {
 // result
 term_set_t term_fr_logicvar(term_t t) {
   let h = get_term_hash_cons_table();
-  let thinfo = lookup_term_opt(h,t);
+  let thinfo = Hashtable::lookup_opt(h,t);
   // the info was computed before and stored in the table
   if (thinfo == NULL) {
     t = hash_cons_term(t);
-    thinfo = lookup_term_opt(h,t);
+    thinfo = Hashtable::lookup_opt(h,t);
   }
   if ((*thinfo)->free_logicvar_set != NULL)
     return *(*thinfo)->free_logicvar_set;
