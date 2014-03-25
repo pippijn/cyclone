@@ -3,3 +3,7 @@
 if [ ! -d boot ]; then
    git clone --depth 1 git://github.com/pippijn/cyclone-boot boot
 fi
+
+if [ ! -f config.om ]; then
+   cp config.om.example config.om
+fi
