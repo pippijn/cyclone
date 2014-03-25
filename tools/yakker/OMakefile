@@ -10,6 +10,8 @@ instantiate.cyc: instantiate.yk yakker/yakker
 boot: instantiate.cyc
   cp $< bootfiles/instantiate.cyc
 
+.SCANNER: scan-%.cyc: parse_tab.h
+
 SUBDIRS[] =
   bootfiles
   libyakker
