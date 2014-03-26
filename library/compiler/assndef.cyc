@@ -2025,14 +2025,14 @@ a2dag ( region_t<`r> r
       , list_t<const char ?`r@`r, `r> @decls
       )
 {
-  $(const char ?`r, unsigned) @`r *resopt = Hashtable::lookup_opt (t, a);
+  $(const char ?, unsigned) @*resopt = Hashtable::lookup_opt (t, a);
   if (resopt != NULL)
     return **resopt;
 
   let c = *ctr;
   *ctr = c + 1;
   const char ?name = rprintf (r, "A%d", c);
-  const char ?`r s;
+  const char ?s;
   unsigned size = 1;
 
   switch (a)
@@ -2105,16 +2105,16 @@ assn2dag (assn_t a)
 
 // calculate a string representation (and total tree node count) for an
 // assertion.  the prec field (precedent) is used to avoid some parens.
-static string_t
-a2string (datatype Assn @a, int inprec)
+static string_t<`r>
+a2string (region_t<`r> r, datatype Assn @a, int inprec)
 {
   int myprec = 10;
   string_t s;
 
   switch (a)
     {
-    case &True : s = "true" ; break;
-    case &False: s = "false"; break;
+    case &True : s = rstrdup (r, "true" ); break;
+    case &False: s = rstrdup (r, "false"); break;
 
     case &Prim (t1, p, t2):
       string_t ps;
@@ -2129,22 +2129,22 @@ a2string (datatype Assn @a, int inprec)
         default:
           Warn::impos ("assn2string primop");
         }
-      s = aprintf ("%s%s%s", term2string (t1), ps, term2string (t2));
+      s = rprintf (r, "%s%s%s", term2string (t1), ps, term2string (t2));
       break;
 
     case &Or (a1, a2):
       myprec = 5;
-      s = aprintf ("%s || %s", a2string (a1, myprec), a2string (a2, myprec));
+      s = rprintf (r, "%s || %s", a2string (r, a1, myprec), a2string (r, a2, myprec));
       break;
 
     case &And (a1, a2):
       myprec = 10;
-      s = aprintf ("%s && %s", a2string (a1, 10), a2string (a2, 10));
+      s = rprintf (r, "%s && %s", a2string (r, a1, 10), a2string (r, a2, 10));
       break;
     }
 
   if (myprec < inprec)
-    s = aprintf ("(%s)", s);
+    s = rprintf (r, "(%s)", s);
 
   return s;
 }
@@ -2153,7 +2153,8 @@ a2string (datatype Assn @a, int inprec)
 string_t
 assn2string (datatype Assn @a)
 {
-  return a2string (a, 10);
+  region r;
+  return strdup (a2string (r, a, 10));
 }
 
 //////////////////////////////////////////////////////////////
