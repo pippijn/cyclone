@@ -2080,7 +2080,7 @@ a2dag ( region_t<`r> r
   return $(name, size);
 }
 
-int assnhash (datatype Assn @a);
+static int assnhash (datatype Assn @a);
 
 string_t
 assn2dag (assn_t a)
@@ -2164,16 +2164,22 @@ assn2string (datatype Assn @a)
 // It would be better if we didn't have to allocate the thing
 // that want to lookup.  That could happen if we had a different
 // type for hashtable lookup (as we did with dictionaries.)
-int
+static int
 assnhash (datatype Assn @a)
 {
+  unsigned h = 0;
+
   switch (a)
     {
     case &False: return 0;
     case &True : return 1;
 
     case &Prim (t1, p, t2):
-      return combine (termhash (t1), combine (termhash (t2), p));
+      h = h + p;
+      h = combine (h, termhash (t2));
+      h = combine (h, termhash (t1));
+      return h;
+
     case &And (a1, a2):
       return combine ((unsigned)a1, (unsigned)a2 + 1);
     case &Or (a1, a2):
