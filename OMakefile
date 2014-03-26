@@ -1,5 +1,7 @@
 rootdir = $(dir .)
 
+DBG		= #valgrind --db-attach=yes
+
 VERSION		= 1.0
 DATE		= $(shell date $'+%B %d, %G')
 
@@ -166,10 +168,10 @@ private.cyclone-rules (boot) =
   LIBS = $(LIBCOMPILER) $(LIBSTD) $(LIBRT)
 
   .SCANNER: scan-%.cyc: %.cyc $(CYCLONE) $(CYCSPECS) $(LIBS)
-    $(CYCLONE) $(CYCFLAGS) $< -M -MT $(removesuffix $<).c
+    $(DBG) $(CYCLONE) $(CYCFLAGS) $< -M -MT $(removesuffix $<).c
 
   %.c %.cyci: %.cyc $(CYCLONE) $(CYCSPECS) $(LIBS) :scanner: scan-%.cyc
-    $(CYCLONE) $(CYCFLAGS) -stopafter-toc $< -o $*.c
+    $(DBG) $(CYCLONE) $(CYCFLAGS) -stopafter-toc $< -o $*.c
 
   %.cyc: %.cyl $(CYCLEX) $(LIBSTD)
     $(CYCLEX) $< $@

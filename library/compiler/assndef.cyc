@@ -2247,7 +2247,7 @@ copy_assn (datatype Assn @`r a)
 
 
 // assertion constants for true and false
-datatype Assn.True true_assn = True;
+datatype Assn.True  true_assn  = True;
 datatype Assn.False false_assn = False;
 
 // computes the negation of an assertion a

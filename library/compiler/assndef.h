@@ -247,7 +247,7 @@ namespace AssnDef
 
   extern string_t assn2dag (assn_t);
   extern string_t assn2string (datatype Assn @);
-  extern datatype Assn.True true_assn;
+  extern datatype Assn.True  true_assn;
   extern datatype Assn.False false_assn;
 
   extern assn_t and  (assn_t a1, assn_t a2);
