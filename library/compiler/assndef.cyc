@@ -2254,8 +2254,8 @@ neg_assn (datatype Assn @a)
 {
   switch (a)
     {
-    case &True : return &false_assn;
-    case &False: return &true_assn;
+    case &True        : return &false_assn;
+    case &False       : return &true_assn;
     case &And (a1, a2): return new Or  (not (a1), not (a2));
     case &Or  (a1, a2): return new And (not (a1), not (a2));
     case &Prim (t1, p, t2):
@@ -2298,8 +2298,8 @@ get_assn_hash_cons_table ()
       assn_hash_cons_table = h;
       assn_set_opt_t ast = Set::empty (assncmp);
       term_set_t tst = empty_term_set ();
-      Hashtable::insert (h, &true_assn, new AssnHashedInfo { &true_assn, &false_assn, new ast, new tst });
-      Hashtable::insert (h, &false_assn, new AssnHashedInfo { &false_assn, &true_assn, new NULL, new tst });
+      Hashtable::insert (h, &true_assn , new AssnHashedInfo { &true_assn , &false_assn, new ast , new tst });
+      Hashtable::insert (h, &false_assn, new AssnHashedInfo { &false_assn, &true_assn , new NULL, new tst });
     }
   else
     h = (Hashtable::table_t)assn_hash_cons_table;
@@ -2358,7 +2358,10 @@ or (assn_t a1, assn_t a2)
 {
   if (a1 == a2)
     return a1;
-  //if (a1 == not(a2)) return &true_assn;
+#if 0
+  if (a1 == not (a2))
+    return &true_assn;
+#endif
   switch $(a1, a2)
     {
     case $(&True,  _): return a1;
