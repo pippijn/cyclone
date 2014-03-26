@@ -2017,27 +2017,28 @@ subst_t (term_dict_t dict, term_t t)
 /////// assertion manipulation /////////////
 
 
-static $(string_t,unsigned)
-a2dag ( assn_t a
+static $(string_t<`r>, unsigned)
+a2dag ( region_t<`r> r
+      , assn_t a
       , int @ctr
-      , Hashtable::table_t<assn_t, $(const char ?`H, unsigned) @`H> t
-      , list_t<const char ?`H@`H, `H> @decls
+      , Hashtable::table_t<assn_t, $(const char ?`r, unsigned) @`r> t
+      , list_t<const char ?`r@`r, `r> @decls
       )
 {
-  $(const char ?`H, unsigned) @`H *resopt = Hashtable::lookup_opt (t, a);
+  $(const char ?`r, unsigned) @`r *resopt = Hashtable::lookup_opt (t, a);
   if (resopt != NULL)
     return **resopt;
 
   let c = *ctr;
   *ctr = c + 1;
-  const char ?name = aprintf ("A%d", c);
-  const char ?s;
+  const char ?name = rprintf (r, "A%d", c);
+  const char ?`r s;
   unsigned size = 1;
 
   switch (a)
     {
-    case &True : s = "true" ; break;
-    case &False: s = "false"; break;
+    case &True : s = rstrdup (r, "true" ); break;
+    case &False: s = rstrdup (r, "false"); break;
 
     case &Prim (t1, p, t2):
       const char ?ps;
@@ -2052,26 +2053,29 @@ a2dag ( assn_t a
         default:
           Warn::impos ("assn2string primop");
         }
-      s = aprintf ("%s%s%s", term2string (t1), ps, term2string (t2));
+      s = rprintf (r, "%s%s%s", term2string (t1), ps, term2string (t2));
       break;
 
     case &Or (a1, a2):
-      let $(s1, n1) = a2dag (a1, ctr, t, decls);
-      let $(s2, n2) = a2dag (a2, ctr, t, decls);
-      s = aprintf ("%s || %s", s1, s2);
+      let $(s1, n1) = a2dag (r, a1, ctr, t, decls);
+      let $(s2, n2) = a2dag (r, a2, ctr, t, decls);
+      s = rprintf (r, "%s || %s", s1, s2);
       size += (n1 + n2);
       break;
 
     case &And (a1, a2):
-      let $(s1, n1) = a2dag (a1, ctr, t, decls);
-      let $(s2, n2) = a2dag (a2, ctr, t, decls);
-      s = aprintf ("%s && %s", s1, s2);
+      let $(s1, n1) = a2dag (r, a1, ctr, t, decls);
+      let $(s2, n2) = a2dag (r, a2, ctr, t, decls);
+      s = rprintf (r, "%s && %s", s1, s2);
       size += (n1 + n2);
       break;
     }
 
-  *decls = new List { new (const char ?)(aprintf ("%s = %s\n", name, s)), *decls };
-  Hashtable::insert (t, a, new $(name, size));
+  *decls = rnew (r) List {
+    rnew (r) (const char ?)rprintf (r, "%s = %s\n", name, s),
+    *decls
+  };
+  Hashtable::insert (t, a, rnew (r) $(name, size));
 
   return $(name, size);
 }
@@ -2081,12 +2085,20 @@ int assnhash (datatype Assn @a);
 string_t
 assn2dag (assn_t a)
 {
-  list_t<const char ?`H @`H> decls = NULL;
-  Hashtable::table_t<assn_t, $(const char ?`H, unsigned) @`H> t =
-    Hashtable::create (221, assncmp, assnhash);
+  region r;
+
+  let decls = NULL;
+  let t = Hashtable::rcreate (r, 221, assncmp, assnhash);
   int ctr = 0;
-  let $(s, n) = a2dag (a, &ctr, t, &decls);
-  decls = List::imp_rev (new List { new (const char ?)(aprintf ("in %s (%d nodes as tree)\n", s, n)), decls });
+
+  let $(s, n) = a2dag (r, a, &ctr, t, &decls);
+
+  decls = rnew (r) List {
+    rnew (r) (const char ?)rprintf (r, "in %s (%d nodes as tree)\n", s, n),
+    decls
+  };
+  decls = List::imp_rev (decls);
+
   return strconcat_l (decls);
 }
 
