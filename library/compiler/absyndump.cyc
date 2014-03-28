@@ -635,10 +635,10 @@ dumpntyp (type_t t)
       return;                                       // shouldn't happen!
     case &AnonAggrType (k, is_tuple, fs):
       if (is_tuple)
-      {
-        dump_char ('$');
-        dumpargs (map (aggrfield2arg, fs));
-      }
+        {
+          dump_char ('$');
+          dumpargs (map (aggrfield2arg, fs));
+        }
       else
         {
           dumpaggr_kind (k);
@@ -1191,8 +1191,9 @@ dumpexp_prec (int inprec, exp_t e)
       // JGM: can't dump locations inside macro arguments, so we turn this
       // off if the location of the function call (or the function itself) is 0.
       bool old_generate_line_directives = generate_line_directives;
-      generate_line_directives =
-       old_generate_line_directives && !(e->loc == 0) && !(e1->loc == 0);
+      generate_line_directives = old_generate_line_directives
+                              && e->loc  != 0
+                              && e1->loc != 0;
       dumpexps_prec (20, es);
       dump_nospace (")");
       generate_line_directives = old_generate_line_directives;
@@ -1204,8 +1205,7 @@ dumpexp_prec (int inprec, exp_t e)
       dumpexp_prec (myprec, e1);
       break;
 
-    case &NoInstantiate_e (e1):
-      fallthru (e1);
+    case &NoInstantiate_e (e1): fallthru (e1);
     case &Instantiate_e (e1, _):
       dumpexp_prec (inprec, e1);
       break;
@@ -1228,16 +1228,16 @@ dumpexp_prec (int inprec, exp_t e)
     case &New_e (ropt, e1, qual):
       // FIX: use ropt!
       if (ropt)
-      {
-        dump ("rnew(");
-        dumpexp_prec (140, ropt);
-        if (qual)
-          {
-            dump_char (',');
-            dumpexp_prec (140, qual);
-          }
-        dump_char (')');
-      }
+        {
+          dump ("rnew(");
+          dumpexp_prec (140, ropt);
+          if (qual)
+            {
+              dump_char (',');
+              dumpexp_prec (140, qual);
+            }
+          dump_char (')');
+        }
       else
         {
           dump ("new");
@@ -1394,11 +1394,11 @@ dumpexp_prec (int inprec, exp_t e)
 
     case &AnonStruct_e (_, is_tuple, des):
       if (is_tuple)
-      {
-        dump ("$(");
-        dumpexps_prec (20, map (snd, des));
-        dump_char (')');
-      }
+        {
+          dump ("$(");
+          dumpexps_prec (20, map (snd, des));
+          dump_char (')');
+        }
       else
         group (dumpde, des, "{", "}", ",");
       break;
@@ -1501,9 +1501,9 @@ dumpexp_prec (int inprec, exp_t e)
 #if 0
   if (inprec >= myprec)
 #else
-    if (inprec >= myprec && (inprec != 140 || myprec != 140))
+  if (inprec >= myprec && (inprec != 140 || myprec != 140))
 #endif
-      dump_char (')');
+    dump_char (')');
 }
 
 static void
@@ -1576,41 +1576,41 @@ LOOP:
       // It is verbose for Cyclone; maybe it should be controlled by a flag.
     case &Seq_s (s1, s2):
       while (true)
-      {
-        if (Absynpp::is_declaration (s1))
-          {
-            dump_char ('{');
-            dumpstmt (s1, false, mt_set ());
-            dump_char ('}');
-          }
-        else
-          dumpstmt (s1, false, varsinblock);
-        switch (s2->r)
-          {
-          case &Seq_s (s3, s4):
-            dumploc (s3->loc);
-            s1 = s3;
-            s2 = s4;
-            continue;
-          default:
-            if (Absynpp::is_declaration (s2))
-              {
-                if (expstmt)
-                  dump_char ('(');
-                dump_char ('{');
-                dumpstmt (s2, expstmt, mt_set ());
-                dump_char ('}');
-                if (expstmt)
-                  {
-                    dump_char (')');
-                    dump_semi ();
-                  }
-              }
-            else
-              dumpstmt (s2, expstmt, varsinblock);
-            return;
-          }
-      }
+        {
+          if (Absynpp::is_declaration (s1))
+            {
+              dump_char ('{');
+              dumpstmt (s1, false, mt_set ());
+              dump_char ('}');
+            }
+          else
+            dumpstmt (s1, false, varsinblock);
+          switch (s2->r)
+            {
+            case &Seq_s (s3, s4):
+              dumploc (s3->loc);
+              s1 = s3;
+              s2 = s4;
+              continue;
+            default:
+              if (Absynpp::is_declaration (s2))
+                {
+                  if (expstmt)
+                    dump_char ('(');
+                  dump_char ('{');
+                  dumpstmt (s2, expstmt, mt_set ());
+                  dump_char ('}');
+                  if (expstmt)
+                    {
+                      dump_char (')');
+                      dump_semi ();
+                    }
+                }
+              else
+                dumpstmt (s2, expstmt, varsinblock);
+              return;
+            }
+        }
 
     case &Return_s (NULL):
       dump ("return;");
@@ -1747,18 +1747,18 @@ LOOP:
       // labels.  This next case forces an explicit block to be written.
       // It is verbose for Cyclone; maybe it should be controlled by a flag.
       if (Absynpp::is_declaration (s1))
-      {
-        dump_str (x);
-        if (expstmt)
-          dump_nospace (": ({");
-        else
-          dump_nospace (": {");
-        dumpstmt (s1, expstmt, mt_set ());
-        if (expstmt)
-          dump_nospace ("});");
-        else
-          dump_char ('}');
-      }
+        {
+          dump_str (x);
+          if (expstmt)
+            dump_nospace (": ({");
+          else
+            dump_nospace (": {");
+          dumpstmt (s1, expstmt, mt_set ());
+          if (expstmt)
+            dump_nospace ("});");
+          else
+            dump_char ('}');
+        }
       else
         {
           dump_str (x);
@@ -2566,10 +2566,10 @@ dump_decl_interface (decl_t d)
       break;
     case &Typedef_d (td):
       if (td->defn == NULL)
-      {
-        dumpdecl (d);
-        dump ("\n");
-      }
+        {
+          dumpdecl (d);
+          dump ("\n");
+        }
       break;
     case &Namespace_d (v, ds):
       dump ("namespace ");

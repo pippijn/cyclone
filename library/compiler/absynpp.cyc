@@ -1581,7 +1581,7 @@ exp_prec (exp_t e)
   switch (e->r)
     {
     case &Const_e 		(...):
-    case &Var_e 		(...): return 10000;
+    case &Var_e 		(...):  return 10000;
     case &Primop_e (p, _):
       switch (p)
         {
