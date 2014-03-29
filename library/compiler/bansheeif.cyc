@@ -132,11 +132,12 @@ using Core;
 
 namespace BansheeIf
 {
-  datatype BansheeVar {
-    BvarPtrBnd (Banshee::ptrbnd);
-    BvarEffect (Banshee::effect);
+  datatype BansheeVar
+  {
+    BvarPtrBnd   (Banshee::ptrbnd  );
+    BvarEffect   (Banshee::effect  );
     BvarZeroterm (Banshee::zeroterm);
-    BvarIntlit (Banshee::intlit);
+    BvarIntlit   (Banshee::intlit  );
     BvarIntbound (Banshee::intbound);
   };
 
@@ -1316,7 +1317,7 @@ namespace BansheeIf
   //read into the assoc list. Each of the Cvars that appear here are
   //top level Cvars and should be persisted to the .cych/cvars file
   void
-  init_toplevel_cvars (list_t<$(type_t, list_t<constraint_t, `H> ) @> assoc)
+  init_toplevel_cvars (list_t<$(type_t, list_t<constraint_t, `H>) @> assoc)
   {
     init_map ();
     for (; assoc; assoc = assoc->tl)
@@ -1329,7 +1330,7 @@ namespace BansheeIf
   }
 
   int
-  add_all_constraints (list_t<$(type_t, list_t<constraint_t, `H> ) @> g)
+  add_all_constraints (list_t<$(type_t, list_t<constraint_t, `H>) @> g)
   {
     for (; g; g = g->tl)
       {
