@@ -294,7 +294,7 @@ curr_namespace_drop ()
 }
 
 string_t
-char_escape (char c)
+char_escape (unsigned char c)
 {
   switch (c)
     {
@@ -317,9 +317,9 @@ char_escape (char c)
         }
       let t = new_string (5);
       t[0] = '\\';
-      t[1] = (char)('0' + (((unsigned char)c >> 6) & 3));
+      t[1] = (char)('0' + ((c >> 6) & 3));
       t[2] = (char)('0' + ((c >> 3) & 7));
-      t[3] = (char)('0' + (c & 7));
+      t[3] = (char)('0' + ((c >> 0) & 7));
       return t;
     }
 }
@@ -399,7 +399,7 @@ string_escape (string_t<`H> s)
             t[j++] = '\\';
             t[j++] = (char)('0' + ((uc >> 6) & 7));
             t[j++] = (char)('0' + ((uc >> 3) & 7));
-            t[j++] = (char)('0' + (uc & 7));
+            t[j++] = (char)('0' + ((uc >> 0) & 7));
           }
         break;
       }
@@ -1663,7 +1663,7 @@ asm_iolist_doc_in (list_t<$(string_t<`H>, exp_t) @> o)
 
   while (o)
     {
-      let & $(c, e) = o->hd;
+      let &$(c, e) = o->hd;
       s = cat (s, text ("\""), text (c), text ("\" ("), exp2doc (e), text (")"));
       o = o->tl;
       if (o)
@@ -1719,7 +1719,7 @@ may_contain_implicit_regions (bool *res, type_t t)
           if (Tcutil::is_temp_tvar (tv))
             {
               *res = true;
-              throw & Implicit_region_val;
+              throw &Implicit_region_val;
             }
           break;
         default:

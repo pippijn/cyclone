@@ -86,7 +86,7 @@ namespace Absynpp
   extern string_t cyc_string;
   extern stringptr_t cyc_stringptr;
   int exp_prec (exp_t);
-  string_t char_escape (char);
+  string_t char_escape (unsigned char);
   string_t string_escape (string_t<`H>);
   string_t prim2str (primop_t);
   bool is_declaration (stmt_t);
