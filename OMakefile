@@ -50,7 +50,7 @@ link (lib) =
 
 
 CYCFLAGS[] =
-  #-pp
+  -pp
   #-noexpandtypedefs
   #-nochecks
   #-nonullchecks

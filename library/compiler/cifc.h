@@ -16,26 +16,31 @@
    along with the Cyclone compiler; see the file COPYING. If not,
    write to the Free Software Foundation, Inc., 59 Temple Place -
    Suite 330, Boston, MA 02111-1307, USA. */
+
 #ifndef _CIFC_H_
 #define _CIFC_H_
 
 #include "absyn.h"
 #include "tcenv.h"
 
-namespace Cifc {
-using Absyn;
-using List;
-using Tcenv;
-
+namespace Cifc
+{
   /* Merges a C version of definition with a user-provided Cyclone
      version, but only if the Cyclone version is
      "representation-compatible" with the C one.  If so, the c_decl is
      changed in place. */
-  void merge_sys_user_decl(seg_t, tenv_t, bool is_buildlib,decl_t user_decl,decl_t c_decl);
-  
-  void user_overrides(seg_t, tenv_t, list_t<decl_t,`H> *ds, list_t<decl_t> ovrs);
+  void merge_sys_user_decl ( Absyn::seg_t
+                           , Tcenv::tenv_t
+                           , bool is_buildlib
+                           , Absyn::decl_t user_decl
+                           , Absyn::decl_t c_decl);
 
-  void set_inst_tvar();
+  void user_overrides ( Absyn::seg_t
+                      , Tcenv::tenv_t
+                      , List::list_t<Absyn::decl_t, `H> *ds
+                      , List::list_t<Absyn::decl_t> ovrs);
+
+  void set_inst_tvar ();
 }
 
 #endif /* _CIFC_H_ */

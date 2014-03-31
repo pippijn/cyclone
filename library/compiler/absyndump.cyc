@@ -684,7 +684,7 @@ dumpntyp (type_t t)
         {
         case { .UnknownDatatype = UnknownDatatypeInfo (n, is_x) }:
           fallthru (n, is_x);
-        case { .KnownDatatype = & & Datatypedecl (_, n, _, _, is_x) }:
+        case { .KnownDatatype = &&Datatypedecl (_, n, _, _, is_x) }:
           if (is_x)
             dump ("@extensible");
           dump ("datatype");
@@ -1001,7 +1001,7 @@ dump_asm_iolist (list_t<$(string_t<`H>, exp_t) @> iolist)
 {
   while (iolist)
     {
-      let & $(constr, e1) = iolist->hd;
+      let &$(constr, e1) = iolist->hd;
       dump_char ('"');
       dump_nospace (Absynpp::string_escape (constr));
       dump_char ('"');
@@ -2304,7 +2304,7 @@ dumpdecl (decl_t d)
       if (wc)
         {
           dump (" export { * }\n");
-          let & $(_, hides) = wc;
+          let &$(_, hides) = wc;
           if (hides)
             egroup (dumpqvar, hides, " cyclone_hide {", "}", ",");
         }
