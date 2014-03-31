@@ -16,19 +16,22 @@
    along with the Cyclone compiler; see the file COPYING. If not,
    write to the Free Software Foundation, Inc., 59 Temple Place -
    Suite 330, Boston, MA 02111-1307, USA. */
+
 #ifndef _CALLGRAPH_H
 #define _CALLGRAPH_H
 
 #include "absyn.h"
 #include <graph.h>
 
-namespace Callgraph {
+namespace Callgraph
+{
   typedef Graph::graph_t<Absyn::fndecl_t> callgraph_t;
+
   // Computes the call graph of the functions in a list of declarations.
   // We'll have an edge from f to g if g occurs anywhere in f (not just
-  // a function call.)  
-  callgraph_t compute_callgraph(List::list_t<Absyn::decl_t>);
-  void print_callgraph(FILE @, callgraph_t);
+  // a function call.)
+  callgraph_t compute_callgraph (List::list_t<Absyn::decl_t>);
+  void print_callgraph (FILE @, callgraph_t);
 }
 
 #endif
