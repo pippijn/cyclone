@@ -20,66 +20,58 @@
 // see flags.h for descriptions
 
 #include "flags.h"
+
 namespace Flags;
 
-bool verbose = false;
-bool compile_for_boot = false;
-bool warn_alias_coerce = false;
-bool warn_region_coerce = false;
-bool tovc_r = false;
-enum C_Compilers c_compiler = Gcc_c;
-bool porting_c_code = false;
-bool no_regions = false;
-bool no_reaps = false;
-bool infstats=false;
-bool override_fat=false;
-bool resolve = false;
-bool interproc = false;
-bool no_merge = true;
-bool tags = false;
-bool no_register = false;
-bool noexpand_r = false;
-bool warn_bounds_checks  = false;
-bool warn_all_null_deref = false;
-bool warn_override = false;
-bool warn_lose_unique = false;
-bool tc_aggressive_warn = false;
-enum Cyclone_Passes stop_after_pass = AllPasses;
-bool print_parser_state_and_token = false;
-bool allpaths = true;
-bool debug_assn = false;
-bool print_unprovable = false;
-bool warn_assert = false;
-unsigned int max_vc_summary = 500;
-unsigned int max_vc_paths = 33;
-unsigned int max_vc_term_size = 100000;
-bool better_widen = false;
+bool verbose                            = false;
+bool compile_for_boot                   = false;
+bool warn_alias_coerce                  = false;
+bool warn_region_coerce                 = false;
+bool tovc_r                             = false;
+enum C_Compilers c_compiler             = Gcc_c;
+bool porting_c_code                     = false;
+bool no_regions                         = false;
+bool no_reaps                           = false;
+bool infstats                           = false;
+bool override_fat                       = false;
+bool resolve                            = false;
+bool interproc                          = false;
+bool no_merge                           = true;
+bool tags                               = false;
+bool no_register                        = false;
+bool noexpand_r                         = false;
+bool warn_bounds_checks                 = false;
+bool warn_all_null_deref                = false;
+bool warn_override                      = false;
+bool warn_lose_unique                   = false;
+bool tc_aggressive_warn                 = false;
+enum Cyclone_Passes stop_after_pass     = AllPasses;
+bool print_parser_state_and_token       = false;
+bool allpaths                           = true;
+bool debug_assn                         = false;
+bool print_unprovable                   = false;
+bool warn_assert                        = false;
+unsigned int max_vc_summary             = 500;
+unsigned int max_vc_paths               = 33;
+unsigned int max_vc_term_size           = 100000;
+bool better_widen                       = false;
 
-void set_all_warnings() {
-  warn_bounds_checks = true;
-  warn_all_null_deref = true;
-  warn_lose_unique = true;
-  warn_alias_coerce = true;
-  warn_region_coerce = true;
-  tc_aggressive_warn = true;
-  warn_override = true;
-  warn_assert = true;
+void
+set_all_warnings ()
+{
+  warn_bounds_checks    = true;
+  warn_all_null_deref   = true;
+  warn_lose_unique      = true;
+  warn_alias_coerce     = true;
+  warn_region_coerce    = true;
+  tc_aggressive_warn    = true;
+  warn_override         = true;
+  warn_assert           = true;
 }
-void set_cpponly() {
-  stop_after_pass = stop_after_pass < Cpp ? stop_after_pass : Cpp;
-}
-void set_parseonly() {
-  stop_after_pass = stop_after_pass < Parsing ? stop_after_pass : Parsing;
-}
-void set_crgnonly() {
-  stop_after_pass = stop_after_pass < CurrentRegion ? stop_after_pass : CurrentRegion;
-}
-void set_tconly() {
-  stop_after_pass = stop_after_pass < TypeChecking ? stop_after_pass : TypeChecking;
-}
-void set_cfonly() {
-  stop_after_pass = stop_after_pass < FlowAnalysis ? stop_after_pass : FlowAnalysis;
-}
-void set_toconly() {
-  stop_after_pass = stop_after_pass < EvalOrder ? stop_after_pass : EvalOrder;
-}
+
+void set_cpponly   () { stop_after_pass = stop_after_pass < Cpp           ? stop_after_pass : Cpp          ; }
+void set_parseonly () { stop_after_pass = stop_after_pass < Parsing       ? stop_after_pass : Parsing      ; }
+void set_crgnonly  () { stop_after_pass = stop_after_pass < CurrentRegion ? stop_after_pass : CurrentRegion; }
+void set_tconly    () { stop_after_pass = stop_after_pass < TypeChecking  ? stop_after_pass : TypeChecking ; }
+void set_cfonly    () { stop_after_pass = stop_after_pass < FlowAnalysis  ? stop_after_pass : FlowAnalysis ; }
+void set_toconly   () { stop_after_pass = stop_after_pass < EvalOrder     ? stop_after_pass : EvalOrder    ; }
