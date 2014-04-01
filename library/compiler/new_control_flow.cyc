@@ -26,58 +26,29 @@
 // KLUDGE: For unions, we just pretend its initialized.  Since you can
 // only read bits out, safety is not compromised.
 
+#include "new_control_flow.h"
+
 #include "absyn.h"
-#include "tcutil.h"
 #include "attributes.h"
 #include "evexp.h"
-#include "new_control_flow.h"
-#include "tcpat.h"
-#include "warn.h"
 #include "flags.h"
+#include "tcpat.h"
+#include "tcutil.h"
+#include "warn.h"
 
 // for debugging
 #include "absynpp.h"
-#include <cycboot.h>
 
-using List;
+#include <string.h>
+
 using Absyn;
-using CfFlowInfo;
 using Absynpp;
+using CfFlowInfo;
+using List;
+
 namespace NewControlFlow;
 
 typedef Dict::dict_t<`a,`b> dict_t<`a,`b>;
-
-// duplicated here to allow bootstrapping
-static int strcmp(buffer_t s1, buffer_t s2) {
-  if (s1 == s2)
-    return 0;
-  int i = 0;
-  unsigned int sz1 = numelts(s1);
-  unsigned int sz2 = numelts(s2);
-  unsigned int minsz = (sz1 < sz2) ? sz1 : sz2;
-//   assert(minsz <= numelts(s1) && minsz <= numelts(s2));
-  while (i < minsz) {
-    char c1 = s1[i];
-    char c2 = s2[i];
-    if (c1 == '\000') {
-      if (c2 == '\000') return 0;
-      else return -1;
-    } else if (c2 == '\000') return 1;
-    else {
-      int diff = c1 - c2;
-      if (diff != 0) return diff;
-    }
-    ++i;
-  }
-  if (sz1 == sz2) return 0;
-  if (minsz < sz2) {
-    if (s2[i] == '\000') return 0;
-    else return -1;
-  } else {
-    if (s1[i] == '\000') return 0;
-    else return 1;
-  }
-}
 
 //////////////////////////// Statement Decoration //////////////////////////
 struct CFStmtAnnot {
