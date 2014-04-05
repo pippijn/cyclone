@@ -19,9 +19,10 @@
 #ifndef CF_FLOWINFO_H
 #define CF_FLOWINFO_H
 
-#include <set.h>
-#include <dict.h>
 #include "absyn.h"
+
+#include <dict.h>
+#include <set.h>
 
 // Note: Okasaki's dictionaries may be the wrong thing here because
 //       we're doing a lot of intersections.  I don't know what's better,

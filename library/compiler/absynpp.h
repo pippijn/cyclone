@@ -20,8 +20,9 @@
 #ifndef _ABSYNPP_H_
 #define _ABSYNPP_H_
 
-#include <pp.h>
 #include "absyn.h"
+
+#include <pp.h>
 
 namespace Absynpp
 {

@@ -26,9 +26,9 @@
 #include "absyn.h"
 
 #include <dict.h>
-#include <string.h>
-#include <set.h>
 #include <hashtable.h>
+#include <set.h>
+#include <string.h>
 
 namespace AssnDef
 {

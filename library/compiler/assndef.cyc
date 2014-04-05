@@ -21,9 +21,10 @@
    assertions as well as utilities on them (such as comparison, debugging
    printing etc.). */
 
+#include "assndef.h"
+
 #include "absyn.h"
 #include "absynpp.h"
-#include "assndef.h"
 #include "evexp.h"
 #include "flags.h"
 #include "pratt_prover.h"

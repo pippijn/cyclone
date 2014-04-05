@@ -32,19 +32,20 @@ specification cycinf : CYCINF =
  end
 */
 #define BANSHEEIF_CYC
-
-#include <hashtable.h>
-#include <assert.h>
-#include <list.h>
-#include <string.h>
-#include <position.h>
-#include "absyn.h"
-#include "warn.h"
-#include "kinds.h"
-#include "absynpp.h"
 #include "bansheeif.h"
-#include "tcutil.h"
+
+#include "absyn.h"
+#include "absynpp.h"
 #include "flags.h"
+#include "kinds.h"
+#include "tcutil.h"
+#include "warn.h"
+
+#include <assert.h>
+#include <hashtable.h>
+#include <list.h>
+#include <position.h>
+#include <string.h>
 
 __noinference__ {
 

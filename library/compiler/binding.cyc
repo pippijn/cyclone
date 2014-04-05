@@ -26,8 +26,9 @@
 // The lexer also uses the namespace-management code (or will eventually)
 // because we must resolve relative typedefs during parsing.
 
-#include "bansheeif.h"
 #include "binding.h"
+
+#include "bansheeif.h"
 #include "cifc.h"
 #include "flags.h"
 #include "tcutil.h"

@@ -21,6 +21,7 @@
 #define _CALLGRAPH_H
 
 #include "absyn.h"
+
 #include <graph.h>
 
 namespace Callgraph

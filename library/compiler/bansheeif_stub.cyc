@@ -1,6 +1,8 @@
-#include <core.h>
-#include "absyn.h"
 #include "bansheeif.h"
+
+#include "absyn.h"
+
+#include <core.h>
 
 namespace BansheeIf
 {
