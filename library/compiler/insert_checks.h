@@ -23,22 +23,23 @@
 #include "absyn.h"
 #include "jump_analysis.h"
 
-namespace InsertChecks {
-@extensible datatype Absyn::AbsynAnnot {
-  extern NoCheck;
-  extern NullOnly;
-  extern NullAndFatBound;
-  extern FatBound;
-  extern NullAndThinBound(Absyn::exp_t); // exp must be a C constant expression
-  extern ThinBound(Absyn::exp_t);        // exp must be a C constant expression
-};
-extern_datacon(Absyn::AbsynAnnot,NoCheck);
-extern_datacon(Absyn::AbsynAnnot,NullOnly);
-extern_datacon(Absyn::AbsynAnnot,NullAndFatBound);
-extern_datacon(Absyn::AbsynAnnot,FatBound);
+namespace InsertChecks
+{
+  @extensible datatype Absyn::AbsynAnnot
+  {
+    extern NoCheck;
+    extern NullOnly;
+    extern NullAndFatBound;
+    extern FatBound;
+    extern NullAndThinBound (Absyn::exp_t); // exp must be a C constant expression
+    extern ThinBound (Absyn::exp_t);     // exp must be a C constant expression
+  };
+  extern_datacon (Absyn::AbsynAnnot, NoCheck);
+  extern_datacon (Absyn::AbsynAnnot, NullOnly);
+  extern_datacon (Absyn::AbsynAnnot, NullAndFatBound);
+  extern_datacon (Absyn::AbsynAnnot, FatBound);
 
-void insert_checks(List::list_t<Absyn::decl_t,`H>, 
-		   JumpAnalysis::jump_anal_res_t,bool);
+  void insert_checks (List::list_t<Absyn::decl_t, `H>, JumpAnalysis::jump_anal_res_t, bool);
 }
 
 #endif

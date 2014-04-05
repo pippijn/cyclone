@@ -5,6 +5,7 @@
 
 #include <core.h>
 #include <list.h>
+#include <stdio.h>
 
 namespace BansheeIf
 {
