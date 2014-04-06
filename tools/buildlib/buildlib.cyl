@@ -106,8 +106,8 @@ nk2str (enum name_kind kind)
 static const char ?cyclone_cc = "gcc";
 static const char ?target_cflags = "";
 
-static int do_setjmp = 0;
-static int verbose = 0;
+static bool do_setjmp = false;
+static bool verbose = false;
 
 FILE *log_file = NULL;
 FILE *cstubs_file = NULL;
