@@ -21,83 +21,93 @@
 
 #include "absyn.h"
 
-namespace Kinds {
-using Absyn;
+namespace Kinds
+{
+  using Absyn;
 
-// useful kinds
-//extern struct Kind rk; // shareable region kind
-extern struct Kind ak; // shareable abstract kind
-extern struct Kind bk; // shareable boxed kind
-extern struct Kind mk; // shareable mem kind
-extern struct Kind ek; // effect kind
-extern struct Kind ik; // int kind
-extern struct Kind boolk; // boolean kind
-extern struct Kind ptrbk; // pointer bound kind
-extern struct Kind aqk;  // alias qualifier kind
+  // useful kinds
+#if 0
+  extern struct Kind rk; // shareable region kind
+#endif
+  extern struct Kind ak; // shareable abstract kind
+  extern struct Kind bk; // shareable boxed kind
+  extern struct Kind mk; // shareable mem kind
+  extern struct Kind ek; // effect kind
+  extern struct Kind ik; // int kind
+  extern struct Kind boolk; // boolean kind
+  extern struct Kind ptrbk; // pointer bound kind
+  extern struct Kind aqk; // alias qualifier kind
 
-// extern struct Kind bk_rhint; // restricted boxed kind
-// extern struct Kind bk_uhint; // unique boxed kind
-// extern struct Kind bk_rchint; // refcnt boxed kind
+#if 0
+  extern struct Kind bk_rhint; // restricted boxed kind
+  extern struct Kind bk_uhint; // unique boxed kind
+  extern struct Kind bk_rchint; // refcnt boxed kind
 
-// extern struct Kind trk; // top region kind
-// extern struct Kind tak; // top abstract kind
-// extern struct Kind tbk; // top boxed kind
-// extern struct Kind tmk; // top memory kind
+  extern struct Kind trk; // top region kind
+  extern struct Kind tak; // top abstract kind
+  extern struct Kind tbk; // top boxed kind
+  extern struct Kind tmk; // top memory kind
 
-// extern struct Kind urk;  // unique region kind
-// extern struct Kind uak;  // unique abstract kind
-// extern struct Kind ubk;  // unique boxed kind
-// extern struct Kind umk;  // unique memory kind
+  extern struct Kind urk; // unique region kind
+  extern struct Kind uak; // unique abstract kind
+  extern struct Kind ubk; // unique boxed kind
+  extern struct Kind umk; // unique memory kind
+#endif
 
-//extern struct Core::Opt<kind_t> rko;
-extern struct Core::Opt<kind_t> ako;
-extern struct Core::Opt<kind_t> bko;
-extern struct Core::Opt<kind_t> mko;
-extern struct Core::Opt<kind_t> iko;
-extern struct Core::Opt<kind_t> eko;
-extern struct Core::Opt<kind_t> boolko;
-extern struct Core::Opt<kind_t> ptrbko;
-extern struct Core::Opt<kind_t> aqko;
+#if 0
+  extern struct Core::Opt<kind_t> rko;
+#endif
+  extern struct Core::Opt<kind_t> ako;
+  extern struct Core::Opt<kind_t> bko;
+  extern struct Core::Opt<kind_t> mko;
+  extern struct Core::Opt<kind_t> iko;
+  extern struct Core::Opt<kind_t> eko;
+  extern struct Core::Opt<kind_t> boolko;
+  extern struct Core::Opt<kind_t> ptrbko;
+  extern struct Core::Opt<kind_t> aqko;
 
-// extern struct Core::Opt<kind_t> bk_rhinto;
-// extern struct Core::Opt<kind_t> bk_uhinto;
-// extern struct Core::Opt<kind_t> bk_rchinto;
-  
-// extern struct Core::Opt<kind_t> trko;
-// extern struct Core::Opt<kind_t> tako;
-// extern struct Core::Opt<kind_t> tbko;
-// extern struct Core::Opt<kind_t> tmko;
+#if 0
+  extern struct Core::Opt<kind_t> bk_rhinto;
+  extern struct Core::Opt<kind_t> bk_uhinto;
+  extern struct Core::Opt<kind_t> bk_rchinto;
 
-// extern struct Core::Opt<kind_t> urko;
-// extern struct Core::Opt<kind_t> uako;
-// extern struct Core::Opt<kind_t> ubko;
-// extern struct Core::Opt<kind_t> umko;
+  extern struct Core::Opt<kind_t> trko;
+  extern struct Core::Opt<kind_t> tako;
+  extern struct Core::Opt<kind_t> tbko;
+  extern struct Core::Opt<kind_t> tmko;
 
-Core::opt_t<kind_t> kind_to_opt(kind_t);
-kindbound_t kind_to_bound(kind_t);
-kindbound_t copy_kindbound(kindbound_t);
+  extern struct Core::Opt<kind_t> urko;
+  extern struct Core::Opt<kind_t> uako;
+  extern struct Core::Opt<kind_t> ubko;
+  extern struct Core::Opt<kind_t> umko;
+#endif
 
-kind_t id_to_kind(string_t<`H>, seg_t); // used in parse.y
-string_t kind2string(kind_t);
+  Core::opt_t<kind_t> kind_to_opt (kind_t);
+  kindbound_t kind_to_bound (kind_t);
+  kindbound_t copy_kindbound (kindbound_t);
 
-kind_t tvar_kind(tvar_t,kind_t def);
-struct Core::Opt<struct Kind*> tvar_kind_opt(tvar_t);
+  kind_t id_to_kind (string_t<`H>, seg_t); // used in parse.cyy
+  string_t kind2string (kind_t);
 
-$(tvar_t,kindbound_t) swap_kind(type_t, kindbound_t);
+  kind_t tvar_kind (tvar_t, kind_t def);
+  struct Core::Opt<struct Kind *> tvar_kind_opt (tvar_t);
+
+  $(tvar_t, kindbound_t) swap_kind (type_t, kindbound_t);
   // for temporary kind refinement
 
-kindbound_t compress_kb(kindbound_t);
-kind_t force_kb(kindbound_t);
+  kindbound_t compress_kb (kindbound_t);
+  kind_t force_kb (kindbound_t);
 
-// returns true if first-arg is a sub-kind of second-arg
-bool kind_leq(kind_t,kind_t);
-bool kind_eq(kind_t,kind_t);
+  // returns true if first-arg is a sub-kind of second-arg
+  bool kind_leq (kind_t, kind_t);
+  bool kind_eq (kind_t, kind_t);
 
-// only used by tctyp
-Core::opt_t<kindbound_t> kind_to_bound_opt(kind_t);
-bool constrain_kinds(kindbound_t, kindbound_t);
+  // only used by tctyp
+  Core::opt_t<kindbound_t> kind_to_bound_opt (kind_t);
+  bool constrain_kinds (kindbound_t, kindbound_t);
 
-  //used only by parse.y
-type_opt_t consistent_aliashint(seg_t loc,kindbound_t kb, type_opt_t aq);
+  //used only by parse.cyy
+  type_opt_t consistent_aliashint (seg_t loc, kindbound_t kb, type_opt_t aq);
 }
-#endif 
+
+#endif
