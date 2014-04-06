@@ -415,7 +415,7 @@ type_t copy_type(type_t t) {
   // For these cases, we don't want to duplicate the definition
   case &TypeDeclType(&{.r = &Aggr_td(ad),...},_):
     let targs = map(tvar2type,ad->tvs);
-    return aggr_type(UnknownAggr(ad->kind,ad->name,false),targs);
+    return aggr_type(UnknownAggr(ad->kind,ad->name,NULL),targs);
   case &TypeDeclType(&{.r = &Enum_td(ed),...},_):
     return enum_type(ed->name,NULL);
   case &TypeDeclType(&{.r = &Datatype_td(dd),...},_):

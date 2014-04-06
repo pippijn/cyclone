@@ -878,7 +878,7 @@ list_t<decl_t> resolve_all(string_t<`H> filename, list_t<decl_t, `H> tds) {
       }catch {
       case &Unresolved_sym(e):
 	Warn::err2(e->loc, "Undefined symbol", e);
-	return false;
+	return NULL;
       }
     }
   } while(worklist);
