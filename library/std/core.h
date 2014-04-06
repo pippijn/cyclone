@@ -63,10 +63,10 @@ typedef int bool;
     macros [true] and [false], which are 1 and 0, respectively.  */
 #endif
 #ifndef false
-#define false (0)
+#define false ((bool)0)
 #endif
 #ifndef true
-#define true (1)
+#define true  ((bool)1)
 #endif
 
 /*** The rest of the declarations are in namespace Core. */

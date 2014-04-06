@@ -5,9 +5,10 @@ TESTS[] =
   fail4
   testaqualdefaults
   testaqualfail
+  zeroptr
 
 check: $(addsuffix .out, $(TESTS))
 
 %.out: %.ref %.cyc $(CYCLONE) $(LIBS)
-  ($(CYCLONE) $(CYCFLAGS) -stopafter-cf --manyerrors $*.cyc >& $@) || true
+  ($(CYCLONE) $(CYCFLAGS) -stopafter-toc --manyerrors $*.cyc >& $@) || true
   diff -wu $@ $<
