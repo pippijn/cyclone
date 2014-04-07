@@ -1310,7 +1310,7 @@ resolve_decl (env_t env, decl_t d)
 
       let old_locals = env->local_vars; // non-NULL only for nested functions
       if (old_locals != NULL)
-        env->local_vars = new * env->local_vars;  // can refer to callers' vars
+        env->local_vars = new *env->local_vars;  // can refer to callers' vars
       else
         env->local_vars = new Dict::empty (strptrcmp);
       for (let vds1 = vds; vds1 != NULL; vds1 = vds1->tl)

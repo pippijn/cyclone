@@ -703,7 +703,7 @@ namespace Lex
   static bool
   is_typedef_body (region_t<`d> d,
                    $(List::list_t<var_t, `H>, trie_t<`d>,
-                     string_t<`H> ) @env)
+                     string_t<`H>) @env)
   {
     let $(ns, t, s) = *env;
     int len = numelts (s) - 1;
@@ -727,7 +727,7 @@ namespace Lex
   is_typedef (list_t<var_t, `H> ns, var_t v)
   {
     if (ns != NULL)
-      return is_typedef_in_namespace ((List_t<var_t, `H> )ns, v);
+      return is_typedef_in_namespace ((List_t<var_t, `H>)ns, v);
     // all unqualified typedefs must be in the trie
     // look ma -- fast lookup
     let s = *v;

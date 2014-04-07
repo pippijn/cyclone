@@ -28,8 +28,8 @@ namespace BansheeIf
   bool resolve (Absyn::cvartype_t b) { return false; }
   //resolution
   void resolve_or_default (Absyn::type_t t);
-  void init_toplevel_cvars (List::list_t<$(Absyn::type_t, List::list_t<constraint_t, `H> ) @> assoc) { }
-  int add_all_constraints (List::list_t<$(Absyn::type_t, List::list_t<constraint_t, `H> ) @> assoc) { }
+  void init_toplevel_cvars (List::list_t<$(Absyn::type_t, List::list_t<constraint_t, `H>) @> assoc) { }
+  int add_all_constraints (List::list_t<$(Absyn::type_t, List::list_t<constraint_t, `H>) @> assoc) { }
   void register_toplevel_cvar (Absyn::type_t cvar) { }
   void persist_cvarmap (FILE @f) { }
   void resolve_or_default (Absyn::type_t t) { }

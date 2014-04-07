@@ -378,8 +378,7 @@ anal_fd (jump_anal_res_t tables, fndecl_t fd)
             }
           let &SaveEnv {
             .enclosers = dest_enclose, ...
-          } =
-            Hashtable::lookup (stmt_info, dest_stmt);
+          } = Hashtable::lookup (stmt_info, dest_stmt);
           if (dest_enclose != NULL) // NULL means outermost, so okay
             {
               let dest_scope = dest_enclose->hd;
@@ -395,16 +394,15 @@ anal_fd (jump_anal_res_t tables, fndecl_t fd)
             }
           fallthru (dest_stmt);
         case &Stmt_j (dest_stmt):
-          let & SaveEnv {
+          let &SaveEnv {
             .try_depth = dest_trydepth, .pat_var_depth = dest_pvdepth, ...
-          } =
-            Hashtable::lookup (stmt_info, dest_stmt);
+          } = Hashtable::lookup (stmt_info, dest_stmt);
           Hashtable::insert (pop_table    , src_stmt, src_trydepth - dest_trydepth);
           Hashtable::insert (pat_pop_table, src_stmt, src_pvdepth  - dest_pvdepth );
           Hashtable::insert (succ_table   , src_stmt, dest_stmt);
           break;
         case &Fallthru_j (dest_clause):
-          let & SaveEnv {
+          let &SaveEnv {
             .try_depth = dest_trydepth, .pat_var_depth = dest_pvdepth, ...
           } = Hashtable::lookup (stmt_info, dest_clause->body);
           Hashtable::insert (pop_table, src_stmt, src_trydepth - dest_trydepth);
@@ -432,19 +430,19 @@ jump_analysis_iter (jump_anal_res_t tables, list_t<decl_t, `H> tds)
   for (; tds != NULL; tds = tds->tl)
     switch (tds->hd->r)
       {
-      case &Let_d (...):
-      case &Letv_d (...):
-      case &Region_d (...):
-      case &Var_d (...):
-      case &Typedef_d (...):
-      case &Aggr_d (...):
+      case &Let_d      (...):
+      case &Letv_d     (...):
+      case &Region_d   (...):
+      case &Var_d      (...):
+      case &Typedef_d  (...):
+      case &Aggr_d     (...):
       case &Datatype_d (...):
-      case &Enum_d (...):
+      case &Enum_d     (...):
       case &Porton_d:
       case &Portoff_d:
       case &Tempeston_d:
       case &Tempestoff_d:
-      case &ExternC_d (...):
+      case &ExternC_d        (...):
       case &ExternCinclude_d (...):
         continue;
 

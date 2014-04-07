@@ -795,7 +795,7 @@ update_tvars ( tenv_t te
                                 *ts = new List (instantiate_tvar (enclosing_decl->loc, tv), *ts);
                               else //normal case -- add a new tvar
                                 {
-                                  let tvcpy = new * tv;
+                                  let tvcpy = new *tv;
                                   let tvn = new ((string_t)aprintf ("`ovr_%d", ++glob_tvar_id));
                                   tvcpy->name = tvn;
                                   added_tvars = new List (tvcpy, added_tvars);
@@ -1223,7 +1223,7 @@ update_usages (seg_t loc, tenv_t te, list_t<decl_t, `H> in_tv_ovrs, list_t<decl_
                           while (tvs)
                             {
                               let tv = tvs->hd;
-                              let tvcpy = new * tv;
+                              let tvcpy = new *tv;
                               let tvn = new ((string_t)aprintf ("`ovr_%d", ++glob_tvar_id));
                               tvcpy->name = tvn;
                               ad->tvs = new List (tvcpy, ad->tvs);
