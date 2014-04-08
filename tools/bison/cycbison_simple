@@ -93,7 +93,7 @@ static int yynerrs = 0;
 #endif
 
 #if YYDEBUG
- bool yydebug = true;	/*  nonzero means print parse trace	*/
+ bool yydebug;	/*  nonzero means print parse trace	*/
 /* Since this is uninitialized, it does not stop multiple parsers
    from coexisting.  */
 #endif
@@ -551,3 +551,6 @@ yyerrhandle:
   goto yynewstate;
 } /* end of region yyregion */
 }
+
+/* vim:ft=cpp
+ */
