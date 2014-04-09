@@ -58,7 +58,7 @@ typedef const char ?@aqual(`q) @nozeroterm `r buffer_t<`r, `q>;
 typedef char ?@aqual(`q) @nozeroterm `r mbuffer_t<`r, `q>;
 
 #ifndef bool
-typedef int bool;
+typedef long bool;
 /** In Cyclone, we use [bool] as a synonym for [int].  We also define
     macros [true] and [false], which are 1 and 0, respectively.  */
 #endif

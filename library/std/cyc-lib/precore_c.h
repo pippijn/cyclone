@@ -9,4 +9,4 @@ typedef char * Cbuffer_t;
 typedef char * CbufferNN_t;
 typedef struct _fat_ptr buffer_t;
 typedef struct _fat_ptr mbuffer_t;
-typedef int bool;
+typedef long bool;
