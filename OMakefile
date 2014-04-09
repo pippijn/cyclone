@@ -177,7 +177,7 @@ private.cyclone-rules (boot) =
     $(CYCLEX) $< $@
 
   %_tab.cyc %_tab.h: %.cyy $(CYCBISON) $(LIBSTD)
-    $(CYCBISON) -d $< -o $*.cyc
+    $(CYCBISON) -v -d $< -o $*.cyc
 
   %_gen.h: %.err.cyc $(ERRORGEN) $(CYCLONE) $(LIBSTD)
     $(ERRORGEN) -c $(CYCLONE) $< > $@
