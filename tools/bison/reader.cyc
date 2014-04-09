@@ -2409,6 +2409,8 @@ output_token_defines(FILE @file)
   char ?cp, ?symbol;
   char c;
 
+  fprintf(file, "enum yyttype {\n");
+
   for (bp = firstsymbol; bp; bp = bp->next)
     {
       symbol = bp->tag;				/* get symbol */
@@ -2430,15 +2432,19 @@ output_token_defines(FILE @file)
       while (((c = *cp++)!=0) && c != '.');
       if (c != '\0')  continue;
 
-      fprintf((FILE @)file, "#define\t%s\t%d\n", symbol,
+      fprintf(file, "\t%s\t= %d,\n", symbol,
+		((translations && ! rawtoknumflag)
+			? bp->user_token_number
+			: bp->value));
+      fprintf(file, "#define %s\t  %d\n", symbol,
 		((translations && ! rawtoknumflag)
 			? bp->user_token_number
 			: bp->value));
       if (semantic_parser)
-        fprintf((FILE @)file, "#define\tT%s\t%d\n", symbol, bp->value);
+        fprintf(file, "#define\tT%s\t%d\n", symbol, bp->value);
     }
 
-  putc('\n', (FILE @)file);
+  fprintf(file, "};\n\n");
 }
 
 

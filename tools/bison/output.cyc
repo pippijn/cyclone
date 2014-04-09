@@ -187,10 +187,17 @@ extern int yycost;\nextern m_string_t yymsg;\nextern YYSTYPE yyval;\n\n\
 yyguard(int n, YYSTYPE yyvsp, YYLTYPE yylsp)\n\
 {\n  yyerror = 0;\nyycost = 0;\n  yymsg = 0;\nswitch (n)\n    {"
 
-#define	ACTSTR		"\n#include \"%s\"\nextern YYSTYPE yyval;\
-\nextern int yychar;\
-yyaction(n, yyvsp, yylsp)\nregister int n;\nregister YYSTYPE *yyvsp;\n\
-register YYLTYPE *yylsp;\n{\n  switch (n)\n{"
+#define	ACTSTR		"\n"				\
+			"#include \"%s\"\n"		\
+			"extern YYSTYPE yyval;\n"	\
+			"extern int yychar;"		\
+			"yyaction(n, yyvsp, yylsp)\n"	\
+			"register int n;\n"		\
+			"register YYSTYPE *yyvsp;\n"	\
+			"register YYLTYPE *yylsp;\n"	\
+			"{\n"				\
+			"  switch (n)\n"		\
+			"    {"
 
 #define	ACTSTR_SIMPLE	"\n  switch (yyn) {\n"
 
@@ -204,8 +211,10 @@ output_headers()
   if (noparserflag)
 	return;
 
+#if 0
 /*fix this has to have literal string for format*/
   fprintf((FILE @)faction, (semantic_parser ?(const char?)ACTSTR : ACTSTR_SIMPLE), attrsfile);
+#endif
 
 /*  if (semantic_parser)	JF moved this below
     fprintf(ftable, "#include \"%s\"\n", attrsfile);
