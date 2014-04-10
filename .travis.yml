@@ -1,6 +1,7 @@
 language: c
 script:
    - ./configure
+   - ulimit -s 16384
    - omake -k
 
 install:
