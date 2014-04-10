@@ -75,10 +75,20 @@ using Core;
 using Hashtable;
 using List;
 
+typedef Lexing::Lexbuf<Lexing::Function_lexbuf_state<FILE @>> lexbuf_t;
+
 // State that we thread through the lexer and parser.
-#define YYLEX_PARAM_ARG Lexing::Lexbuf<Lexing::Function_lexbuf_state<FILE@>>,union YYSTYPE<`yy> @yylval_ptr, YYLTYPE @yylloc
-#define YYLEX_ARG yylex_buf,&yylval,&yylloc
-#define YYPARSE_PARAM_ARG region_t<`yy> yyr, Lexing::Lexbuf<Lexing::Function_lexbuf_state<FILE@>> yylex_buf
+#define YYLEX_PARAM_ARG			\
+	lexbuf_t yylex_buf,		\
+        union YYSTYPE<`yy> @yylval_ptr,	\
+        YYLTYPE @yylloc
+#define YYLEX_ARG			\
+	yylex_buf,			\
+        &yylval,			\
+        &yylloc
+#define YYPARSE_PARAM_ARG		\
+	region_t<`yy> yyr,		\
+        lexbuf_t yylex_buf
 
 #define LOC(s, e) (Position::loc_to_seg (s.first_line))
 #define SLOC(s)   (Position::loc_to_seg (s.first_line))
@@ -177,6 +187,17 @@ struct Abstractdeclarator<`yy>
 {
   list_t<type_modifier_t<`yy>, `yy> tms;
 };
+
+struct Tms
+{
+  seg_t varloc;
+  qvar_t x;
+  tqual_t tq;
+  type_t typ;
+  list_t<tvar_t> tvs;
+  list_t<attribute_t> atts;
+};
+typedef struct Tms @`r tms_t<`r>;
 
 ////////////////////////// forward references //////////////////////
 static type_t collapse_type_specifiers (type_specifier_t, seg_t);
@@ -277,9 +298,7 @@ gensym_enum ()
 
 static aggrfield_t
 make_aggr_field (seg_t loc,
-		 $($(seg_t, qvar_t, tqual_t, type_t, list_t<tvar_t>,
-		     list_t<attribute_t, `H> ) @, $(exp_opt_t, exp_opt_t) @) @
-		 field_info)
+		 $(tms_t, $(exp_opt_t, exp_opt_t) @) @field_info)
 {
   let &$(&$(varloc, qid, tq, t, tvs, atts), &$(widthopt, reqopt)) = field_info;
   if (tvs != NULL)
@@ -292,7 +311,7 @@ make_aggr_field (seg_t loc,
     .type	     = t,
     .width	     = widthopt,
     .attributes      = atts,
-    .requires_clause = reqopt
+    .requires_clause = reqopt,
   };
 }
 
@@ -308,7 +327,7 @@ empty_spec (seg_t loc)
     .Complex_spec    = false,
     .Valid_type_spec = false,
     .Type_spec	     = sint_type,
-    .loc	     = loc
+    .loc	     = loc,
   };
 }
 
@@ -512,7 +531,7 @@ substitute_aggrfield_tags (list_t<$(var_t, type_t) @> tags, aggrfield_t x)
 // variables, return the tqual and type and check that the type
 // variables are NULL -- used when we have a tuple type specification.
 static $(tqual_t, type_t) @
-get_tqual_typ (seg_t loc, $(`a, tqual_t, type_t)@t)
+get_tqual_typ (seg_t loc, $(`a, tqual_t, type_t) @t)
 {
   return new $((*t)[1], (*t)[2]);
 }
@@ -897,7 +916,7 @@ collapse_type_specifiers (type_specifier_t ts, seg_t loc)
   return t;
 }
 
-static list_t<$(seg_t, qvar_t, tqual_t, type_t, list_t<tvar_t>, list_t<attribute_t>) @`r, `r>
+static list_t<tms_t<`r>, `r>
 apply_tmss ( region_t<`r> r
 	   , tqual_t tq
 	   , type_t t
@@ -913,10 +932,10 @@ apply_tmss ( region_t<`r> r
   // NB: we copy the type here to avoid sharing definitions
   // but we avoid the copy when ds->tl is NULL
   let tl = (ds->tl == NULL) ? NULL : apply_tmss (r, tq, Tcutil::copy_type (t), ds->tl, shared_atts);
-  return rnew (r) List (rnew (r) $(varloc, q, tq2, new_typ, tvs, atts), tl);
+  return rnew (r) List (rnew (r) Tms (varloc, q, tq2, new_typ, tvs, atts), tl);
 }
 
-static $(tqual_t, type_t, list_t<tvar_t>, list_t<attribute_t> )
+static $(tqual_t, type_t, list_t<tvar_t>, list_t<attribute_t>)
 apply_tms (tqual_t tq, type_t t, list_t<attribute_t, `H> atts,
 	   list_t<type_modifier_t> tms)
 {
@@ -963,7 +982,7 @@ apply_tms (tqual_t tq, type_t t, list_t<attribute_t, `H> atts,
 	      args2 = NULL;
 	    // eliminate C99 dependencies e.g., int f (int n, int a[n]) by
 	    // adding in a requires clause e.g.,
-	    // int f (int n, int a@) @requires (n <= numelts (a))
+	    // int f (int n, int a @) @requires (n <= numelts (a))
 	    list_t<exp_t> new_requires = NULL;
 	    for (let a = args2; a != NULL; a = a->tl)
 	      {
@@ -1067,7 +1086,7 @@ speclist2typ (type_specifier_t tss, seg_t loc)
 // TJ: FIX the tqual should make it into the typedef as well,
 // e.g., typedef const int CI;
 static decl_t
-v_typ_to_typedef (seg_t loc, $(seg_t, qvar_t, tqual_t, type_t, list_t<tvar_t, `H>, list_t<attribute_t, `H> ) @t)
+v_typ_to_typedef (seg_t loc, tms_t<`r> t)
 {
   let &$(varloc, x, tq, typ, tvs, atts) = t;
   // tell the lexer that x is a typedef identifier
@@ -1561,7 +1580,7 @@ using Parse;
 %type<list_t<var_t, `H>> identifier_list identifier_list0
 %type<$(var_opt_t, tqual_t, type_t) @`H> parameter_declaration type_name
 %type<list_t<$(var_opt_t, tqual_t, type_t) @`H, `H>> parameter_list
-%type<$(list_t<$(var_opt_t, tqual_t, type_t) @`H, `H>, bool, vararg_info_t *`H, type_opt_t, list_t<effconstr_t, `H>, list_t<$(type_t, type_t) @`H, `H> ) @`H> parameter_type_list
+%type<$(list_t<$(var_opt_t, tqual_t, type_t) @`H, `H>, bool, vararg_info_t *`H, type_opt_t, list_t<effconstr_t, `H>, list_t<$(type_t, type_t) @`H, `H>) @`H> parameter_type_list
 %type<types_t> type_name_list type_params_opt effect_set region_set
 %type<types_t> atomic_effect eff_set
 %type<list_t<designator_t, `H>> designation designator_list
@@ -1574,7 +1593,7 @@ using Parse;
 %type<list_t<enumfield_t, `H>> enum_declaration_list
 %type<type_opt_t> optional_effect opt_aqual_bnd
 //%type<list_t<$(type_t, type_t) @`H, `H>> optional_rgn_order rgn_order
-%type<$(list_t<effconstr_t, `H>, list_t<$(type_t, type_t) @`H, `H> ) *`H> optional_effconstr_qualbnd effconstr_qualbnd
+%type<$(list_t<effconstr_t, `H>, list_t<$(type_t, type_t) @`H, `H>) *`H> optional_effconstr_qualbnd effconstr_qualbnd
 %type<effconstr_t> effconstr_elt
 %type<$(type_t, type_t) @`H> qual_bnd_elt
 %type<booltype_t> zeroterm_qual_opt
@@ -1588,8 +1607,8 @@ using Parse;
 %type<$(exp_opt_t, exp_opt_t, exp_opt_t, exp_opt_t)> chk_req_ens_thr_opt
 %type<$(exp_opt_t, exp_opt_t, exp_opt_t, exp_opt_t)> chk_req_ens_thr
 %type<raw_exp_t> asm_expr
-%type<$(list_t<$(string_t<`H>, exp_t) @`H, `H>, list_t<$(string_t<`H>, exp_t) @`H, `H>, list_t<string_t<`H> @`H, `H> ) @`H> asm_out_opt
-%type<$(list_t<$(string_t<`H>, exp_t) @`H, `H>, list_t<string_t<`H> @`H, `H> ) @`H> asm_in_opt
+%type<$(list_t<$(string_t<`H>, exp_t) @`H, `H>, list_t<$(string_t<`H>, exp_t) @`H, `H>, list_t<string_t<`H> @`H, `H>) @`H> asm_out_opt
+%type<$(list_t<$(string_t<`H>, exp_t) @`H, `H>, list_t<string_t<`H> @`H, `H>) @`H> asm_in_opt
 %type<list_t<string_t<`H> @`H, `H>> asm_clobber_opt asm_clobber_list
 %type<list_t<$(string_t<`H>, exp_t) @`H, `H>> asm_outlist asm_inlist
 %type<$(string_t<`H>, exp_t) @`H> asm_io_elt
@@ -1605,12 +1624,6 @@ using Parse;
 
 %nonassoc IF
 %nonassoc ELSE
-
-%nonassoc P1
-%nonassoc P2
-%nonassoc P3
-%nonassoc P4
-%nonassoc P5
 
 %start prog_or_constraints
 %%
@@ -5184,7 +5197,7 @@ yyprint (int i, union YYSTYPE<`yy> v)
     case { .QualId_tok = q }: fprintf (stderr, "%s", Absynpp::qvar2string (q)); break;
     case { .Exp_tok    = e }: fprintf (stderr, "%s", Absynpp::exp2string (e) ); break;
     case { .Stmt_tok   = s }: fprintf (stderr, "%s", Absynpp::stmt2string (s)); break;
-    default		    : fprintf (stderr, "?"			      ); break;
+    default		    : fprintf (stderr, "?"			     ); break;
     }
 }
 
